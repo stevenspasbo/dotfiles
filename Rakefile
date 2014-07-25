@@ -78,7 +78,6 @@ task :backup do
           next
         end
       end
-    end
     elsif (File.symlink?(file) && !file_already_linked(file))
       puts "#{base_dot_file} is a symlink to #{File.readlink(home_file)}"
       while (true)
@@ -92,9 +91,10 @@ task :backup do
           puts "\tMoving to next file"
           next
         end
+      end
     end
+  end
 end
-
 desc "Installs all dotfiles"
 task :install => :backup do
   files.each do |file|
@@ -107,11 +107,10 @@ task :install => :backup do
         if (file_already_linked?(home_file))
           puts "\tSymlink to file already exists. Moving on."
         end
-      else
-        File.symlink(File.expand_path(file), home_file)
       end
+    else
+      File.symlink(File.expand_path(file), home_file)
     end
   end
 end
-
 
