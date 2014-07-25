@@ -45,9 +45,29 @@ end
 
 desc "Backs up dotfiles to $REPO/Backup"
 task :backup do
-  Dir.entries.each do |file|
-    unless rakefile?(file) && markdown?(file)
+  t = Time.new
+  date_str = "#{t.month}_#{t.day}_#{t.year}_-_#{t.hour}_#{t.min}_#{t.sec}"
+  begin
+    backupdir = "#{File.expand_path(File.dirname(__FILE__)}/backups/#{date_str})"
+    Dir.mkdir(backupdir) unless File.exists?(backupdir)
+    Dir.glob('*').each do |file|
+      unless rakefile?(file) && markdown?(file)
+        home_file = "#{ENV['HOME']}/.#{file}"
+        if File.exists?(home_file) && !File.symlink?(home_file)
+          puts "#{home_file} found. Backing up."
+          mv (File.expand_path(home_file), File.expand_path(backup_dir))
+        end
+      end
+    end
+  rescue SystemCallError => e
+    puts e.message
+  end
 
+end
+
+task :dir do
+  puts File.dirname(__FILE__)
+  puts __FILE__
 end
 
 #-------------------------------------------------------------
@@ -56,15 +76,7 @@ end
 
 def backup(file)
   unless File.symlink?(file)
-    t = Time.new
-    date_str = "#{t.month}_#{t.day}_#{t.year}_-_#{t.hour}_#{t.min}_#{t.sec}"
-    begin
-      Dir.mkdir("Backup/"date_str)
-      Dir.chdir(date_str)
-      mv(file, "#{Dir.pwd}/backup/#{new_file_name}")
-    rescue SystemCallError -> e
-      puts e.message
-      puts e.backtrace.inspect
+    puts blah
   end
 end
 
@@ -73,5 +85,5 @@ def rakefile?(file)
 end
 
 def markdown?(file)
-  File.extname(file).downcase == ".markdown"
+  File.extname(file).downcase == ".md"
 end
