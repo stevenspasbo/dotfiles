@@ -11,7 +11,7 @@ end
 
 desc "Installs all dotfiles"
 task :install do
-  puts "OMG EVERYTHING IS DESTROYED"
+
 end
 
 desc "Installs bash files"
@@ -36,21 +36,15 @@ task :vim do
     File.symlink("#{Dir.pwd}/vimrc", vimrc)
     puts "[ * ~/.vimrc symlink created ]"
   end
-  #if Dir.exists?(vim_dir)
-  #  puts "[ #{File.basename(vimrc)} found ]"
-  #  unless File.symlink?(vimrc)
-  #    #backup(vimrc)
-  #    puts "\tMoved to $repoLocation/backup/ "
-  #  else
-  #    puts "\tFile is symlink, skipping backup "
-  #  end
-  #else
-  #  #ln_s("#{Dir.pwd}/vimrc", vimrc)
-  #end
 end
 
 desc "Updates all vim plugins"
 task :update_vim_plugins => :vim do
+
+end
+
+desc "Backs up dotfiles to $REPO/Backup"
+task :backup do
 
 end
 
