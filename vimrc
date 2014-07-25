@@ -44,7 +44,6 @@ colorscheme molokai
 let g:airline_powerline_fonts = 1
 let g:airline_theme='light'
 
-
 """""""""""""""""""""""""""""""""""""""""""
 " Status line
 """""""""""""""""""""""""""""""""""""""""""
@@ -59,4 +58,8 @@ set laststatus=2
 "set statusline+=%l/%L " Cursor location
 "set statusline+=\ %P " Percent through file
 
+"""""""""""""""""""""""""""""""""""""""""""
+" Mappings
+"""""""""""""""""""""""""""""""""""""""""""
 
+map <c-x> VdO
