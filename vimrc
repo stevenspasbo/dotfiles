@@ -1,6 +1,7 @@
 """""""""""""""""""""""""""""""""""""""""""
 "           Author: Steven Spasbo         "
 """""""""""""""""""""""""""""""""""""""""""
+execute pathogen#infect()
 
 """""""""""""""""""""""""""""""""""""""""""
 " Misc vim settings
@@ -15,10 +16,6 @@ set smartcase " Unless search contains uppercase
 set background=dark " For dark terminals
 set ruler " Show position
 set showmode
-
-execute pathogen#infect()
-call pathogen#runtime_append_all_bundles()
-call pathogen#helptags()
 
 """""""""""""""""""""""""""""""""""""""""""
 " Text, tabs, indentds
