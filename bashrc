@@ -2,6 +2,8 @@
 #           Author: Steven Spasbo
 #-------------------------------------------------------------
 
+export DOTFILE_REPO=`dirname (readlink ~/.bashrc)`
+
 #-------------------------------------------------------------
 # History stuff
 #-------------------------------------------------------------
@@ -15,13 +17,8 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 #-------------------------------------------------------------
 # Prompt
 #-------------------------------------------------------------
-
-#source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
-#PS1="\[$blue\u$purple@$cyan\h: $white\w$nc `echo -e "\xE2\x9A\xA1\x03"` \] " # Bolt
-#PS1="\[$blue\u$purple@$cyan\h: $white\w$nc `echo -e "\xE2\x98\x83\x0A"` \] " # Snowman
-#export PS1="\[$(tput bold)\]\[$(tput setaf 4)\]\u\[$(tput setaf 5)\]@\[$(tput setaf 6)\]\h: \[$(tput setaf 7)\]\w ☭  \[$(tput sgr0)\]"
-#export PS1="\[$(tput bold)\]\[$(tput setaf 4)\]\u\[$(tput setaf 5)\]@\[$(tput setaf 6)\]\h: \[$(tput setaf 7)\]\w \[$(tput sgr0)\]\n> "
-# Custom bash prompt via kirsle.net/wizards/ps1.html
+export GIT_PS1_SHOWDIRTYSTATE=1
+source $DOTFILE_REPO/git-prompt.sh
 export PS1="\[$(tput bold)\]\[$(tput setaf 7)\][\[$(tput setaf 4)\]\h\[$(tput setaf 5)\]@\[$(tput setaf 6)\]\h: \[$(tput setaf 2)\]\w\[$(tput setaf 7)\]]\n\[$(tput setaf 2)\]> \[$(tput sgr0)\]"
 export CLICOLOR=1
 export LSCOLORS=ExFxCxDxBxegedabagacad
@@ -103,5 +100,5 @@ clear
 default_title
 motd
 
-
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+
