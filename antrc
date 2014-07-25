@@ -1,0 +1,1 @@
+ANT_OPTS="${ANT_OPTS} -Djava.awt.headless=true -XX:MaxPermSize=1024m"
