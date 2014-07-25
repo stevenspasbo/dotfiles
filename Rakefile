@@ -45,6 +45,8 @@ end
 
 desc "Backs up dotfiles to $REPO/Backup"
 task :backup do
+  Dir.entries.each do |file|
+    unless rakefile?(file) && markdown?(file)
 
 end
 
@@ -55,9 +57,21 @@ end
 def backup(file)
   unless File.symlink?(file)
     t = Time.new
-    new_file_name = "#{file}_#{t.month}_#{t.day}_#{t.year}"
-    mv(file, "#{Dir.pwd}/backup/#{new_file_name}")
+    date_str = "#{t.month}_#{t.day}_#{t.year}_-_#{t.hour}_#{t.min}_#{t.sec}"
+    begin
+      Dir.mkdir("Backup/"date_str)
+      Dir.chdir(date_str)
+      mv(file, "#{Dir.pwd}/backup/#{new_file_name}")
+    rescue SystemCallError -> e
+      puts e.message
+      puts e.backtrace.inspect
   end
 end
 
+def rakefile?(file)
+  File.expand_path(file) == File.expand_path(__FILE__)
+end
 
+def markdown?(file)
+  File.extname(file).downcase == ".markdown"
+end
