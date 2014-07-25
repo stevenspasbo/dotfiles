@@ -1,10 +1,15 @@
 require 'colorize'
 
 #-------------------------------------------------------------
+# Variables
+#-------------------------------------------------------------
+HOME = ENV['HOME']
+REPO = File.expand_path(File.dirname(__FILE__))
+BACKUP_DIR = REPO + "/backups"
+
+#-------------------------------------------------------------
 # Tasks
 #-------------------------------------------------------------
-home_dir = ENV['HOME']
-
 task :default do
   puts "Rakefile for my dotfiles. WIP. (default task)"
 end
@@ -16,7 +21,7 @@ end
 
 desc "Installs bash files"
 task :bashrc do
-  puts "Installing bashrc"
+
 end
 
 desc "Installs vim files"
@@ -45,24 +50,33 @@ end
 
 desc "Backs up dotfiles to $REPO/Backup"
 task :backup do
-  t = Time.new
-  date_str = "#{t.month}_#{t.day}_#{t.year}_-_#{t.hour}_#{t.min}_#{t.sec}"
-  begin
-    backupdir = "#{File.expand_path(File.dirname(__FILE__)}/backups/#{date_str})"
-    Dir.mkdir(backupdir) unless File.exists?(backupdir)
-    Dir.glob('*').each do |file|
-      unless rakefile?(file) && markdown?(file)
-        home_file = "#{ENV['HOME']}/.#{file}"
-        if File.exists?(home_file) && !File.symlink?(home_file)
-          puts "#{home_file} found. Backing up."
-          mv (File.expand_path(home_file), File.expand_path(backup_dir))
+  Dir.glob('*').each do |file|
+    unless rakefile?(file) && markdown?(file) && file != "backups"
+      home_file = "#{HOME}/.#{file}"
+      base_dot_name = File.basename(home_file)
+      puts "Checking for #{base_dot_name}"
+      if File.exists?(home_file)
+        puts "\t#{base_dot_name} exists"
+        if File.symlink?(home_file)
+          if (File.readlink(home_file) == File.expand_path(file))
+            puts "\tSymlink to file already exists. Moving on."
+          end
+        else
+          begin
+            t = Time.new
+            date_str = "#{t.month}_#{t.day}_#{t.year}_-_#{t.hour}_#{t.min}_#{t.sec}"
+            backupdir = BACKUP_DIR + "/" + date_str
+            Dir.mkdir(backupdir) unless File.exists?(backupdir)
+            puts "\t#{home_file} found. Backing up."
+            File.rename(home_file, "#{File.expand_path(backupdir)}/#{base_dot_name}")
+            File.symlink(File.expand_path(file), home_file)
+          rescue SystemCallError => e
+            puts e.message
+          end
         end
       end
     end
-  rescue SystemCallError => e
-    puts e.message
   end
-
 end
 
 task :dir do
