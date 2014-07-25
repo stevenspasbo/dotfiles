@@ -19,30 +19,6 @@ task :install do
 
 end
 
-desc "Installs bash files"
-task :bashrc do
-
-end
-
-desc "Installs vim files"
-task :vim do
-  vimrc = "#{home_dir}/.vimrc"
-  vim_dir = "#{home_dir}/.vim"
-  if File.exists?(vimrc)
-    puts "[ #{File.basename(vimrc)} found ]".colorize(:red)
-    unless File.symlink?(vimrc)
-      backup(vimrc)
-      puts "\tMoved to $repoLocation/backup/ "
-    else
-      puts "\tFile is symlink, skipping backup "
-    end
-  else
-    puts "[ No .vimrc file found ]"
-    File.symlink("#{Dir.pwd}/vimrc", vimrc)
-    puts "[ * ~/.vimrc symlink created ]"
-  end
-end
-
 desc "Updates all vim plugins"
 task :update_vim_plugins => :vim do
 
@@ -51,7 +27,8 @@ end
 desc "Backs up dotfiles to $REPO/Backup"
 task :backup do
   Dir.glob('*').each do |file|
-    unless rakefile?(file) && markdown?(file) && file != "backups"
+    unless rakefile?(file) && markdown?(file)
+      next if file == "backups"
       home_file = "#{HOME}/.#{file}"
       base_dot_name = File.basename(home_file)
       puts "Checking for #{base_dot_name}"
@@ -62,26 +39,12 @@ task :backup do
             puts "\tSymlink to file already exists. Moving on."
           end
         else
-          begin
-            t = Time.new
-            date_str = "#{t.month}_#{t.day}_#{t.year}_-_#{t.hour}_#{t.min}_#{t.sec}"
-            backupdir = BACKUP_DIR + "/" + date_str
-            Dir.mkdir(backupdir) unless File.exists?(backupdir)
-            puts "\t#{home_file} found. Backing up."
-            File.rename(home_file, "#{File.expand_path(backupdir)}/#{base_dot_name}")
-            File.symlink(File.expand_path(file), home_file)
-          rescue SystemCallError => e
-            puts e.message
-          end
+          backup(home_file)
+          File.symlink(File.expand_path(file), home_file)
         end
       end
     end
   end
-end
-
-task :dir do
-  puts File.dirname(__FILE__)
-  puts __FILE__
 end
 
 #-------------------------------------------------------------
@@ -89,8 +52,19 @@ end
 #-------------------------------------------------------------
 
 def backup(file)
-  unless File.symlink?(file)
-    puts blah
+  t = Time.new
+  date_str = "#{t.month}_#{t.day}_#{t.year}_-_#{t.hour}_#{t.min}_#{t.sec}"
+  backupdir = BACKUP_DIR + "/" + date_str
+  new_file_name = "#{File.expand_path(backupdir)}/#{file}"
+  begin
+    Dir.mkdir(backupdir) unless File.exists?(backupdir)
+    unless File.exists?(new_file_name)
+      File.rename(file, new_file_name)
+    else
+      File.rename(file, "#{new_file_name}#{rand(10000)}")
+    end
+  rescue SystemCallError => e
+    puts e.message
   end
 end
 

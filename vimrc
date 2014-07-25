@@ -17,6 +17,8 @@ set ruler " Show position
 set showmode
 
 execute pathogen#infect()
+call pathogen#runtime_append_all_bundles()
+call pathogen#helptags()
 
 """""""""""""""""""""""""""""""""""""""""""
 " Text, tabs, indentds
