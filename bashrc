@@ -73,32 +73,14 @@ nc='\[\e[0m\]'
 cyan2="\033[036m"
 
 #-------------------------------------------------------------
-# Functions!!!
+# Functions
 #-------------------------------------------------------------
-xtitle()
-{
-  case "$TERM" in
-    *term | rxvt)
-      echo -ne "\033]0;$*\007" ;;
-    *)
-      ;;
-  esac
-}
 
-default_title() 
-{
-  xtitle `logname` on `hostname`
-}
-
-motd()
-{
-archey -c
-
+motd() {
+  archey -c
 }
 
 clear
-default_title
 motd
 
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
