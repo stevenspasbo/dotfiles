@@ -19,11 +19,6 @@ task :install do
 
 end
 
-desc "Updates all vim plugins"
-task :update_vim_plugins => :vim do
-
-end
-
 desc "Backs up dotfiles to $REPO/Backup"
 task :backup do
   Dir.glob('*').each do |file|
@@ -45,6 +40,11 @@ task :backup do
       end
     end
   end
+end
+
+desc "Updates all the vim plugins"
+task :update_vim do
+  `git submodule foreach git pull origin master`
 end
 
 #-------------------------------------------------------------
