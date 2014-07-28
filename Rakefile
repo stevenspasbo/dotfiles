@@ -51,7 +51,7 @@ end
 # Tasks
 #-------------------------------------------------------------
 task :default do
-  puts "Rakefile for my dotfiles. WIP. (default task)"
+  sh "rake -T"
 end
 
 desc "Updates all the vim plugins"
