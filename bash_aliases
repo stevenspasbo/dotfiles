@@ -14,7 +14,6 @@ a egrep='egrep --color'
 #-------------------------------------------------------------
 a ls='ls'
 a ll="ls -la"
-a la='ls -al'
 a l='ls -CF'
 
 #-------------------------------------------------------------
@@ -37,17 +36,9 @@ a desktop='cd ~/Desktop'
 #-------------------------------------------------------------
 # Personalized shortcuts
 #-------------------------------------------------------------
-a dev='cd /Development'
-a apps="cd /apps"
-a repository="cd /Work/SVN"
 a ru="cd /Development/Ruby"
 a py="cd /Development/Python"
 a ja="cd /Development/Java"
-a cpp="cd /Development/C++"
-a onlineclasses="cd /Development/OnlineClasses"
-a coursera="cd /Development/Coursera"
-
-a auto="cd ~/Automation"
 
 a chbash="vim ~/.bashrc"
 a chvim="vim ~/.vimrc"
