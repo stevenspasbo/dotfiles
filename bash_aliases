@@ -98,18 +98,6 @@ REMOTELOGS="/data/workdaydevqa/suv/suvwats/logs"
   fi
 }
 
-VIM_PLUGIN_DIR=/Users/steven.spasbo/.vim/bundle/*
-function updatevimplugins() {
-  for i in $VIM_PLUGIN_DIR
-  do
-    cd ${i}
-    pwd
-    git pull
-    cd ..
-  done
-}
-
-
 repos=( "/Work/SVN/auto" )
 updaterepos() {
 for i in "${repos[@]}"
