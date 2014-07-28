@@ -20,7 +20,7 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 # Prompt
 #-------------------------------------------------------------
 export GIT_PS1_SHOWDIRTYSTATE=1
-export PS1='\[$(tput bold)\]\[$(tput setaf 7)\][\[$(tput setaf 4)\]\h\[$(tput setaf 5)\]@\[$(tput setaf 6)\]\h: \[$(tput setaf 2)\]\w\[$(tput setaf 7)\]]$(__git_ps1 " (%s)")\n\[$(tput setaf 2)\] > \[$(tput sgr0)\]'
+export PS1='\[$(tput bold)\]\[$(tput setaf 7)\][\[$(tput setaf 4)\]\h\[$(tput setaf 5)\]@\[$(tput setaf 6)\]\h: \[$(tput setaf 2)\]\w\[$(tput setaf 7)\]]$(__git_ps1 " (%s)")\n\[$(tput setaf 2)\]> \[$(tput sgr0)\]'
 export CLICOLOR=1
 export LSCOLORS=ExFxCxDxBxegedabagacad
 
