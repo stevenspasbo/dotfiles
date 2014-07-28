@@ -56,7 +56,7 @@ end
 
 desc "Updates all the vim plugins"
 task :update_vim do
-  `git submodule foreach git pull origin master`
+  sh "git submodule foreach git pull origin master"
 end
 
 desc "Backs up dotfiles to #{REPO}backup"
