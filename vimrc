@@ -38,13 +38,15 @@ set showmode
 """""""""""""""""""""""""""""""""""""""""""
 " Text, tabs, indentds
 """""""""""""""""""""""""""""""""""""""""""
+" 1 tab == 2 spaces
+set tabstop=2
+set shiftwidth=2
+
 filetype indent on " Smart indents
+set expandtab " Use spaces instead of tabs
 set wrap
 set autoindent
 set smarttab
-set tabstop=2
-set shiftwidth=2
-set expandtab
 
 """""""""""""""""""""""""""""""""""""""""""
 " Files, undos
@@ -58,6 +60,7 @@ set updatecount=100 " Update swapfile after 100 character changes
 """""""""""""""""""""""""""""""""""""""""""
 syntax enable " Syntax highlighting
 colorscheme molokai
+set encoding=utf8
 let g:airline_powerline_fonts = 1
 let g:airline_theme='light'
 
