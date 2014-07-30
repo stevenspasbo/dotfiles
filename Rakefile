@@ -114,3 +114,16 @@ task :install => :backup do
   end
 end
 
+desc "Install RVM"
+task :install_rvm do
+  unless File.exists? "#{ENV['HOME']}/.rvm"
+    print "Install RVM? (y/n) "
+    ans = gets.downcase.chomp
+    if (ans == "y" || ans == "yes")
+      sh "curl -sSL https://get.rvm.io | bash"
+    end
+  else
+    puts "RVM already installed"
+  end
+end
+
