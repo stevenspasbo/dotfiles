@@ -14,7 +14,7 @@ BACKUP_DIRECTORY = BACKUP_DIR + "/" + DATE_TIME_STRING
 def backup(file)
   new_file_name = "#{File.expand_path(BACKUP_DIRECTORY)}/#{File.basename(file)}"
   begin
-    Dir.mkdir(BACKUP_DIRECTORY) unless File.exists?(BACKUP_DIRECTORY)
+    Dir.mkdir(BACKUP_DIRECTORY) unless Dir.exists?(BACKUP_DIRECTORY)
     unless File.exists?(new_file_name)
       File.rename(file, new_file_name)
     else
@@ -71,11 +71,11 @@ task :backup do
         ans = $stdin.gets.chomp.downcase
         if (ans == "yes" || ans == "y")
           backup(home_file)
-          next
+          break
         elsif (ans == "no" || ans == "n")
           files.delete(file)
           puts "\tMoving to next file"
-          next
+          break
         end
       end
     elsif (File.symlink?(file) && !file_already_linked(file))
