@@ -74,13 +74,6 @@ scp-profile() {
   echo "Done, logging in"
 }
 
-gitit() {
-  git add .
-  git commit -m "$1"
-  git push
-}
-
-
 getlogs() {
 WATSLOGS="/Work/Logs/WATS"
 CURRENTDIRECTORY=`pwd`
