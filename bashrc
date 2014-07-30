@@ -39,18 +39,8 @@ fi
 
 export EDITOR=vim
 
-# If you need to add any dirs to path, just add :/path/to/dir after $PATH
-#PATH=$PATH
-
 #-------------------------------------------------------------
 # Functions
 #-------------------------------------------------------------
-
-motd() {
-  archey -c
-}
-
-clear
-motd
 
 
