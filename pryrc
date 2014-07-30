@@ -1,1 +1,1 @@
-system "clear"
+Pry.config.theme = "monokai"
