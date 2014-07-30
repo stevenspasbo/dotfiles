@@ -7,3 +7,4 @@ compinit
 # correction
 setopt correctall
 
+
