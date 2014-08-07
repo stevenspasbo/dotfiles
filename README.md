@@ -8,4 +8,4 @@ Installation is pretty simple as long as you have rake.
 
 1) Check out repo
 
-2) Run 'rake install'
+2) Run 'rake install_everything'
