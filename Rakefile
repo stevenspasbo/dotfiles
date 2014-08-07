@@ -95,7 +95,7 @@ task :backup do
   end
 end
 desc "Installs all dotfiles"
-task :install => :backup do
+task :install_dotfiles => :backup do
   files.each do |file|
     home_file = "#{HOME}/.#{file}"
     base_dot_name = File.basename(home_file)
@@ -113,7 +113,7 @@ task :install => :backup do
   end
 end
 
-desc "Install RVM"
+desc "Installs RVM"
 task :install_rvm do
   unless File.exists? "#{ENV['HOME']}/.rvm"
     print "Install RVM? (y/n) "
@@ -126,3 +126,15 @@ task :install_rvm do
   end
 end
 
+desc "Installs Homebrew"
+task :install_homebrew do
+  unless File.exists?("/usr/local/bin/brew")
+    print "Install Homebrew? (y/n) "
+    ans = gets.downcase.chomp
+    if (ans == "y" || ans == "yes")
+      sh 'ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"'
+    end
+  else
+    puts "Homebrew already installed"
+  end
+end
