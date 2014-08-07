@@ -28,7 +28,7 @@ a cal='cal | grep --before-context 6 --after-context 6 --color -e " $(date +%e)"
 # Shortcuts and directory stuff
 #-------------------------------------------------------------
 a ..='cd ..'
-a ....='cd ../..'
+a ...='cd ../..'
 a home='cd ~/'
 a downloads='cd ~/Downloads'
 a desktop='cd ~/Desktop'
