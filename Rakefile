@@ -138,3 +138,8 @@ task :install_homebrew do
     puts "Homebrew already installed"
   end
 end
+
+desc "Installs everything"
+task :install_all => [ :install_rvm, :install_homebrew, :install_dotfiles ] do
+  puts "Installing everything..."
+end
