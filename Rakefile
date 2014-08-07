@@ -52,7 +52,7 @@ end
 # Tasks
 #-------------------------------------------------------------
 task :default do
-  sh "rake -T"
+  puts "Run 'rake -T' to see the list of available tasks"
 end
 
 desc "Updates all the vim plugins"
@@ -166,7 +166,7 @@ task :install_fonts do
       unless (File.exists? "#{USER_FONT_DIR}/#{File.basename(font)}")
         FileUtils.cp(font, USER_FONT_DIR)
       else
-        "NO GO"
+        "#{File.basename(font)} already exists in Users library"
       end
     end
   end
