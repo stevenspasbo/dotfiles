@@ -4,6 +4,8 @@
 HOME = ENV['HOME']
 REPO = File.expand_path(File.dirname(__FILE__))
 BACKUP_DIR = REPO + "/backups"
+REPO_FONT_DIR = REPO + "/fonts"
+USER_FONT_DIR = "#{ENV['HOME']}/Library/Fonts"
 TIME = Time.new
 DATE_TIME_STRING = "#{TIME.month}_#{TIME.day}_#{TIME.year}_-_#{TIME.hour}_#{TIME.min}_#{TIME.sec}"
 
@@ -143,3 +145,30 @@ desc "Installs everything"
 task :install_all => [ :install_rvm, :install_homebrew, :install_dotfiles ] do
   puts "Installing everything..."
 end
+
+desc "Installs iTerm"
+task :install_iterm do
+  if ((/darwin/ =~ RUBY_PLATFORM) != nil)
+    if (ENV['TERM_PROGRAM'] != "iTerm.app")
+      # Install iTerm
+    else
+      puts "iTerm already installed, and you're using it!"
+    end
+  else
+    puts "Wrong OS. That's for Mac only."
+  end
+
+end
+
+desc "Installs fonts"
+task :install_fonts do
+  Dir["#{REPO_FONT_DIR}/*"].each do |font|
+    unless (File.exists? "#{USER_FONT_DIR}/#{File.basename(font)}")
+      FileUtils.cp(font, USER_FONT_DIR)
+    else
+      "NO GO"
+    end
+  end
+end
+
+
