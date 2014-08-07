@@ -6,15 +6,14 @@ REPO = File.expand_path(File.dirname(__FILE__))
 BACKUP_DIR = REPO + "/backups"
 TIME = Time.new
 DATE_TIME_STRING = "#{TIME.month}_#{TIME.day}_#{TIME.year}_-_#{TIME.hour}_#{TIME.min}_#{TIME.sec}"
-BACKUP_DIRECTORY = BACKUP_DIR + "/" + DATE_TIME_STRING
 
 #-------------------------------------------------------------
 # Methods
 #-------------------------------------------------------------
 def backup(file)
-  new_file_name = "#{File.expand_path(BACKUP_DIRECTORY)}/#{File.basename(file)}"
+  new_file_name = "#{File.expand_path(BACKUP_DIR)}/#{File.basename(file)}#{DATE_TIME_STRING}"
   begin
-    Dir.mkdir(BACKUP_DIRECTORY) unless Dir.exists?(BACKUP_DIRECTORY)
+    Dir.mkdir(BACKUP_DIR) unless Dir.exists?(BACKUP_DIR)
     unless File.exists?(new_file_name)
       File.rename(file, new_file_name)
     else
@@ -23,7 +22,7 @@ def backup(file)
   rescue SystemCallError => e
     puts e.message
   end
-  puts "#{file} was moved to #{BACKUP_DIRECTORY}"
+  puts "\t#{file} was moved to #{new_file_name}"
 end
 
 def rakefile?(file)
