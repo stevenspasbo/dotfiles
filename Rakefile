@@ -157,16 +157,17 @@ task :install_iterm do
   else
     puts "Wrong OS. That's for Mac only."
   end
-
 end
 
 desc "Installs fonts"
 task :install_fonts do
-  Dir["#{REPO_FONT_DIR}/*"].each do |font|
-    unless (File.exists? "#{USER_FONT_DIR}/#{File.basename(font)}")
-      FileUtils.cp(font, USER_FONT_DIR)
-    else
-      "NO GO"
+  if ((/darwin/ =~ RUBY_PLATFORM) != nil)
+    Dir["#{REPO_FONT_DIR}/*"].each do |font|
+      unless (File.exists? "#{USER_FONT_DIR}/#{File.basename(font)}")
+        FileUtils.cp(font, USER_FONT_DIR)
+      else
+        "NO GO"
+      end
     end
   end
 end
