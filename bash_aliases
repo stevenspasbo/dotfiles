@@ -77,9 +77,9 @@ function removeFromPath() {
 #-------------------------------------------------------------
 
 # Personal laptop
-if [ $(hostname) == "h4xx0rmaxx0rzzzz.local" ]; then
-
-fi
+#if [ $(hostname) == "h4xx0rmaxx0rzzzz.local" ]; then
+# Uncomment when you have something.
+#fi
 
 # Work laptop
 if [ $(hostname) == "SSPASBO-03.local" ]; then
