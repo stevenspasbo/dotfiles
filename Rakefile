@@ -129,7 +129,7 @@ task :install_homebrew do
 end
 
 desc "Installs everything"
-task :install_all => [ :install_rvm, :install_homebrew, :install_dotfiles ] do
+task :install_all => [ :install_fonts, :install_rvm, :install_homebrew, :install_dotfiles ] do
   puts "Installing everything..."
 end
 
