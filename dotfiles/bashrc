@@ -3,7 +3,7 @@
 #-------------------------------------------------------------
 if [[ -L ~/.bashrc ]]; then
   export DOTFILE_REPO=`dirname $(readlink ~/.bashrc)`
-  source $DOTFILE_REPO/git-prompt.sh
+  source $DOTFILE_REPO/../git-prompt.sh
 fi
 
 #-------------------------------------------------------------

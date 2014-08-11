@@ -1,33 +1,6 @@
-[submodule "dotfiles/vim/bundle/vim-pathogen"]
-	path = dotfiles/vim/bundle/vim-pathogen
-	url = https://github.com/tpope/vim-pathogen.git
-[submodule "dotfiles/vim/bundle/nerdtree.git"]
-	path = dotfiles/vim/bundle/nerdtree.git
-	url = https://github.com/scrooloose/nerdtree.git
 [submodule "dotfiles/vim/bundle/vim-airline"]
 	path = dotfiles/vim/bundle/vim-airline
 	url = https://github.com/bling/vim-airline.git
-[submodule "dotfiles/vim/bundle/vim-fugitive"]
-	path = dotfiles/vim/bundle/vim-fugitive
-	url = https://github.com/tpope/vim-fugitive.git
-[submodule "dotfiles/vim/bundle/vim-json"]
-	path = dotfiles/vim/bundle/vim-json
-	url = https://github.com/elzr/vim-json.git
-[submodule "dotfiles/vim/bundle/vim-javascript"]
-	path = dotfiles/vim/bundle/vim-javascript
-	url = https://github.com/pangloss/vim-javascript.git
-[submodule "dotfiles/vim/bundle/vim-surround"]
-	path = dotfiles/vim/bundle/vim-surround
-	url = https://github.com/tpope/vim-surround.git
-[submodule "dotfiles/vim/bundle/vim-rake"]
-	path = dotfiles/vim/bundle/vim-rake
-	url = https://github.com/tpope/vim-rake.git
-[submodule "dotfiles/vim/bundle/vim-rails"]
-	path = dotfiles/vim/bundle/vim-rails
-	url = https://github.com/tpope/vim-rails
-[submodule "dotfiles/vim/vim-ruby"]
-	path = dotfiles/vim/bundle/vim-ruby
-	url = https://github.com/vim-ruby/vim-ruby.git
-[submodule "dotfiles/vim/bundle/vim-markdown"]
-	path = dotfiles/vim/bundle/vim-markdown
-	url = https://github.com/tpope/vim-markdown.git
+[submodule "dotfiles/vim/bundle/nerdtree"]
+	path = dotfiles/vim/bundle/nerdtree
+	url = https://github.com/scrooloose/nerdtree.git

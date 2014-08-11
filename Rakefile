@@ -44,17 +44,17 @@ end
 #-------------------------------------------------------------
 # Variables
 #-------------------------------------------------------------
-files = Dir.glob("*").each.reject do |file|
-  file == "bin"           ||
-  file == "fonts"         ||
-  file == "backups"       ||
-  file == "Gemfile"       ||
-  file == "Gemfile.lock"  ||
-  file == "git-prompt.sh" ||
-  markdown?(file)         ||
-  rakefile?(file)
-  
-end
+files = Dir.glob("dotfiles/*")
+  #.each.reject do |file|
+  #file == "bin"           ||
+  #file == "fonts"         ||
+  #file == "backups"       ||
+  #file == "Gemfile"       ||
+  #file == "Gemfile.lock"  ||
+  #file == "git-prompt.sh" ||
+  #markdown?(file)         ||
+  #rakefile?(file)  
+#end
 
 #-------------------------------------------------------------
 # Tasks
@@ -71,7 +71,7 @@ end
 desc "Backs up dotfiles to #{REPO}backup"
 task :backup do
   files.each do |file|
-    home_file = "#{HOME}/.#{file}"
+    home_file = "#{HOME}/.#{File.basename(file)}"
     base_dot_name = File.basename(home_file)
     puts "Checking for #{base_dot_name}"
     if (File.exists?(home_file) && !File.symlink?(home_file))
@@ -108,7 +108,7 @@ end
 desc "Installs all dotfiles"
 task :install_dotfiles => :backup do
   files.each do |file|
-    home_file = "#{HOME}/.#{file}"
+    home_file = "#{HOME}/.#{File.basename(file)}"
     base_dot_name = File.basename(home_file)
     puts "Creating symlink for #{base_dot_name} ..."
     if File.exists?(home_file)
