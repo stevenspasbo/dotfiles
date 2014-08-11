@@ -10,3 +10,6 @@
 [submodule "dotfiles/vim/bundle/vim-ruby"]
 	path = dotfiles/vim/bundle/vim-ruby
 	url = https://github.com/vim-ruby/vim-ruby.git
+[submodule "dotfiles/vim/bundle/vim-rails"]
+	path = dotfiles/vim/bundle/vim-rails
+	url = https://github.com/tpope/vim-rails.git
