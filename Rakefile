@@ -94,7 +94,7 @@ task :backup do
         ans = $stdin.gets.chomp.downcase
         if (ans == "yes" || ans == "y")
           File.delete(home_file)
-          next
+          break
         elsif (ans == "no" || ans == "n")
           files.delete(file)
           puts "\tMoving to next file"
