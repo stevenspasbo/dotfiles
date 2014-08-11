@@ -1,4 +1,6 @@
-#require 'CFPropertyList'
+#-------------------------------------------------------------
+# Author: Steven Spasbo
+#-------------------------------------------------------------
 
 #-------------------------------------------------------------
 # Constants
@@ -27,6 +29,10 @@ def backup(file)
     puts e.message
   end
   puts "\t#{file} was moved to #{new_file_name}"
+end
+
+def is_mac?
+  return (RUBY_PLATFORM =~ /darwin/) != nil
 end
 
 #-------------------------------------------------------------
@@ -135,7 +141,7 @@ end
 
 desc "Installs fonts"
 task :install_fonts do
-  if ((/darwin/ =~ RUBY_PLATFORM) != nil)
+  if (is_mac?)
     Dir["#{REPO_FONT_DIR}/*"].each do |font|
       unless (File.exists? "#{USER_FONT_DIR}/#{File.basename(font)}")
         FileUtils.cp(font, USER_FONT_DIR)
@@ -143,7 +149,9 @@ task :install_fonts do
         puts "#{File.basename(font)} already exists in Users library"
       end
     end
-    print "Fonts now installed." 
+    puts "Fonts now installed." 
+  else
+    puts "Sorry, mac only feature right now."
   end
 end
 
