@@ -4,3 +4,9 @@
 [submodule "dotfiles/vim/bundle/nerdtree"]
 	path = dotfiles/vim/bundle/nerdtree
 	url = https://github.com/scrooloose/nerdtree.git
+[submodule "dotfiles/vim/bundle/vim-fugitive"]
+	path = dotfiles/vim/bundle/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive.git
+[submodule "dotfiles/vim/bundle/vim-ruby"]
+	path = dotfiles/vim/bundle/vim-ruby
+	url = https://github.com/vim-ruby/vim-ruby.git
