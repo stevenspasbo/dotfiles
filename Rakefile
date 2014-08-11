@@ -158,7 +158,7 @@ task :install_fonts do
         puts "#{File.basename(font)} already exists in Users library"
       end
     end
-    print "Fonts now installed. Now 
+    print "Fonts now installed." 
   end
 end
 
