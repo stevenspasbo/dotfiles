@@ -81,7 +81,7 @@ task :backup do
           break
         end
       end
-    elsif (File.symlink?(home_file) && !(File.readlink(home_file) == File.expand_path(file))
+    elsif (File.symlink?(home_file) && !File.readlink(home_file) == File.expand_path(file)
       puts "#{base_dot_file} is a symlink to #{File.readlink(home_file)}"
       while (true)
         print "\tRemove symlink? File will not be deleted. (yes/no): "
@@ -92,12 +92,13 @@ task :backup do
         elsif (ans == "no" || ans == "n")
           files.delete(file)
           puts "\tMoving to next file"
-          next
+          break
         end
       end
     end
   end
 end
+
 desc "Installs all dotfiles"
 task :install_dotfiles => :backup do
   files.each do |file|
