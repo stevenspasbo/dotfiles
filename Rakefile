@@ -37,17 +37,23 @@ def markdown?(file)
   File.extname(file).downcase == ".md"
 end
 
-def file_already_linked?(symlinked_file_in_home, repo_file)
-  File.readlink(symlinked_file_in_home) == File.expand_path(repo_file)
-end
+#def file_already_linked?(symlinked_file_in_home, repo_file)
+#  File.readlink(symlinked_file_in_home) == File.expand_path(repo_file)
+#end
 
 #-------------------------------------------------------------
 # Variables
 #-------------------------------------------------------------
 files = Dir.glob("*").each.reject do |file|
-  file == "backups" ||
-  markdown?(file) ||
+  file == "bin"           ||
+  file == "fonts"         ||
+  file == "backups"       ||
+  file == "Gemfile"       ||
+  file == "Gemfile.lock"  ||
+  file == "git-prompt.sh" ||
+  markdown?(file)         ||
   rakefile?(file)
+  
 end
 
 #-------------------------------------------------------------
@@ -81,8 +87,8 @@ task :backup do
           break
         end
       end
-    elsif (File.symlink?(home_file) && !File.readlink(home_file) == File.expand_path(file)
-      puts "#{base_dot_file} is a symlink to #{File.readlink(home_file)}"
+    elsif File.symlink?(home_file)
+      puts "#{base_dot_name} is a symlink to #{File.readlink(home_file)}"
       while (true)
         print "\tRemove symlink? File will not be deleted. (yes/no): "
         ans = $stdin.gets.chomp.downcase
