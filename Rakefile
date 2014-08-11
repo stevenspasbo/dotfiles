@@ -1,4 +1,4 @@
-require 'CFPropertyList'
+#require 'CFPropertyList'
 
 #-------------------------------------------------------------
 # Constants
