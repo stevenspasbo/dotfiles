@@ -82,7 +82,7 @@ function removeFromPath() {
 #fi
 
 # Work laptop
-if [ $(hostname) == "SSPASBO-03.local" ]; then
+if [ $(hostname) == "SSPASBO-03" ]; then
   setjdk 1.7
 
   function syncpdfs() {
