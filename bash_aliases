@@ -10,6 +10,7 @@ a grep='grep --color'
 a fgrep='fgrep --color'
 a egrep='egrep --color'
 
+#-------------------------------------------------------------
 # ls stuff
 #-------------------------------------------------------------
 a ls='ls'
@@ -23,6 +24,8 @@ a reload='clear && source ~/.bashrc'
 a hist='history | grep'
 a cls='clear'
 a cal='cal | grep --before-context 6 --after-context 6 --color -e " $(date +%e)" -e "^$(date +%e)"'
+
+a ping='ping -c 5'
 
 #-------------------------------------------------------------
 # Shortcuts and directory stuff
