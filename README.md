@@ -9,3 +9,6 @@ Installation is pretty simple as long as you have rake.
 1) Check out repo
 
 2) Run 'rake install_everything'
+
+
+Note: When cloning, include --repository flag to also clone submodules, otherwise you'll need to run 'git submodule update --init'
