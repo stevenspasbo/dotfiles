@@ -81,7 +81,7 @@ task :backup do
           break
         end
       end
-    elsif (File.symlink?(home_file) && !file_already_linked(home_file, file))
+    elsif (File.symlink?(home_file) && !(File.readlink(home_file) == File.expand_path(file))
       puts "#{base_dot_file} is a symlink to #{File.readlink(home_file)}"
       while (true)
         print "\tRemove symlink? File will not be deleted. (yes/no): "
