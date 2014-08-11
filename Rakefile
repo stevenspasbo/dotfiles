@@ -1,3 +1,5 @@
+require 'CFPropertyList'
+
 #-------------------------------------------------------------
 # Constants
 #-------------------------------------------------------------
@@ -35,8 +37,8 @@ def markdown?(file)
   File.extname(file).downcase == ".md"
 end
 
-def file_already_linked?(file)
-  File.readlink(home_file) == File.expand_path(file)
+def file_already_linked?(symlinked_file_in_home, repo_file)
+  File.readlink(symlinked_file_in_home) == File.expand_path(repo_file)
 end
 
 #-------------------------------------------------------------
@@ -79,7 +81,7 @@ task :backup do
           break
         end
       end
-    elsif (File.symlink?(file) && !file_already_linked(file))
+    elsif (File.symlink?(home_file) && !file_already_linked(home_file, file))
       puts "#{base_dot_file} is a symlink to #{File.readlink(home_file)}"
       while (true)
         print "\tRemove symlink? File will not be deleted. (yes/no): "
@@ -146,19 +148,6 @@ task :install_all => [ :install_rvm, :install_homebrew, :install_dotfiles ] do
   puts "Installing everything..."
 end
 
-desc "Installs iTerm"
-task :install_iterm do
-  if ((/darwin/ =~ RUBY_PLATFORM) != nil)
-    if (ENV['TERM_PROGRAM'] != "iTerm.app")
-      # Install iTerm
-    else
-      puts "iTerm already installed, and you're using it!"
-    end
-  else
-    puts "Wrong OS. That's for Mac only."
-  end
-end
-
 desc "Installs fonts"
 task :install_fonts do
   if ((/darwin/ =~ RUBY_PLATFORM) != nil)
@@ -166,9 +155,10 @@ task :install_fonts do
       unless (File.exists? "#{USER_FONT_DIR}/#{File.basename(font)}")
         FileUtils.cp(font, USER_FONT_DIR)
       else
-        "#{File.basename(font)} already exists in Users library"
+        puts "#{File.basename(font)} already exists in Users library"
       end
     end
+    print "Fonts now installed. Now 
   end
 end
 
