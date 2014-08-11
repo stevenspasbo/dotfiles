@@ -29,32 +29,10 @@ def backup(file)
   puts "\t#{file} was moved to #{new_file_name}"
 end
 
-def rakefile?(file)
-  File.expand_path(file) == File.expand_path(__FILE__)
-end
-
-def markdown?(file)
-  File.extname(file).downcase == ".md"
-end
-
-#def file_already_linked?(symlinked_file_in_home, repo_file)
-#  File.readlink(symlinked_file_in_home) == File.expand_path(repo_file)
-#end
-
 #-------------------------------------------------------------
 # Variables
 #-------------------------------------------------------------
 files = Dir.glob("dotfiles/*")
-  #.each.reject do |file|
-  #file == "bin"           ||
-  #file == "fonts"         ||
-  #file == "backups"       ||
-  #file == "Gemfile"       ||
-  #file == "Gemfile.lock"  ||
-  #file == "git-prompt.sh" ||
-  #markdown?(file)         ||
-  #rakefile?(file)  
-#end
 
 #-------------------------------------------------------------
 # Tasks
