@@ -89,7 +89,7 @@ if [ $(hostname) == "SSPASBO-03" ]; then
     rsync -avz /Users/steven.spasbo/Documents/PDFs steven@stevenspasbo.com:/home/steven/PDFs
   }
   
-  repos=( "/Work/SVN/auto" )
+  repos=( "/Work/SVN/auto" "/Work/SVN/tools/wats" "/Work/SVN/oms")
   updaterepos() {
   for i in "${repos[@]}"
   do 
