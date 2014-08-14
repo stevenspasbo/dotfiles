@@ -55,9 +55,6 @@ a chvim="vim ~/.vimrc"
 #-------------------------------------------------------------
 # Functions
 #-------------------------------------------------------------
-
-# VARIABLES
-
 function setjdk() {  
   if [ $# -ne 0 ]; then  
     removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'  
@@ -72,10 +69,25 @@ function removeFromPath() {
   export PATH=$(echo $PATH | sed -E -e "s;:$1;;" -e "s;$1:?;;")  
 }
 
+function cleanpath() {
+  if [ -n "$PATH" ]; then
+    old_PATH=$PATH:; PATH=
+    while [ -n "$old_PATH" ]; do
+      x=${old_PATH%%:*}       # the first remaining entry
+      case $PATH: in
+        *:"$x":*) ;;         # already there
+        *) PATH=$PATH:$x;;    # not there yet
+      esac
+      old_PATH=${old_PATH#*:}
+    done
+    PATH=${PATH#:}
+    unset old_PATH x
+  fi
+}
+
 #-------------------------------------------------------------
 # Device specific functions
 #-------------------------------------------------------------
-
 # Personal laptop
 #if [ $(hostname) == "h4xx0rmaxx0rzzzz.local" ]; then
 # Uncomment when you have something.
