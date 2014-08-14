@@ -51,3 +51,4 @@ fi
 
 export EDITOR=vim
 
+cleanpath
