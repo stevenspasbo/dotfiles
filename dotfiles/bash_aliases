@@ -121,10 +121,6 @@ if [ $(hostname) == "SSPASBO-03" ]; then
   scp-profile() {
     echo "Sending .bash_profile to ~/ on $1"
     scp $AUTO/trunk/wats/BashScript/.bash_profile root@$1:~/.bash_profile
-    echo "Sending .vimrc to ~/ on $1"
-    scp ~/.vimrc root@$1:~/.vimrc
-    echo "Sending vim plugins"
-    rsync -a --ignore-existing --exclude="*/.git/" ~/.vim/ root@$1:~/.vim
     echo "Sending my.wats.properties"
     scp ~/.my.wats.properties root@$1:/data/workdaydevqa/suv/suvwats/my.wats.properties
     echo "Done, logging in"
