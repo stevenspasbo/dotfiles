@@ -55,9 +55,6 @@ a chvim="vim ~/.vimrc"
 #-------------------------------------------------------------
 # Functions
 #-------------------------------------------------------------
-
-# VARIABLES
-
 function setjdk() {  
   if [ $# -ne 0 ]; then  
     removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'  
@@ -72,10 +69,25 @@ function removeFromPath() {
   export PATH=$(echo $PATH | sed -E -e "s;:$1;;" -e "s;$1:?;;")  
 }
 
+function cleanpath() {
+  if [ -n "$PATH" ]; then
+    old_PATH=$PATH:; PATH=
+    while [ -n "$old_PATH" ]; do
+      x=${old_PATH%%:*}       # the first remaining entry
+      case $PATH: in
+        *:"$x":*) ;;         # already there
+        *) PATH=$PATH:$x;;    # not there yet
+      esac
+      old_PATH=${old_PATH#*:}
+    done
+    PATH=${PATH#:}
+    unset old_PATH x
+  fi
+}
+
 #-------------------------------------------------------------
 # Device specific functions
 #-------------------------------------------------------------
-
 # Personal laptop
 #if [ $(hostname) == "h4xx0rmaxx0rzzzz.local" ]; then
 # Uncomment when you have something.
@@ -89,7 +101,7 @@ if [ $(hostname) == "SSPASBO-03" ]; then
     rsync -avz /Users/steven.spasbo/Documents/PDFs steven@stevenspasbo.com:/home/steven/PDFs
   }
   
-  repos=( "/Work/SVN/auto" )
+  repos=( "/Work/SVN/auto" "/Work/SVN/tools/wats" "/Work/SVN/oms")
   updaterepos() {
   for i in "${repos[@]}"
   do 
@@ -109,10 +121,6 @@ if [ $(hostname) == "SSPASBO-03" ]; then
   scp-profile() {
     echo "Sending .bash_profile to ~/ on $1"
     scp $AUTO/trunk/wats/BashScript/.bash_profile root@$1:~/.bash_profile
-    echo "Sending .vimrc to ~/ on $1"
-    scp ~/.vimrc root@$1:~/.vimrc
-    echo "Sending vim plugins"
-    rsync -a --ignore-existing --exclude="*/.git/" ~/.vim/ root@$1:~/.vim
     echo "Sending my.wats.properties"
     scp ~/.my.wats.properties root@$1:/data/workdaydevqa/suv/suvwats/my.wats.properties
     echo "Done, logging in"

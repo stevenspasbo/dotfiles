@@ -5,10 +5,13 @@
 """""""""""""""""""""""""""""""""""""""""""
 " Plugins
 """""""""""""""""""""""""""""""""""""""""""
-execute pathogen#infect()
-autocmd VimEnter * NERDTree 
-autocmd VimEnter * wincmd p
-autocmd WinEnter * call s:CloseIfOnlyNerdTreeLeft()
+try 
+  execute pathogen#infect()
+  autocmd VimEnter * NERDTree 
+  autocmd VimEnter * wincmd p
+  autocmd WinEnter * call s:CloseIfOnlyNerdTreeLeft()
+catch
+endtry
 " Close all open buffers on entering a window if the only
 " buffer that's left is the NERDTree buffer
 function! s:CloseIfOnlyNerdTreeLeft()
