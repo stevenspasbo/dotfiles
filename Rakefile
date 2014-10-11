@@ -127,7 +127,7 @@ task :install_homebrew do
     print "Install Homebrew? (y/n) "
     ans = $stdin.gets.downcase.chomp
     if (ans == "y" || ans == "yes")
-      sh 'ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"'
+      sh 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
     end
   else
     puts "Homebrew already installed"
