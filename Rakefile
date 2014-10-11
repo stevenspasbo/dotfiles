@@ -112,7 +112,7 @@ desc "Installs RVM"
 task :install_rvm do
   unless File.exists? "#{ENV['HOME']}/.rvm"
     print "Install RVM? (y/n) "
-    ans = gets.downcase.chomp
+    ans = $stdin.gets.downcase.chomp
     if (ans == "y" || ans == "yes")
       sh "curl -sSL https://get.rvm.io | bash"
     end
@@ -125,7 +125,7 @@ desc "Installs Homebrew"
 task :install_homebrew do
   unless File.exists?("/usr/local/bin/brew")
     print "Install Homebrew? (y/n) "
-    ans = gets.downcase.chomp
+    ans = $stdin.gets.downcase.chomp
     if (ans == "y" || ans == "yes")
       sh 'ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"'
     end
