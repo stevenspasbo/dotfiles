@@ -13,6 +13,9 @@ USER_FONT_DIR = "#{ENV['HOME']}/Library/Fonts"
 TIME = Time.new
 DATE_TIME_STRING = "#{TIME.month}_#{TIME.day}_#{TIME.year}_-_#{TIME.hour}_#{TIME.min}_#{TIME.sec}"
 
+RVM = "#{ENV['HOME']}/.rvm"
+HOMEBREW = "/usr/local/bin/brew"
+
 #-------------------------------------------------------------
 # Methods
 #-------------------------------------------------------------
@@ -32,7 +35,15 @@ def backup(file)
 end
 
 def is_mac?
-  return (RUBY_PLATFORM =~ /darwin/) != nil
+  (RUBY_PLATFORM =~ /darwin/) != nil
+end
+
+def file_already_linked?(symlinked_file_in_home, repo_file)
+    File.readlink(symlinked_file_in_home) == File.expand_path(repo_file)
+end
+
+def app_installed?(app)
+  File.exists? app
 end
 
 #-------------------------------------------------------------
@@ -90,7 +101,7 @@ task :backup do
 end
 
 desc "Installs all dotfiles"
-task :install_dotfiles => :backup do
+task :install_dotfiles do
   files.each do |file|
     home_file = "#{HOME}/.#{File.basename(file)}"
     base_dot_name = File.basename(home_file)
@@ -98,9 +109,7 @@ task :install_dotfiles => :backup do
     if File.exists?(home_file)
       puts "\t#{base_dot_name} exists"
       if File.symlink?(home_file)
-        if (file_already_linked?(home_file))
           puts "\tSymlink to file already exists. Moving on."
-        end
       end
     else
       File.symlink(File.expand_path(file), home_file)
@@ -110,7 +119,7 @@ end
 
 desc "Installs RVM"
 task :install_rvm do
-  unless File.exists? "#{ENV['HOME']}/.rvm"
+  unless app_installed? RVM 
     print "Install RVM? (y/n) "
     ans = $stdin.gets.downcase.chomp
     if (ans == "y" || ans == "yes")
@@ -123,7 +132,7 @@ end
 
 desc "Installs Homebrew"
 task :install_homebrew do
-  unless File.exists?("/usr/local/bin/brew")
+  unless app_installed? HOMEBREW
     print "Install Homebrew? (y/n) "
     ans = $stdin.gets.downcase.chomp
     if (ans == "y" || ans == "yes")
@@ -154,5 +163,13 @@ task :install_fonts do
     puts "Sorry, mac only feature right now."
   end
 end
+
+#desc "Installs all homebrew packages"
+#task :install_homebrew_formulas
+#  if is_mac?
+#    if app_installed? HOMEBREW
+#      
+#    end
+#  end
 
 
