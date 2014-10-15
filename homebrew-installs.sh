@@ -25,7 +25,13 @@ cask_apps=(
 # Install homebrew apps
 for i in "${homebrew_formulas[@]}"
 do
+  echo "Install $@? (y/n): "
+  read ans
+  if (( (ans == "y") || ans == "yes")); then
     brew install $i
+  else
+    echo "Skipping $@"
+  fi
 done
 
 if [ ! -e "/opt/homebrew-cask/Caskroom" ]; then
@@ -33,7 +39,13 @@ if [ ! -e "/opt/homebrew-cask/Caskroom" ]; then
 fi
 for i in in "${cask_apps[@]}"
 do
+  echo "Install $@? (y/n): "
+  read ans
+  if (( (ans == "y") || ans == "yes")); then
     brew cask install --appdir="/Applications" ${cask_apps[@]}
+  else
+    echo "Skipping $@"
+  fi
 done
 
 
@@ -44,6 +56,6 @@ fonts=(
   font-clear-sans
   font-roboto
 )
-echo "installing fonts..."
-brew cask install ${fonts[@]}
+# echo "installing fonts..."
+# brew cask install ${fonts[@]}
 
