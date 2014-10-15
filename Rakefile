@@ -17,6 +17,11 @@ RVM = "#{ENV['HOME']}/.rvm"
 HOMEBREW = "/usr/local/bin/brew"
 
 #-------------------------------------------------------------
+# Variables
+#-------------------------------------------------------------
+files = Dir.glob("dotfiles/*")
+
+#-------------------------------------------------------------
 # Methods
 #-------------------------------------------------------------
 def backup(file)
@@ -47,11 +52,6 @@ def app_installed?(app)
 end
 
 #-------------------------------------------------------------
-# Variables
-#-------------------------------------------------------------
-files = Dir.glob("dotfiles/*")
-
-#-------------------------------------------------------------
 # Tasks
 #-------------------------------------------------------------
 task :default do
@@ -63,56 +63,18 @@ task :update_vim do
   sh "git submodule foreach git pull origin master"
 end
 
-desc "Backs up dotfiles to #{REPO}backup"
-task :backup do
-  files.each do |file|
-    home_file = "#{HOME}/.#{File.basename(file)}"
-    base_dot_name = File.basename(home_file)
-    puts "Checking for #{base_dot_name}"
-    if (File.exists?(home_file) && !File.symlink?(home_file))
-      while (true)
-        print "\t#{base_dot_name} exists. Backup and remove from home? (yes/no): "
-        ans = $stdin.gets.chomp.downcase
-        if (ans == "yes" || ans == "y")
-          backup(home_file)
-          break
-        elsif (ans == "no" || ans == "n")
-          files.delete(file)
-          puts "\tMoving to next file"
-          break
-        end
-      end
-    elsif File.symlink?(home_file)
-      puts "#{base_dot_name} is a symlink to #{File.readlink(home_file)}"
-      while (true)
-        print "\tRemove symlink? File will not be deleted. (yes/no): "
-        ans = $stdin.gets.chomp.downcase
-        if (ans == "yes" || ans == "y")
-          File.delete(home_file)
-          break
-        elsif (ans == "no" || ans == "n")
-          files.delete(file)
-          puts "\tMoving to next file"
-          break
-        end
-      end
-    end
-  end
-end
-
 desc "Installs all dotfiles"
 task :install_dotfiles do
   files.each do |file|
     home_file = "#{HOME}/.#{File.basename(file)}"
     base_dot_name = File.basename(home_file)
     puts "Creating symlink for #{base_dot_name} ..."
-    if File.exists?(home_file)
-      puts "\t#{base_dot_name} exists"
-      if File.symlink?(home_file)
-          puts "\tSymlink to file already exists. Moving on."
-      end
-    else
-      File.symlink(File.expand_path(file), home_file)
+    if File.exists? home_file && !File.symlink? home_file
+      backup home_file
+    elsif File.symlink? home_file
+      File.delete home_file
+    end
+    File.symlink(File.expand_path(file), home_file)
     end
   end
 end
