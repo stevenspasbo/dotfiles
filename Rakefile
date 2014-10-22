@@ -69,13 +69,9 @@ task :install_dotfiles do
     home_file = "#{HOME}/.#{File.basename(file)}"
     base_dot_name = File.basename(home_file)
     puts "Creating symlink for #{base_dot_name} ..."
-    if File.exists? home_file && !File.symlink? home_file
-      backup home_file
-    elsif File.symlink? home_file
-      File.delete home_file
-    end
+    backup home_file if File.exists? home_file && !File.symlink? home_file
+    File.delete home_file if File.symlink? home_file
     File.symlink(File.expand_path(file), home_file)
-    end
   end
 end
 
@@ -94,6 +90,10 @@ end
 
 desc "Installs Homebrew"
 task :install_homebrew do
+  unless is_mac?
+    puts "Mac only"
+    break
+  end
   unless app_installed? HOMEBREW
     print "Install Homebrew? (y/n) "
     ans = $stdin.gets.downcase.chomp
@@ -106,7 +106,7 @@ task :install_homebrew do
 end
 
 desc "Installs everything"
-task :install_all => [ :install_fonts, :install_rvm, :install_homebrew, :install_dotfiles ] do
+task :install_all => [ :install_homebrew, :install_fonts, :install_rvm, :install_dotfiles ] do
   puts "Installing everything..."
 end
 
@@ -125,13 +125,3 @@ task :install_fonts do
     puts "Sorry, mac only feature right now."
   end
 end
-
-#desc "Installs all homebrew packages"
-#task :install_homebrew_formulas
-#  if is_mac?
-#    if app_installed? HOMEBREW
-#      
-#    end
-#  end
-
-
