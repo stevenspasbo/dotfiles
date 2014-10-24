@@ -1,4 +1,5 @@
 brew tap homebrew/dupes > /dev/null
+brew tap thoughtbot/formulae > /dev/null
 
 homebrew_formulas=(
     "coreutils"
@@ -12,6 +13,7 @@ homebrew_formulas=(
     "tmux"
     "git"
     "caskroom/cask/brew-cask"
+    "gitsh"
 )
 
 cask_apps=(
