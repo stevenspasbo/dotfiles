@@ -14,6 +14,8 @@ homebrew_formulas=(
     "git"
     "caskroom/cask/brew-cask"
     "gitsh"
+    "bash"
+    "zsh"
 )
 
 cask_apps=(
