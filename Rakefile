@@ -68,8 +68,8 @@ task :install_dotfiles do
   files.each do |file|
     home_file = "#{HOME}/.#{File.basename(file)}"
     base_dot_name = File.basename(home_file)
-    puts "Creating symlink for #{base_dot_name} ..."
-    backup home_file if (File.exists? home_file && !File.symlink?(home_file))
+    puts "Creating symlink for #{base_dot_name}" unless File.exists?(home_file)
+    backup home_file if (File.exists?(home_file) && !File.symlink?(home_file))
     File.delete home_file if File.symlink? home_file
     File.symlink(File.expand_path(file), home_file)
   end
