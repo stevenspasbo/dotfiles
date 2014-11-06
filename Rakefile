@@ -59,7 +59,7 @@ task :default do
 end
 
 desc "Updates all the vim plugins"
-task :update_vim do
+task :update_submodules do
   sh "git submodule foreach git pull origin master"
 end
 

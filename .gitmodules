@@ -19,3 +19,6 @@
 [submodule "dotfiles/vim/bundle/vim-scala"]
 	path = dotfiles/vim/bundle/vim-scala
 	url = https://github.com/derekwyatt/vim-scala.git
+[submodule "oh-my-zsh"]
+	path = oh-my-zsh
+	url = https://github.com/robbyrussell/oh-my-zsh.git
