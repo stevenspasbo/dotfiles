@@ -2,7 +2,7 @@
 #           Author: Steven Spasbo
 #-------------------------------------------------------------
 alias a='alias'
-if [[ $SHELL == *zsh ]] then;
+if [[ $SHELL == *zsh ]]; then
   export RC_FILE="$HOME/.zshrc"
 else
   export RC_FILE="$HOME/.bashrc"
