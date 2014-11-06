@@ -2,6 +2,11 @@
 #           Author: Steven Spasbo
 #-------------------------------------------------------------
 alias a='alias'
+if [[ $SHELL == *zsh ]] then;
+  export RC_FILE="$HOME/.zshrc"
+else
+  export RC_FILE="$HOME/.bashrc"
+fi
 
 #-------------------------------------------------------------
 # grep stuff
@@ -20,7 +25,7 @@ a l='ls -CF'
 #-------------------------------------------------------------
 # System stuff
 #-------------------------------------------------------------
-a reload='clear && source ~/.bashrc'
+a reload='clear && source $RC_FILE'
 a hist='history | grep'
 a cls='clear'
 a cal='cal | grep --before-context 6 --after-context 6 --color -e " $(date +%e)" -e "^$(date +%e)"'
@@ -94,7 +99,7 @@ function cleanpath() {
 #fi
 
 # Work laptop
-if [ $(hostname) == "SSPASBO-03" ]; then
+if [[ "$(hostname)" == "SSPASBO-03" ]]; then
   setjdk 1.7
 
   function syncpdfs() {
@@ -111,7 +116,7 @@ if [ $(hostname) == "SSPASBO-03" ]; then
   done
   }
   
-  AUTO="/Work/SVN/auto"
+  AUTO="/Work/SVN/auto-trunk"
   ssh-suv() {
     scp-profile $1
     echo "ssh to $1"
@@ -120,7 +125,7 @@ if [ $(hostname) == "SSPASBO-03" ]; then
   
   scp-profile() {
     echo "Sending .bash_profile to ~/ on $1"
-    scp $AUTO/trunk/wats/BashScript/.bash_profile root@$1:~/.bash_profile
+    scp $AUTO/wats/BashScript/.bash_profile root@$1:~/.bash_profile
     echo "Sending my.wats.properties"
     scp ~/.my.wats.properties root@$1:/data/workdaydevqa/suv/suvwats/my.wats.properties
     echo "Done, logging in"
@@ -143,4 +148,3 @@ if [ $(hostname) == "SSPASBO-03" ]; then
   fi
   }
 fi
-
