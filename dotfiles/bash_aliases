@@ -89,6 +89,7 @@ function cleanpath() {
     unset old_PATH x
   fi
 }
+cleanpath
 
 #-------------------------------------------------------------
 # Device specific functions
