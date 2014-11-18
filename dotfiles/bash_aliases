@@ -103,7 +103,7 @@ if [[ "$(hostname)" == "SSPASBO-03" ]]; then
   setjdk 1.7
 
   function syncpdfs() {
-    rsync -avz /Users/steven.spasbo/Documents/PDFs steven@stevenspasbo.com:/home/steven/PDFs
+    rsync -avz /Users/steven.spasbo/Documents/PDFs steven@stevenspasbo.com:/home/steven/public_html/PDFs
   }
   
   repos=( "/Work/SVN/auto" "/Work/SVN/tools/wats" "/Work/SVN/oms")
