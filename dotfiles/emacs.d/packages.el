@@ -13,7 +13,7 @@
   (package-refresh-contents))
 
 (defvar required-packages
-  '(monokai-theme)
+  '(color-theme monokai-theme)
   "Packages which should be installed upon launch")
 
 (dolist (p required-packages)
