@@ -9,3 +9,7 @@ dotfiles/paths
 
 # Emacs
 \#*\#
+*.elc
+auto-save-list
+tramp
+.\#*
