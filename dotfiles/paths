@@ -1,8 +1,1 @@
-export ANDROID_HOME=/Development/Android/sdk/tools
-export HASKELL_HOME=/Library/Haskell
-export HOMEBREW_HOME=/usr/local/bin
 
-
-
-
-PATH=$HOMEBREW_HOME:$PATH:$HASKELL_HOME/bin
