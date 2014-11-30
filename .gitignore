@@ -8,6 +8,7 @@ backups/*
 dotfiles/paths
 
 # Emacs
+*~
 \#*\#
 *.elc
 auto-save-list
