@@ -1,5 +1,11 @@
 .DS_Store
 backups/*
 .netrwhist
+
+# Ruby Mine
 .idea/
+
 dotfiles/paths
+
+# Emacs
+\#*\#
