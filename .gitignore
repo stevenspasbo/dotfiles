@@ -13,3 +13,4 @@ dotfiles/paths
 auto-save-list
 tramp
 .\#*
+/elpa/
