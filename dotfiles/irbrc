@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'awesome_print'
 require 'irb/completion'
 
 IRB.conf[:PROMPT_MODE] = :SIMPLE
