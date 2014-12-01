@@ -10,7 +10,9 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-(defvar mypackages '(monokai-theme ;; Add required packages you need here
+(defvar mypackages '(
+            monokai-theme
+            haskell-mode
 		    ))
 
 (dolist (p mypackages)
