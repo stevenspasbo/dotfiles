@@ -4,6 +4,4 @@
 
 (show-paren-mode 1) ;; Highlight matching parens
 
-(setq-default show-trailing-whitespace t) ;; Shows trailing whitespace
-
-
+(add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete whitespace on save
