@@ -13,8 +13,9 @@
   (package-refresh-contents))
 
 (defvar mypackages '(
-            monokai-theme
-            haskell-mode
+		     haskell-mode
+		     inf-ruby
+         neotree
 		    ))
 
 (dolist (p mypackages)
