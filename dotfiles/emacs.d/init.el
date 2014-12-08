@@ -13,6 +13,7 @@
 
 ;; Loads all files in each directory
 (load-directory (concat emacs-home "custom"))
+(load-directory (concat emacs-home "langs"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
