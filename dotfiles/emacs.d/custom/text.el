@@ -1,6 +1,7 @@
 ;; Text options
 
 (electric-pair-mode 1) ;; Auto-inserts paren and bracket pairs
+(setq indent-tabs-mode nil) ;; Use spaces only, no tabs
 
 (show-paren-mode 1) ;; Highlight matching parens
 
