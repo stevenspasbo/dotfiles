@@ -15,7 +15,8 @@
 (defvar mypackages '(
 		     haskell-mode
 		     inf-ruby
-         neotree
+		     neotree
+		     rainbow-mode
 		    ))
 
 (dolist (p mypackages)
