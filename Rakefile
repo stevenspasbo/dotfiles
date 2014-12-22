@@ -71,13 +71,13 @@ task :install_dotfiles do
     puts "Creating symlink for #{base_dot_name}" unless File.exists?(home_file)
     backup home_file if (File.exists?(home_file) && !File.symlink?(home_file))
     File.delete home_file if File.symlink? home_file
-    File.symlink(File.expand_path(file), home_file)
+    File.symlink("#{File.basename(Dir.pwd)}/#{file}", home_file)
   end
 end
 
 desc "Installs RVM"
 task :install_rvm do
-  unless app_installed? RVM 
+  unless app_installed? RVM
     print "Install RVM? (y/n) "
     ans = $stdin.gets.downcase.chomp
     if (ans == "y" || ans == "yes")
@@ -120,7 +120,7 @@ task :install_fonts do
         puts "#{File.basename(font)} already exists in Users library"
       end
     end
-    puts "Fonts now installed." 
+    puts "Fonts now installed."
   else
     puts "Sorry, mac only feature right now."
   end
