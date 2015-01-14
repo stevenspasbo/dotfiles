@@ -15,3 +15,5 @@ auto-save-list
 tramp
 .\#*
 elpa/
+el-get
+*/emacs.d/langs/el*
