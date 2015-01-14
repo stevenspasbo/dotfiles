@@ -1,9 +1,13 @@
+# Move all device specific PATH stuff to this
+if [ -f ~/.paths ]; then
+  source ~/.paths
+fi
+
+if [ -f ~/.bash_aliases ]; then
+    source ~/.bash_aliases
+fi
 
 if [ -f ~/.bashrc ]; then
   . ~/.bashrc
 fi
 
-# Move all device specific PATH stuff to this
-if [ -f ~/.paths ]; then
-  source ~/.paths
-fi
