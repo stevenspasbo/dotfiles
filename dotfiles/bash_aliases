@@ -1,7 +1,6 @@
 #-------------------------------------------------------------
 #           Author: Steven Spasbo
 #-------------------------------------------------------------
-alias a='alias'
 if [[ $SHELL == *zsh ]]; then
   export RC_FILE="$HOME/.zshrc"
 else
@@ -11,45 +10,46 @@ fi
 #-------------------------------------------------------------
 # grep stuff
 #-------------------------------------------------------------
-a grep='grep --color'
-a fgrep='fgrep --color'
-a egrep='egrep --color'
+alias grep='grep --color'
+alias fgrep='fgrep --color'
+alias egrep='egrep --color'
 
 #-------------------------------------------------------------
 # ls stuff
 #-------------------------------------------------------------
-a ls='ls'
-a ll="ls -la"
-a l='ls -CF'
+alias ls='ls -h'
+alias ll="ls -la"
+alias l='ls -CF'
 
 #-------------------------------------------------------------
 # System stuff
 #-------------------------------------------------------------
-a reload='clear && source $RC_FILE'
-a hist='history | grep'
-a cls='clear'
-a cal='cal | grep --before-context 6 --after-context 6 --color -e " $(date +%e)" -e "^$(date +%e)"'
+alias reload='clear && source $RC_FILE'
+alias hist='history | grep'
+alias cls='clear'
+alias cal='cal | grep --before-context 6 --after-context 6 --color -e " $(date +%e)" -e "^$(date +%e)"'
 
-a ping='ping -c 5'
+alias ping='ping -c 5'
+
 
 #-------------------------------------------------------------
 # Shortcuts and directory stuff
 #-------------------------------------------------------------
-a ..='cd ..'
-a ...='cd ../..'
-a home='cd ~/'
-a downloads='cd ~/Downloads'
-a desktop='cd ~/Desktop'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias home='cd ~/'
+alias downloads='cd ~/Downloads'
+alias desktop='cd ~/Desktop'
 
 #-------------------------------------------------------------
 # Personalized shortcuts
 #-------------------------------------------------------------
-a ru="cd /Development/Ruby"
-a py="cd /Development/Python"
-a ja="cd /Development/Java"
+alias ru="cd /Development/Ruby"
+alias py="cd /Development/Python"
+alias ja="cd /Development/Java"
 
-a chbash="vim ~/.bashrc"
-a chvim="vim ~/.vimrc"
+alias chbash="vim ~/.bashrc"
+alias chvim="vim ~/.vimrc"
 
 #-------------------------------------------------------------
 # Version control stuff
@@ -60,18 +60,19 @@ a chvim="vim ~/.vimrc"
 #-------------------------------------------------------------
 # Functions
 #-------------------------------------------------------------
-function setjdk() {  
-  if [ $# -ne 0 ]; then  
-    removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'  
-    if [ -n "${JAVA_HOME+x}" ]; then  
-      removeFromPath $JAVA_HOME  
-    fi  
-    export JAVA_HOME=`/usr/libexec/java_home -v $@`  
-    export PATH=$JAVA_HOME/bin:$PATH  
-  fi  
-}  
-function removeFromPath() {  
-  export PATH=$(echo $PATH | sed -E -e "s;:$1;;" -e "s;$1:?;;")  
+
+function setjdk() {
+  if [ $# -ne 0 ]; then
+    removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
+    if [ -n "${JAVA_HOME+x}" ]; then
+      removeFromPath $JAVA_HOME
+    fi
+    export JAVA_HOME=`/usr/libexec/java_home -v $@`
+    export PATH=$JAVA_HOME/bin:$PATH
+  fi
+}
+function removeFromPath() {
+  export PATH=$(echo $PATH | sed -E -e "s;:$1;;" -e "s;$1:?;;")
 }
 
 function cleanpath() {
@@ -106,24 +107,24 @@ if [[ "$(hostname)" == "SSPASBO-03" ]]; then
   function syncpdfs() {
     rsync -vr --size-only --progress /Users/steven.spasbo/Documents/PDFs steven@stevenspasbo.com:/home/steven/public_html/
   }
-  
+
   repos=( "/Work/SVN/auto" "/Work/SVN/tools/wats" "/Work/SVN/oms")
   updaterepos() {
   for i in "${repos[@]}"
-  do 
+  do
     echo "Updating $i"
     svn up $i
     echo ""
   done
   }
-  
+
   AUTO="/Work/SVN/auto-trunk"
   ssh-suv() {
     scp-profile $1
     echo "ssh to $1"
     ssh $1 -A
   }
-  
+
   scp-profile() {
     echo "Sending .bash_profile to ~/ on $1"
     scp $AUTO/wats/BashScript/.bash_profile root@$1:~/.bash_profile
