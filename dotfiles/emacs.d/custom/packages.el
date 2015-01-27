@@ -17,6 +17,7 @@
 		     inf-ruby
 		     neotree
 		     rainbow-mode
+		     yaml-mode
 		    ))
 
 (dolist (p mypackages)
