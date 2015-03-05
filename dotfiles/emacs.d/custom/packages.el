@@ -17,8 +17,15 @@
 		     inf-ruby
 		     neotree
 		     rainbow-mode
+		     cider
+		     clojure-mode
+		     clojure-mode-extra-font-locking
+		     dash
+		     rainbow-delimiters
+		     cl-lib
+		     paredit
 		     yaml-mode
-		    ))
+		     ))
 
 (dolist (p mypackages)
   (when (not (package-installed-p p))
