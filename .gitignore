@@ -15,6 +15,11 @@ auto-save-list
 tramp
 .\#*
 elpa/
+<<<<<<< HEAD
 
 # Language specific / envs
 dotfiles/emacs.d/cider-history
+=======
+el-get
+*/emacs.d/langs/el*
+>>>>>>> 210aad8c4a08c61ff9eb341c627fe5e2605bdfa1

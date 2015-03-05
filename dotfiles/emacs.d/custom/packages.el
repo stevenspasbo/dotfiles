@@ -17,6 +17,7 @@
 		     inf-ruby
 		     neotree
 		     rainbow-mode
+<<<<<<< HEAD
 		     cider
 		     clojure-mode
 		     clojure-mode-extra-font-locking
@@ -25,6 +26,10 @@
 		     cl-lib
 		     paredit
 		     ))
+=======
+		     yaml-mode
+		    ))
+>>>>>>> 210aad8c4a08c61ff9eb341c627fe5e2605bdfa1
 
 (dolist (p mypackages)
   (when (not (package-installed-p p))

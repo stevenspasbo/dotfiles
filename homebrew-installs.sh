@@ -1,5 +1,6 @@
 brew tap homebrew/dupes > /dev/null
 brew tap thoughtbot/formulae > /dev/null
+brew tap homebrew/php
 
 homebrew_formulas=(
     "coreutils"
@@ -16,6 +17,12 @@ homebrew_formulas=(
     "gitsh"
     "bash"
     "zsh"
+    "ant"
+    "plt-racket"
+    "php55"
+    "scala"
+    "emacs"
+    "mit-scheme"
 )
 
 cask_apps=(
