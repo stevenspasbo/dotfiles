@@ -25,6 +25,7 @@
 		     cl-lib
 		     paredit
 		     yaml-mode
+		     hipster-theme
 		     ))
 
 (dolist (p mypackages)
