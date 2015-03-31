@@ -1,18 +1,26 @@
-;;; Author:     Steven Spasbo
-;;; Created:    11-30-2014
+;;;; Author:     Steven Spasbo
+;;;; Created:    11-30-2014
+;;;; Updated:    03-30-2015
 
-(require 'cl)
+(load-file
+ (file-truename "~/.emacs.d/elisp/load-directory.el"))
 
-(defvar emacs-home (file-truename "~/.emacs.d/")
+;; Load everything and set the theme
+(defvar emacs-home (file-truename "~/.emacs.d")
   "Retrieves the full path to my emacs directory")
 
-(load-file (file-truename "~/.emacs.d/elisp/load-directory.el"))
+;; Sets location of custom file to unclutter init file
+(setq custom-file
+      (concat emacs-home "/init-custom.el"))
+(load custom-file)
+;; Sets list of directories to load, then iterates over each
+(setq dirs
+      '("/custom" "/langs"))
+(dolist (dir dirs)
+  (load-directory (concat emacs-home dir)))
 
-;; Adds themes
-(add-to-list 'custom-theme-load-path (file-truename "~/.emacs.d/themes/"))
-
-;; Loads all files in each directory
-(load-directory (concat emacs-home "custom"))
-(load-directory (concat emacs-home "langs"))
-
+;; Load theme
 (load-theme 'hipster t)
+
+;; Make them parens purdy
+(require 'rainbow-delimiters)
