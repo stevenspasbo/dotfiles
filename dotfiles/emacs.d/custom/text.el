@@ -1,8 +1,15 @@
-;; Text options
+;;;; Text configs
 
-(electric-pair-mode 1) ;; Auto-inserts paren and bracket pairs
-(setq indent-tabs-mode nil) ;; Use spaces only, no tabs
+;; Auto-inserts paren and bracket pairs
+(electric-pair-mode 1)
 
-(show-paren-mode 1) ;; Highlight matching parens
+(setq indent-tabs-mode nil)		; Spaces, no tabs
+(show-paren-mode 1)		        ; Highlight matching parens
+(add-hook 'before-save-hook
+	  'delete-trailing-whitespace)	; Remove whitespace on save
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace) ;; Delete whitespace on save
+(global-hl-line-mode)		        ; Highline current line
+(set-face-background
+ 'hl-line "color-234")			; Sets line color
+
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
