@@ -5,11 +5,11 @@
 
 (setq indent-tabs-mode nil)		; Spaces, no tabs
 (show-paren-mode 1)		        ; Highlight matching parens
+(setq-default show-trailing-whitespace t)
 (add-hook 'before-save-hook
 	  'delete-trailing-whitespace)	; Remove whitespace on save
+(setq require-final-newline 't)
 
 (global-hl-line-mode)		        ; Highline current line
-(set-face-background
- 'hl-line "color-234")			; Sets line color
 
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
