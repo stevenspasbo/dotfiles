@@ -13,19 +13,30 @@
   (package-refresh-contents))
 
 (defvar mypackages '(
-		     haskell-mode
-		     inf-ruby
+		     ;; Stand alone
 		     neotree
+		     rainbow-delimiters
 		     rainbow-mode
+		     paredit
+		     ;; Modes
+		     cl-lib
+		     haskell-mode
+		     ruby-electric
+		     inf-ruby
+		     yaml-mode
 		     cider
 		     clojure-mode
 		     clojure-mode-extra-font-locking
 		     dash
-		     rainbow-delimiters
-		     cl-lib
-		     paredit
-		     yaml-mode
+		     ;; Themes
 		     hipster-theme
+		     moe-theme
+		     zenburn-theme
+		     ujelly-theme
+		     tronesque-theme
+		     tangotango-theme
+		     color-theme-sanityinc-tomorrow
+		     cyberpunk-theme
 		     ))
 
 (dolist (p mypackages)
