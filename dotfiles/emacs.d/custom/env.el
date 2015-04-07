@@ -1,12 +1,12 @@
 (setq-default
+ shell-file-name "/usr/local/bin/bash" ;; Sets shell
+ user-full-name "Steven Spasbo"
+ user-mail-address "stevenspasbo@gmail.com"
  undo-limit 10000 ;; Increase undo limit
  linum-format "%4d " ;; Add space after linum
+ inhibit-startup-screen t ;; Skip startup screen
  make-backup-files nil ;; Disable backup~
  auto-save-default nil ;; Disable #autosave# files
- shell-file-name "/usr/local/bin/bash" ;; Sets shell
- inhibit-startup-screen t ;; Skip startup screen
- inferior-lisp-program "/usr/local/bin/sbcl" ;; Sets location of sbcl binary
  confirm-kill-emacs 'y-or-n-p ;; Disallow accidental exits
- user-full-name "Steven Spasbo")
-
-(autoload 'neotree-toggle "neotree")
+ debug-on-error t
+)
