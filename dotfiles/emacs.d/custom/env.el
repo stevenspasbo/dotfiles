@@ -9,4 +9,5 @@
  auto-save-default nil ;; Disable #autosave# files
  confirm-kill-emacs 'y-or-n-p ;; Disallow accidental exits
  debug-on-error t
+ ring-bell-function 'ignore
 )

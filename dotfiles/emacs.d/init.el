@@ -1,28 +1,25 @@
+(package-initialize)
+
 ;;;; Author:     Steven Spasbo
 ;;;; Created:    11-30-2014
-;;;; Updated:    03-31-2015
+;;;; Updated:    08-13-2015
+
+(require 'cl)
 
 ;; Sets location of custom file to unclutter init file
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
 
-;; Enable tab completion
-(setq tab-always-indent 'complete)
-(add-to-list 'completion-styles 'initials t)
-
 ;; Loads load-directory function
 (load-file
  (file-truename "~/.emacs.d/elisp/load-directory.el"))
 
-;; Sets list of directories to load, then iterates over each
-(setq dirs '("custom" "langs"))
-(dolist (dir dirs)
-  (load-directory (concat user-emacs-directory dir)))
-
+;; Load themes
+;(load-themes)
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
 
-;; Load theme
-(load-theme 'hipster t)
+;; Sets list of directories to load, then iterates over each
+(dolist (dir '("custom" "langs"))
+  (load-directory (concat user-emacs-directory dir)))
 
-;; Make them parens purdy
-(require 'rainbow-delimiters)
+(load-theme 'hipster t)

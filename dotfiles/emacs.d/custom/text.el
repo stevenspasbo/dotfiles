@@ -8,8 +8,10 @@
 (setq-default show-trailing-whitespace t)
 (add-hook 'before-save-hook
 	  'delete-trailing-whitespace)	; Remove whitespace on save
-(setq require-final-newline 't)
+(setq require-final-newline 'visit-save)
 
 (global-hl-line-mode)		        ; Highline current line
 
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+
+(require 'rainbow-delimiters)

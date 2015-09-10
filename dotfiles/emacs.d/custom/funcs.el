@@ -3,7 +3,7 @@
 ;; Reloads init.el
 (defun my/reload-init ()
     (interactive)
-    (load-file (concat emacs-home "/init.el")))
+    (load-file (concat user-emacs-directory "/init.el")))
 (global-set-key (kbd "C-c r") 'my/reload-init)
 
 (defun date (&optional insert)

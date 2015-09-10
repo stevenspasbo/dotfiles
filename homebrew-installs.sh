@@ -3,26 +3,49 @@ brew tap thoughtbot/formulae > /dev/null
 brew tap homebrew/php
 
 homebrew_formulas=(
-    "coreutils"
-    "wget"
-    "findutils"
-    "homebrew/dupes/grep"
-    "sshfs"
-    "node"
-    "npm"
-    "htop"
-    "tmux"
-    "git"
-    "caskroom/cask/brew-cask"
-    "gitsh"
-    "bash"
-    "zsh"
+    # Applications
     "ant"
+    "archey"
+    "caskroom/cask/brew-cask"
+    "coreutils"
+    "curl"
+    "cvs"
+    "emacs --cocoa"
+    "faac"
+    "findutils"
+    "fontforge"
+    "git"
+    "thoughtbot/formulae/gitsh"
+    "homebrew/dupes/grep"
+    "htop-osx"
+    "irsii"
+    "maven"
+    "nmap"
+    "homebrew/fuse/sshfs"
+    "tmux"
+    "wget"
+
+    # Shells
+    "bash"
+    "bash-completion"
+    "zsh"
+
+    # Languages
+    "gcc"
+    "leiningen"
     "plt-racket"
-    "php55"
     "scala"
-    "emacs"
-    "mit-scheme"
+    "sbt"
+    "homebrew/x11/mit-scheme"
+    "python"
+    "sbcl"
+
+    # DBs
+    "mysql"
+    "mongodb"
+    "postgresql"
+    "readline"
+    "sqlite"
 )
 
 cask_apps=(
@@ -69,4 +92,3 @@ fonts=(
 )
 # echo "installing fonts..."
 # brew cask install ${fonts[@]}
-

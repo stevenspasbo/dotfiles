@@ -2,11 +2,11 @@
 
 (require 'package)
 
-(add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives
-	     '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
+(setq package-archives
+      '(("marmalade"   . "http://marmalade-repo.org/packages/")
+	("gnu"         . "http://elpa.gnu.org/packages/")
+	("org"         . "http://orgmode.org/elpa/")
+	("melpa"       . "http://melpa.milkbox.net/packages/")))
 (package-initialize)
 
 (when (not package-archive-contents)
@@ -18,6 +18,9 @@
 		     rainbow-delimiters
 		     rainbow-mode
 		     paredit
+		     flycheck
+		     flyspell
+		     auto-complete
 		     ;; Modes
 		     cl-lib
 		     haskell-mode
@@ -28,6 +31,8 @@
 		     clojure-mode
 		     clojure-mode-extra-font-locking
 		     dash
+		     hi2
+		     ghc
 		     ;; Themes
 		     hipster-theme
 		     moe-theme
@@ -37,6 +42,8 @@
 		     tangotango-theme
 		     color-theme-sanityinc-tomorrow
 		     cyberpunk-theme
+		     js2-mode
+		     ac-js2
 		     ))
 
 (dolist (p mypackages)
