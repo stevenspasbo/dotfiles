@@ -60,7 +60,7 @@ end
 
 desc "Updates all the vim plugins"
 task :update_submodules do
-  sh "git submodule foreach git pull origin master"
+  sh "git submodule update --init --recursive"
 end
 
 desc "Installs all dotfiles"
