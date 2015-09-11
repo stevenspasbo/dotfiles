@@ -1,0 +1,19 @@
+[user]
+	email = stevenspasbo@gmail.com
+	name = Steven Spasbo
+[apply]
+	whitespace = nowarn
+[alias]
+	review = "!f() { if [ -z $1 ]; then echo \"Usage: git review <branch> <topic>\"; else if [ -z $2 ]; then git push origin HEAD:refs/for/$1; else git push origin HEAD:refs/for/$1/$2 ; fi; fi; }; f"
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+[core]
+	editor = emacs
+	excludesfile = /Users/steven.spasbo/.gitignore
+	filemode = false
+
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
