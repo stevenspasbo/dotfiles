@@ -1,6 +1,6 @@
 brew tap homebrew/dupes > /dev/null
 brew tap thoughtbot/formulae > /dev/null
-brew tap homebrew/php
+brew tap homebrew/php > /dev/null
 
 homebrew_formulas=(
     # Applications
@@ -18,7 +18,7 @@ homebrew_formulas=(
     "thoughtbot/formulae/gitsh"
     "homebrew/dupes/grep"
     "htop-osx"
-    "irsii"
+    "irssi"
     "maven"
     "nmap"
     "homebrew/fuse/sshfs"
@@ -53,42 +53,33 @@ cask_apps=(
     "spotify"
     "google-chrome"
     "iterm2"
-    "sublime-text2"
+    "sublime-text"
+    "osxfuse"
+    "xquartz"
 )
-
-# Install homebrew apps
-for i in "${homebrew_formulas[@]}"
-do
-  echo "Install $@? (y/n): "
-  read ans
-  if (( (ans == "y") || ans == "yes")); then
-    brew install $i
-  else
-    echo "Skipping $@"
-  fi
-done
 
 if [ ! -e "/opt/homebrew-cask/Caskroom" ]; then
     brew cask
 fi
-for i in in "${cask_apps[@]}"
-do
-  echo "Install $@? (y/n): "
-  read ans
-  if (( (ans == "y") || ans == "yes")); then
+
+for i in "${cask_apps[@]}"; do
     brew cask install --appdir="/Applications" ${cask_apps[@]}
-  else
-    echo "Skipping $@"
-  fi
 done
 
+# Install homebrew apps
+for i in "${homebrew_formulas[@]}"; do
+    brew install $i
+    if [ $# == 1 ]; then
+	echo "ERROR OMG"
+    fi
+done
 
 # Install fonts
 brew tap caskroom/fonts
 fonts=(
-  font-m-plus
-  font-clear-sans
-  font-roboto
+    font-m-plus
+    font-clear-sans
+    font-roboto
 )
 # echo "installing fonts..."
 # brew cask install ${fonts[@]}

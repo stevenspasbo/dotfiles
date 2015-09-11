@@ -22,6 +22,7 @@
 		     flyspell
 		     auto-complete
 		     ;; Modes
+		     slime
 		     cl-lib
 		     haskell-mode
 		     ruby-electric
