@@ -56,6 +56,7 @@ cask_apps=(
     "sublime-text"
     "osxfuse"
     "xquartz"
+    "sourcetree"
 )
 
 if [ ! -e "/opt/homebrew-cask/Caskroom" ]; then
