@@ -1,7 +1,7 @@
 brew tap homebrew/dupes > /dev/null
 brew tap thoughtbot/formulae > /dev/null
 brew tap homebrew/php > /dev/null
-brew tap caskroom/fonts
+brew tap caskroom/fonts > /dev/null
 
 homebrew_formulas=(
     # Applications
@@ -64,7 +64,9 @@ cask_apps=(
     "evernote"
     "caskroom/homebrew-versions/java6"
     "phpstorm"
-
+    "textmate"
+    "spotifree"
+    "ynab"
 )
 
 if [ ! -e "/opt/homebrew-cask/Caskroom" ]; then
@@ -72,7 +74,7 @@ if [ ! -e "/opt/homebrew-cask/Caskroom" ]; then
 fi
 
 for i in "${cask_apps[@]}"; do
-    brew cask install --appdir="/Applications" ${cask_apps[@]}
+    brew cask install ${cask_apps[@]}
 done
 
 # Install homebrew apps
