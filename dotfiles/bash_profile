@@ -1,3 +1,5 @@
+#! /usr/bin/env bash
+
 # Move all device specific PATH stuff to this
 if [ -f ~/.paths ]; then
   source ~/.paths

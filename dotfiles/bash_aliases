@@ -1,3 +1,5 @@
+#! /usr/bin/env bash
+
 #-------------------------------------------------------------
 #           Author: Steven Spasbo
 #-------------------------------------------------------------
@@ -6,6 +8,8 @@ if [[ $SHELL == *zsh ]]; then
 else
   export RC_FILE="$HOME/.bashrc"
 fi
+
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
 #-------------------------------------------------------------
 # grep stuff
@@ -55,7 +59,7 @@ alias chvim="vim ~/.vimrc"
 # Version control stuff
 #-------------------------------------------------------------
 
-# Blank for now
+alias 'git diff'='git diff --ignore-space-at-eol -b -w --ignore-blank-lines'
 
 #-------------------------------------------------------------
 # Functions
