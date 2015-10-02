@@ -6,6 +6,11 @@
 [alias]
 	review = "!f() { if [ -z $1 ]; then echo \"Usage: git review <branch> <topic>\"; else if [ -z $2 ]; then git push origin HEAD:refs/for/$1; else git push origin HEAD:refs/for/$1/$2 ; fi; fi; }; f"
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	diff = diff --ignore-space-at-eol -b -w --ignore-blank-lines
+	amend = commit --amend
+	bclean = "!f() { git branch --merged ${1-production} | grep -v " ${1-production}$" | xargs git branch -d; }; f"
+	status = status --ignore-submodules
+
 [core]
 	editor = emacs
 	excludesfile = /Users/steven.spasbo/.gitignore
@@ -15,5 +20,13 @@
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path =
 [mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	cmd = /opt/homebrew-cask/Caskroom/sourcetree/2.0.5.2/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
+
+[color "status"]
+	added = green
+	changed = red
+	untracked = magenta
+
+[color "branch"]
+	remote = yellow
