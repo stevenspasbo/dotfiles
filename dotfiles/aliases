@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /bin/sh
 
 #-------------------------------------------------------------
 #           Author: Steven Spasbo
@@ -52,14 +52,8 @@ alias ru="cd /Development/Ruby"
 alias py="cd /Development/Python"
 alias ja="cd /Development/Java"
 
-alias chbash="vim ~/.bashrc"
-alias chvim="vim ~/.vimrc"
-
-#-------------------------------------------------------------
-# Version control stuff
-#-------------------------------------------------------------
-
-alias 'git diff'='git diff --ignore-space-at-eol -b -w --ignore-blank-lines'
+alias chbash="$EDITOR ~/.bashrc"
+alias chvim="$EDITOR ~/.vimrc"
 
 #-------------------------------------------------------------
 # Functions

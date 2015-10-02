@@ -1,0 +1,6 @@
+setopt append_history
+setopt hist_ignore_dups
+setopt inc_append_history
+setopt share_history
+
+unsetopt histverify
