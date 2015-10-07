@@ -2,7 +2,8 @@
 
 export EDITOR=emacs
 
-eval "$(thefuck --alias FUCK)"
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 #-------------------------------------------------------------
 # History stuff
