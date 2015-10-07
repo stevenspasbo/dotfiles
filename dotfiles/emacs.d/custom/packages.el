@@ -1,4 +1,4 @@
-;; Load packages
+;;;; Load packages
 
 (require 'package)
 
@@ -22,6 +22,7 @@
 		     flyspell
 		     auto-complete
 		     ;; Modes
+		     racket-mode
 		     slime
 		     cl-lib
 		     haskell-mode
