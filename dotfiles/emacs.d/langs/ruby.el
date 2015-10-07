@@ -10,6 +10,7 @@
 ;(add-hook 'ruby-mode-hook
 ;	  (local-set-key (kbd "C-c C-c") 'select-all-and-run))
 
+(add-to-list 'auto-mode-alist '("Vagrantfile$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.ya?ml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.rake$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Rakefile$" . ruby-mode))
