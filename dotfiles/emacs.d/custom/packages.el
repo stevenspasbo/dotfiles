@@ -46,6 +46,7 @@
 		     cyberpunk-theme
 		     js2-mode
 		     ac-js2
+		     solarized-theme
 		     ))
 
 (dolist (p mypackages)
