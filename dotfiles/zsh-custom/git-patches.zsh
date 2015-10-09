@@ -1,4 +1,5 @@
 function git_commits_behind() {
-  local curr_br=$(git symbolic-ref --short HEAD)
-  echo $(git rev-list --count $curr_br..origin/$curr_br)
+  if git rev-parse --git-dir > /dev/null 2>&1; then
+    echo $(git rev-list --count $(current_branch)..$(git rev-parse --abbrev-ref --symbolic-full-name @{u}))
+  fi
 }
