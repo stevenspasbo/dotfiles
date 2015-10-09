@@ -30,3 +30,5 @@
 
 [color "branch"]
 	remote = yellow
+[diff]
+	mnemonicprefix = true
