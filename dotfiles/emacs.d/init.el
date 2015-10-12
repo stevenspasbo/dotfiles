@@ -14,12 +14,8 @@
 (load-file
  (file-truename "~/.emacs.d/elisp/load-directory.el"))
 
-;; Load themes
-;(load-themes)
-(add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
-
 ;; Sets list of directories to load, then iterates over each
 (dolist (dir '("custom" "langs"))
   (load-directory (concat user-emacs-directory dir)))
 
-(load-theme 'hipster t)
+(set-theme)
