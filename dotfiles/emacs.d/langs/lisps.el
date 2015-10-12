@@ -19,23 +19,6 @@
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
-;;;; Clojure
-(require 'clojure-mode)
-(defun my/clojure-setup()
-  (add-hook 'cider-mode-hook #'eldoc-mode)
-  (setq nrepl-log-messages t)
-  (setq nrepl-hide-special-buffers t))
-; This will make relevant lines stand out more in stack traces
-(defun sldb-font-lock ()
-  (font-lock-add-keywords nil
-			  '(("[0-9]+: \\(clojure\.\\(core\\|lang\\).*\\)"
-			     1 starter-kit-clojure-trace-face)
-			    ("[0-9]+: \\(java.*\\)"
-			     1 starter-kit-clojure-trace-face)
-			    ("[0-9]+: \\(swank.*\\)"
-			     1 starter-kit-clojure-trace-face)
-			    ("\\[\\([A-Z]+\\)\\]"
-			     1 font-lock-function-name-face))))
 (add-hook 'sldb-mode-hook 'sldb-font-lock)
 
 ;;;; Scheme
