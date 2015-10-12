@@ -1,5 +1,4 @@
 (require 'inf-ruby)
-(require 'ruby-electric)
 (require 'yaml-mode)
 
 (add-hook 'ruby-mode-hook (lambda () (ruby-electric-mode t)))
