@@ -1,0 +1,8 @@
+(add-to-list 'auto-mode-alist '(".*bash.*" . sh-mode))
+(add-to-list 'auto-mode-alist '(".*zsh.*" . sh-mode))
+(add-to-list 'auto-mode-alist '(".+[^bash|zsh|vim]rc$" . sh-mode))
+(add-to-list 'auto-mode-alist '(".+login$" . sh-mode))
+(add-to-list 'auto-mode-alist '(".+profile$" . sh-mode))
+(add-to-list 'auto-mode-alist '(".+aliases$" . sh-mode))
+(add-to-list 'auto-mode-alist '(".+history$" . sh-mode))
+(add-to-list 'auto-mode-alist '(".+env_vars" . sh-mode))

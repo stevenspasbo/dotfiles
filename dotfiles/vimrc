@@ -5,9 +5,9 @@
 """""""""""""""""""""""""""""""""""""""""""
 " Plugins
 """""""""""""""""""""""""""""""""""""""""""
-try 
+try
   execute pathogen#infect()
-  autocmd VimEnter * NERDTree 
+  autocmd VimEnter * NERDTree
   autocmd VimEnter * wincmd p
   autocmd WinEnter * call s:CloseIfOnlyNerdTreeLeft()
 catch
