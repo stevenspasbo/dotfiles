@@ -23,6 +23,7 @@
 		     auto-complete
 		     ;; Modes
 		     racket-mode
+		     scheme-complete
 		     slime
 		     cl-lib
 		     haskell-mode
@@ -35,6 +36,9 @@
 		     dash
 		     hi2
 		     ghc
+		     scala-mode2
+		     sbt-mode
+		     php-mode
 		     ;; Themes
 		     hipster-theme
 		     moe-theme
