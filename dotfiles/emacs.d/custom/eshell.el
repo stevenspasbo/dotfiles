@@ -1,16 +1,31 @@
 (add-hook 'eshell-mode-hook
-	  (lambda ()
-	    (linum-mode 0)
-	    (hl-line-mode 0)))
+  (lambda ()
+    (linum-mode 0)
+    (setq show-trailing-whitespace nil)))
 
-(defun pwd-repl-home (pwd)
+;; eshell-banner stuff
+
+;; (add-hook 'eshell-post-command-hook
+;;   (lambda ()
+;;     (if (not (eq linum-mode 0)) (linum-mode 0))))
+
+(defun eshell/emacs (&rest args)
+  "Open a file in emacs"
+  (if (null args)
+      ;; Already in emacs, but whatever
+      (bury-buffer)
+    (mapc #'find-file (mapcar #'expand-file-name (eshell-flatten-list (reverse args))))))
+
+(defun get-abbriv-cd ()
+  "Gets the current directory, replaces home with ~"
   (interactive)
-  (let* ((home (expand-file-name (getenv "HOME")))
-	 (home-len (length home)))
-    (if (and
-	 (>= (length pwd) home-len)
-	 (equal home (substring pwd 0 home-len)))
-	(concat "~" (substring pwd home-len)) pwd)))
+  (abbreviate-file-name (eshell/pwd)))
+
+(defun myclear ()
+  (let ((heigth (- (window-body-height) 1)))
+    (while (> heigth 0)
+      (eshell-send-input)
+      (setq heigth (- heigth 1)))))
 
 (defun current-git-branch (pwd)
     "Returns current git branch as a string.
@@ -20,36 +35,28 @@ If string is empty, current directory is not a git repo"
 	       (locate-dominating-file pwd ".git"))
       (let ((git-output (shell-command-to-string (concat "cd " pwd " && git branch | grep '\\*' | sed -e 's/^\\* //'"))))
 	(if (> (length git-output) 0)
-	    (concat "(" (substring git-output 0 -1) ")" )
-	    ""))))
+	    (concat " (" (substring git-output 0 -1) ")" )
+	  ""))))
 
-;; (setq eshell-prompt-function
-;;       (lambda ()
-;; 	(let ((uzr (getenv "USER"))
-;; 	      (hozt (system-name))
-;; 	      (dirz (pwd)))
-;; 	  (concat "[" uzr "@" hozt ": " dirz "]\n" "λ "))))
-;; (setq eshell-highlight-prompt nil)
-;; (setq eshell-prompt-function
-;;       (lambda ()
-;; 	(current-git-branch (eshell/pwd))
-;;         (let* (
+(setq eshell-prompt-function
+      (lambda ()
+        (let* ((dirz (get-abbriv-cd))
+	       (my/host (system-name))
+	       (uzr (getenv "USER"))
+	       (git-branch (or (current-git-branch (substring (pwd) 10)) "")))
+          (concat
+	   (propertize "[" 'face `(:foreground "#FFFFFF"))
+	   (propertize uzr 'face `(:foreground "#1585C6"))
+	   (propertize "@" 'face `(:foreground "#D63883" :weight bold))
+	   (propertize my/host 'face `(:foreground "#22A198"))
+	   (propertize ": " 'face `(:foreground "#22A198"))
+	   (propertize dirz 'face `(:foreground "#7BC783"))
+	   (propertize "]" 'face `(:foreground "#FFFFFF"))
+	   (propertize git-branch 'face `(:foreground "#FFFFFF"))
+	   (propertize "\nλ " 'face `(:foreground "#7BC783"))))))
+
+(setq eshell-prompt-regexp ". ")
 ;; 	       (directory (split-directory-prompt (pwd-shorten-dirs (pwd-replace-home (eshell/pwd)))))
 ;;                (parent (car directory))
 ;;                (name (cadr directory))
 ;;                (branch (or (curr-dir-git-branch-string (eshell/pwd)) "")))
-
-;;           (if (eq 'dark (frame-parameter nil 'background-mode))
-;;               (concat   ;; Prompt for Dark Themes
-;;                (propertize parent 'face `(:foreground "#8888FF"))
-;;                (propertize name   'face `(:foreground "#8888FF" :weight bold))
-;;                (propertize branch 'face `(:foreground "green"))
-;;                (propertize " $"   'face `(:weight ultra-bold))
-;;                (propertize " "    'face `(:weight bold)))
-
-;;             (concat    ;; Prompt for Light Themes
-;;              (propertize parent 'face `(:foreground "blue"))
-;;              (propertize name   'face `(:foreground "blue" :weight bold))
-;;              (propertize branch 'face `(:foreground "dark green"))
-;;              (propertize " $"   'face `(:weight ultra-bold))
-;;              (propertize " "    'face `(:weight bold)))))))
