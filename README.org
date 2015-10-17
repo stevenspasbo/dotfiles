@@ -1,0 +1,31 @@
+* My dotfiles
+
+Installation is pretty straight forward.
+
+** Check out the repository
+#+begin_src sh
+git clone --recursive https://github.com/stevenspasbo/dotfiles.git
+#+end_src
+Note: When cloning, include --repository flag to also clone submodules, otherwise you'll need to run 'git submodule update --init'
+
+** (Possibly) Install ruby
+If you don't have ruby
+#+begin_src sh
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+\curl -sSL https://get.rvm.io | bash -s stable --ruby
+#+end_src
+
+** Install homebrew
+#+begin_src sh
+rake install_homebrew
+#+end_src
+
+** Run homebrew-installs to install applications
+#+BEGIN_SRC sh
+./$DOTFILES_REPO/homebrew-installs.sh
+#+END_SRC
+
+** Create symlinks for all dotfiles
+#+BEGIN_SRC sh
+  rake install_dotfiles
+#+END_SRC
