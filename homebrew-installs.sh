@@ -1,13 +1,12 @@
-brew tap homebrew/dupes > /dev/null
-brew tap thoughtbot/formulae > /dev/null
-brew tap homebrew/php > /dev/null
-brew tap caskroom/fonts > /dev/null
+brew tap homebrew/dupes 2>&1 /dev/null
+brew tap thoughtbot/formulae 2>&1 /dev/null
+brew tap homebrew/php 2>&1 /dev/null
+brew tap caskroom/fonts 2>&1 /dev/null
 
 homebrew_formulas=(
     # Applications
     "ant"
     "archey"
-    "caskroom/cask/brew-cask"
     "coreutils"
     "curl"
     "cvs"
@@ -69,27 +68,26 @@ cask_apps=(
     "ynab"
 )
 
+brew install caskroom/cask/brew-cask
+
 if [ ! -e "/opt/homebrew-cask/Caskroom" ]; then
     brew cask
 fi
 
 for i in "${cask_apps[@]}"; do
-    brew cask install ${cask_apps[@]}
+    brew cask install $i
 done
 
 # Install homebrew apps
 for i in "${homebrew_formulas[@]}"; do
     brew install $i
-    if [ $# == 1 ]; then
-	echo "ERROR OMG"
-    fi
 done
 
 # Install fonts
-fonts=(
-    font-m-plus
-    font-clear-sans
-    font-roboto
-)
+# fonts=(
+#     font-m-plus
+#     font-clear-sans
+#     font-roboto
+# )
 # echo "installing fonts..."
 # brew cask install ${fonts[@]}
