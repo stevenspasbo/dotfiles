@@ -18,6 +18,11 @@
 		     rainbow-mode
 		     paredit
                      undo-tree
+                     helm
+                     helm-swoop
+                     magit
+                     git-timemachine
+                     exec-path-from-shell
 		     ;; Modes
 		     racket-mode
 		     scheme-complete
