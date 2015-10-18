@@ -21,6 +21,7 @@
 		     flycheck
 		     flyspell
 		     auto-complete
+                     undo-tree
 		     ;; Modes
 		     racket-mode
 		     scheme-complete
@@ -39,6 +40,7 @@
 		     scala-mode2
 		     sbt-mode
 		     php-mode
+                     vimrc-mode
 		     ;; Themes
 		     hipster-theme
 		     moe-theme
@@ -51,6 +53,7 @@
 		     js2-mode
 		     ac-js2
 		     solarized-theme
+                     monokai-theme
 		     ))
 
 (dolist (p mypackages)
