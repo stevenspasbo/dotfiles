@@ -2,12 +2,12 @@
 (require 'slime)
 (require 'slime-autoloads)
 
-(defun slime-setup ()
-  (slime-mode t)
-  (setq inferior-lisp-program "/usr/local/bin/sbcl"
-	lisp-indent-function 'common-lisp-indent-function))
+;; (defun slime-setup ()
+;;   (slime-mode t)
+;;   (setq inferior-lisp-program "/usr/local/bin/sbcl"
+;; 	lisp-indent-function 'common-lisp-indent-function))
 
-(add-hook 'lisp-mode-hook '(slime-setup))
+;(add-hook 'lisp-mode-hook 'slime-setup)
 (add-to-list 'slime-contribs 'slime-fancy)
 (eval-after-load 'slime
   `(define-key slime-prefix-map (kbd "M-h") 'slime-documentation-lookup))
