@@ -5,16 +5,8 @@
       user-full-name "Steven Spasbo"
       user-mail-address "stevenspasbo@gmail.com")
 
-;;; Helm
-(require 'helm)
-;(helm-mode 1) ; Sets global helm-mode
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-h a") 'helm-apropos)
-;(global-set-key (kbd "C-h f") 'helm-describe-function)
-;(global-set-key (kbd "C-h v") 'helm-describe-variable)
-
 ;;; Window
-(global-linum-mode 1)  ; Enable line numbers
+;(global-linum-mode 1)  ; Enable line numbers
 (global-hl-line-mode)  ; Highline current line
 (column-number-mode 1) ; Enable (line,column)
 (menu-bar-mode -1)     ; Disable menu
@@ -29,8 +21,12 @@
 ;;; Text
 ;; Rainbow-delimiters
 (require 'rainbow-delimiters)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'prog-mode-hook 'rainbow-mode)
+(defun prog-setup ()
+  (rainbow-delimiters-mode)
+  (rainbow-mode)
+  (linum-mode))
+
+(add-hook 'prog-mode-hook 'prog-setup)
 
 (setq rainbow-delimiters-max-face-count 4)
 (set-face-attribute 'rainbow-delimiters-depth-1-face nil
@@ -44,7 +40,8 @@
 
 (set-face-attribute 'rainbow-delimiters-unmatched-face nil
                     :foreground "#E8079B"
-                    :background "#FFFFFF"
+                    :background "#00FF00"
+                    :weight 'ultra-bold
                     :strike-through t)
 
 (add-hook 'prog-mode-hook
@@ -61,11 +58,18 @@
 
 (delete-selection-mode t) ; Allows deletions on highlighted text
 
-;; Startup
-;(add-to-list 'exec-path "/usr/local/bin")
 
-(setq inhibit-splash-screen t
-      inhibit-startup-screen t ; Skip startup screen
+
+;; Startup
+
+
+(when (and
+       (not (null (window-system)))    ; If running in a window
+       (string= system-type "darwin")) ; And if on a mac
+  (exec-path-from-shell-initialize))   ; Match PATH from shell
+
+(setq inhibit-splash-screen t  ; Don't show splash screen
+      inhibit-startup-screen t ; Or startup screen
       debug-on-error t)
 
 (defalias 'yes-or-no-p 'y-or-n-p) ; y/n instead of yes/no
@@ -73,17 +77,13 @@
 (add-to-list 'completion-styles 'initials t)
 
 (setq-default
- undo-limit 10000 ; Increase undo limit
- make-backup-files nil ; Disable backup~
- auto-save-default nil ; Disable #autosave# files
+ scroll-margin 5        ; Scroll when cursor is 5 lines from top or bottom
+ line-spacing 1         ; Easier on the eyes
+ undo-limit 10000       ; Who needs 80k undos?
+ vc-follow-symlinks t   ; Silently follow symlinks
+ make-backup-files nil  ; Disable backup~
+ auto-save-default nil  ; Disable #autosave# files
+ ring-bell-function (lambda ()
+                      (message "*beep*"))
  confirm-kill-emacs 'y-or-n-p ; Disallow accidental exits
- ring-bell-function nil
- vc-follow-symlinks t)
-
-;; Disable scrollwheel
-(global-set-key [wheel-up] 'ignore)
-(global-set-key [wheel-down] 'ignore)
-(global-set-key [double-wheel-up] 'ignore)
-(global-set-key [double-wheel-down] 'ignore)
-(global-set-key [triple-wheel-up] 'ignore)
-(global-set-key [triple-wheel-down] 'ignore)
+ )

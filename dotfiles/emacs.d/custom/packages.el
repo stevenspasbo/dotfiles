@@ -14,13 +14,9 @@
 
 (defvar mypackages '(
 		     ;; Stand alone
-		     neotree
 		     rainbow-delimiters
 		     rainbow-mode
 		     paredit
-		     flycheck
-		     flyspell
-		     auto-complete
                      undo-tree
 		     ;; Modes
 		     racket-mode
@@ -34,13 +30,14 @@
 		     cider
 		     clojure-mode
 		     clojure-mode-extra-font-locking
-		     dash
 		     hi2
 		     ghc
 		     scala-mode2
 		     sbt-mode
 		     php-mode
                      vimrc-mode
+		     js2-mode
+		     ac-js2
 		     ;; Themes
 		     hipster-theme
 		     moe-theme
@@ -50,8 +47,6 @@
 		     tangotango-theme
 		     color-theme-sanityinc-tomorrow
 		     cyberpunk-theme
-		     js2-mode
-		     ac-js2
 		     solarized-theme
                      monokai-theme
 		     ))
