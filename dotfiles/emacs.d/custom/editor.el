@@ -1,13 +1,19 @@
 ;;;; System stuff
 
-;; Personalization
+;;; Personalization
 (setq shell-file-name "/usr/local/bin/zsh"
       user-full-name "Steven Spasbo"
       user-mail-address "stevenspasbo@gmail.com")
 
-(require 'rainbow-delimiters)
+;;; Helm
+(require 'helm)
+;(helm-mode 1) ; Sets global helm-mode
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-h a") 'helm-apropos)
+;(global-set-key (kbd "C-h f") 'helm-describe-function)
+;(global-set-key (kbd "C-h v") 'helm-describe-variable)
 
-;; Window
+;;; Window
 (global-linum-mode 1)  ; Enable line numbers
 (global-hl-line-mode)  ; Highline current line
 (column-number-mode 1) ; Enable (line,column)
@@ -20,12 +26,34 @@
   (tool-bar-mode -1)   ; Disable tool bar
   (global-unset-key (kbd "C-z"))) ; Disable minimize to dock key
 
-;;Text
-(show-paren-mode 1) ; Highlight matching parens
+;;; Text
+;; Rainbow-delimiters
+(require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook 'rainbow-mode)
+
+(setq rainbow-delimiters-max-face-count 4)
+(set-face-attribute 'rainbow-delimiters-depth-1-face nil
+                    :foreground "#FFFFFF")
+(set-face-attribute 'rainbow-delimiters-depth-2-face nil
+                    :foreground "#E8079B")
+(set-face-attribute 'rainbow-delimiters-depth-3-face nil
+                    :foreground "#2100FF")
+(set-face-attribute 'rainbow-delimiters-depth-4-face nil
+                    :foreground "#0CD2E8")
+
+(set-face-attribute 'rainbow-delimiters-unmatched-face nil
+                    :foreground "#E8079B"
+                    :background "#FFFFFF"
+                    :strike-through t)
+
+(add-hook 'prog-mode-hook
+          (lambda()
+            (setq show-trailing-whitespace t)))
+
+(show-paren-mode 1) ; Highlight matching parens
 (setq-default tab-always-indent 'complete ; Enable tab completion
               indent-tabs-mode nil ; Disable all tabs
-              show-trailing-whitespace t
               require-final-newline 'visit-save ; Insert final newline
               )
 (add-hook 'before-save-hook
@@ -34,7 +62,7 @@
 (delete-selection-mode t) ; Allows deletions on highlighted text
 
 ;; Startup
-(add-to-list 'exec-path "/usr/local/bin")
+;(add-to-list 'exec-path "/usr/local/bin")
 
 (setq inhibit-splash-screen t
       inhibit-startup-screen t ; Skip startup screen
