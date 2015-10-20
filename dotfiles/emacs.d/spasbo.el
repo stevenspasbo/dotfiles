@@ -35,6 +35,7 @@
                        magit
                        git-timemachine
                        exec-path-from-shell
+                       nyan-mode
                        ;; Modes
                        racket-mode
                        scheme-complete
@@ -71,17 +72,18 @@
     (when (not (package-installed-p p))
       (package-install p))))
 
-
 ;; Add custom themes dir
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
+
 
 (defun set-theme ()
   "Sets the theme depending on window-system"
   (interactive)
   (cond ((string-equal window-system "ns")
-         (load-theme 'monokai t))
+         (load-theme 'monokai t)
+         (nyan-mode))
         ((string-equal window-system nil)
-         (load-theme 'monokai t))))
+         (load-theme 'hipster t))))
 
 (defun load-directory (directory)
   "Load recursively all `.el' files in DIRECTORY."
