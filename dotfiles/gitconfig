@@ -1,6 +1,5 @@
-[user]
-	email = stevenspasbo@gmail.com
-	name = Steven Spasbo
+[include]
+    path = ~/.gitconfig-private
 [apply]
 	whitespace = nowarn
 [alias]
