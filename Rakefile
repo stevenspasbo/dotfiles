@@ -75,6 +75,11 @@ task :install_dotfiles do
   end
 end
 
+desc "Write template .gitconfig-private"
+task :install_private_gitconfig do
+  printf '[user]\n\temail = {github.email}\n\tname = {name}' >> ~/.gitconfig-private
+end
+
 desc "Installs RVM"
 task :install_rvm do
   unless app_installed? RVM
@@ -106,7 +111,7 @@ task :install_homebrew do
 end
 
 desc "Installs everything"
-task :install_all => [ :install_homebrew, :install_fonts, :install_rvm, :install_dotfiles ] do
+task :install_all => [ :install_homebrew, :install_fonts, :install_rvm, :install_private_gitconfig, :install_dotfiles ] do
   puts "Installing everything..."
 end
 
