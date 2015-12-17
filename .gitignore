@@ -20,3 +20,5 @@ elpa/
 dotfiles/emacs.d/cider-history
 el-get
 */emacs.d/langs/el*
+**/eshell/history
+**/eshell/lastdir
