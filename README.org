@@ -6,7 +6,10 @@ Installation is pretty straight forward.
 #+begin_src sh
 git clone --recursive https://github.com/stevenspasbo/dotfiles.git
 #+end_src
-Note: When cloning, include --repository flag to also clone submodules, otherwise you'll need to run 'git submodule update --init'
+Note: When cloning, include --repository flag to also clone submodules, otherwise you'll need to run 
+#+begin_src sh
+git submodule update --init
+#+end_src
 
 ** (Possibly) Install ruby
 If you don't have ruby
