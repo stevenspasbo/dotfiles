@@ -58,10 +58,7 @@
 
 (delete-selection-mode t) ; Allows deletions on highlighted text
 
-
-
 ;; Startup
-
 
 (when (and
        (not (null (window-system)))    ; If running in a window

@@ -8,21 +8,30 @@
 
 ;;; Helm
 (require 'helm)
+(require 'helm-config)
 (helm-mode 1) ; Sets global helm-mode
+(global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "C-x r b") 'helm-bookmarks)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
 
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
 
 (global-set-key (kbd "C-h a") 'helm-apropos)
 
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "M-x") 'helm-M-x)
+
 (require 'helm-swoop)
 (global-set-key (kbd "M-i") 'helm-swoop)
 (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
-(setq helm-swoop-split-direction 'split-window-vertically)
 
-(require 'helm-config)
-(global-set-key (kbd "C-x b") 'helm-buffers-list)
-(global-set-key (kbd "C-x r b") 'helm-bookmarks)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+(setq helm-buffers-fuzzy-matching t
+      helm-recentf-fuzzy-match    t ; For helm-mini
+      helm-swoop-split-direction 'split-window-vertically
+      )
+
+;; Magit
+(global-set-key (kbd "C-x g") 'magit-status)
 
 ;; Disable scroll wheel
 (global-set-key [wheel-up] 'ignore)
