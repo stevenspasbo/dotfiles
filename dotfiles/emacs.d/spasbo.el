@@ -1,6 +1,5 @@
 ;;;; spasbo.el - Load thems, packages, stuff I need before loading files from custom/ directory
 
-
 (defun spasbo/load ()
   (require 'cl)
   (require 'package)
@@ -16,19 +15,51 @@
 (defun load-packages ()
   (setq mypackages
     '( ;; Stand alone
-      rainbow-delimiters rainbow-mode paredit undo-tree helm helm-swoop magit
-                         git-timemachine exec-path-from-shell nyan-mode
-                         android-mode
-                         ;; Modes
-                         racket-mode scheme-complete slime cl-lib haskell-mode
-                         ruby-electric inf-ruby yaml-mode cider clojure-mode
-                         clojure-mode-extra-font-locking hi2 ghc scala-mode2
-                         sbt-mode php-mode vimrc-mode js2-mode ac-js2
-                         ;; Themes
-                         hipster-theme moe-theme zenburn-theme ujelly-theme
-                         tronesque-theme tangotango-theme
-                         color-theme-sanityinc-tomorrow cyberpunk-theme
-                         solarized-theme monokai-theme))
+      rainbow-delimiters
+      rainbow-mode
+      paredit
+      undo-tree
+      helm
+      helm-swoop
+      magit
+      git-timemachine
+      exec-path-from-shell
+      nyan-mode
+      android-mode
+      golden-ratio
+      dash-at-point
+      helm-descbinds
+      ;; Modes
+      racket-mode
+      scheme-complete
+      slime
+      cl-lib
+      haskell-mode
+      ruby-electric
+      inf-ruby
+      yaml-mode
+      cider
+      clojure-mode
+      clojure-mode-extra-font-locking
+      hi2
+      ghc
+      scala-mode2
+      sbt-mode
+      php-mode
+      vimrc-mode
+      js2-mode
+      ac-js2
+      ;; Themes
+      hipster-theme
+      moe-theme
+      zenburn-theme
+      ujelly-theme
+      tronesque-theme
+      tangotango-theme
+      color-theme-sanityinc-tomorrow
+      cyberpunk-theme
+      solarized-theme
+      monokai-theme))
 
   (setq package-archives
         '(("marmalade"   . "http://marmalade-repo.org/packages/")
@@ -54,8 +85,7 @@
   (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
 
   (cond ((string-equal window-system "ns")
-         (load-theme 'monokai t)
-         (nyan-mode))
+         (load-theme 'monokai t))
         ((string-equal window-system nil)
          (load-theme 'hipster t))))
 

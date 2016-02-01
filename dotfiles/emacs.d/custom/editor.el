@@ -37,7 +37,6 @@
                     :foreground "#2100FF")
 (set-face-attribute 'rainbow-delimiters-depth-4-face nil
                     :foreground "#0CD2E8")
-
 (set-face-attribute 'rainbow-delimiters-unmatched-face nil
                     :foreground "#E8079B"
                     :background "#00FF00"
@@ -59,7 +58,6 @@
 (delete-selection-mode t) ; Allows deletions on highlighted text
 
 ;; Startup
-
 (when (and
        (not (null (window-system)))    ; If running in a window
        (string= system-type "darwin")) ; And if on a mac
@@ -83,4 +81,24 @@
  ring-bell-function (lambda ()
                       (message "*beep*"))
  confirm-kill-emacs 'y-or-n-p ; Disallow accidental exits
+ initial-scratch-message ""
  )
+
+(require 'golden-ratio)
+(golden-ratio-mode 1)
+
+;; (nyan-mode)
+;; (setq nyan-wavy-trail t)
+
+(setq sml/no-confirm-load-theme t)
+(setq sml/theme nil)
+(sml/setup)
+
+(add-to-list 'sml/replacer-regexp-list '("^~/dotfiles" ":DOTFILES:"))
+
+(setq hidden-minor-modes '(
+                           " AC"
+                           "Undo-Tree"
+                           "Golden"
+                           "Helm"))
+(setq sml/hidden-modes (mapconcat 'identity hidden-minor-modes "\\| *"))

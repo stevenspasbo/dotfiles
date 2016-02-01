@@ -6,13 +6,23 @@
 (global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-S-z") 'redo)
 
+;; Dash
+(global-set-key (kbd "C-c C-d") 'dash-at-point)
+
+;;; Custom
+(global-set-key (kbd "C-M-<backspace>") 'sanityinc/kill-back-to-indentation)
+
 ;;; Helm
 (require 'helm)
 (require 'helm-config)
+(require 'helm-descbinds)
+(helm-descbinds-mode)
 (helm-mode 1) ; Sets global helm-mode
 (global-set-key (kbd "C-x b") 'helm-mini)
 (global-set-key (kbd "C-x r b") 'helm-bookmarks)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+(global-set-key (kbd "C-M-z") 'helm-resume)
 
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
 
