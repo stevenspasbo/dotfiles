@@ -3,7 +3,6 @@
 (defun spasbo/load ()
   (require 'cl)
   (require 'package)
-
   (load-packages)
   (set-theme)
   (set-custom-dir))
@@ -29,6 +28,10 @@
       golden-ratio
       dash-at-point
       helm-descbinds
+      helm-dash
+      projectile
+      helm-projectile
+      dash
       ;; Modes
       racket-mode
       scheme-complete
@@ -49,6 +52,9 @@
       vimrc-mode
       js2-mode
       ac-js2
+      smart-mode-line
+      smart-mode-line-powerline-theme
+      elm-mode
       ;; Themes
       hipster-theme
       moe-theme
@@ -59,7 +65,10 @@
       color-theme-sanityinc-tomorrow
       cyberpunk-theme
       solarized-theme
-      monokai-theme))
+      monokai-theme
+      gotham-theme
+      farmhouse-theme
+      afternoon-theme))
 
   (setq package-archives
         '(("marmalade"   . "http://marmalade-repo.org/packages/")
@@ -84,10 +93,11 @@
   ;; Add custom themes dir
   (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
 
-  (cond ((string-equal window-system "ns")
-         (load-theme 'monokai t))
-        ((string-equal window-system nil)
-         (load-theme 'hipster t))))
+  (cond ((string-equal window-system "ns") ; Emacs client settings
+         (load-theme 'farmhouse-dark t)
+         (custom-set-faces '(default ((t (:height 130 :width normal :family "Fira Code"))))))
+        ((string-equal window-system nil) ; Terminal settings
+         (load-theme 'afternoon t))))
 
 (defun load-directory (directory)
   "Load recursively all `.el' files in DIRECTORY."

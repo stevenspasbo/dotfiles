@@ -6,7 +6,12 @@
 (global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-S-z") 'redo)
 
-;; Dash
+;;; Adjust text size
+(global-set-key (kbd "C-M-=") 'text-scale-increase)
+(global-set-key (kbd "C-M--") 'text-scale-decrease)
+
+
+;;; Dash
 (global-set-key (kbd "C-c C-d") 'dash-at-point)
 
 ;;; Custom

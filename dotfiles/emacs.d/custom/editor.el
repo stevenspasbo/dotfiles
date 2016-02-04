@@ -90,15 +90,14 @@
 ;; (nyan-mode)
 ;; (setq nyan-wavy-trail t)
 
-(setq sml/no-confirm-load-theme t)
-(setq sml/theme nil)
-(sml/setup)
-
-(add-to-list 'sml/replacer-regexp-list '("^~/dotfiles" ":DOTFILES:"))
-
-(setq hidden-minor-modes '(
-                           " AC"
-                           "Undo-Tree"
-                           "Golden"
-                           "Helm"))
-(setq sml/hidden-modes (mapconcat 'identity hidden-minor-modes "\\| *"))
+;; smart-mode-line
+;; (setq sml/no-confirm-load-theme t)
+;; (setq sml/theme 'dark)
+;; (sml/setup)
+;; (add-to-list 'sml/replacer-regexp-list '("^~/dotfiles" ":DOTFILES:"))
+;; (setq hidden-minor-modes '(
+;;                            " AC"
+;;                            "Undo-Tree"
+;;                            "Golden"
+;;                            "Helm"))
+;; (setq sml/hidden-modes (mapconcat 'identity hidden-minor-modes "\\| *"))
