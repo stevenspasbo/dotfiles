@@ -15,6 +15,7 @@ auto-save-list
 tramp
 .\#*
 elpa/
+places
 
 # Language specific / envs
 dotfiles/emacs.d/cider-history

@@ -57,6 +57,14 @@
 
 (delete-selection-mode t) ; Allows deletions on highlighted text
 
+;; When you visit a file, point goes to the last place where it
+;; was when you previously visited the same file.
+;; http://www.emacswiki.org/emacs/SavePlace
+(require 'saveplace)
+(setq-default save-place t)
+;; keep track of saved places in ~/.emacs.d/places
+(setq save-place-file (concat user-emacs-directory "places"))
+
 ;; Startup
 (when (and
        (not (null (window-system)))    ; If running in a window
@@ -86,6 +94,11 @@
 
 (require 'golden-ratio)
 (golden-ratio-mode 1)
+
+;; Disable blinking cursor
+(blink-cursor-mode 0)
+
+(setq-default frame-title-format "%b (%f)")
 
 ;; (nyan-mode)
 ;; (setq nyan-wavy-trail t)
