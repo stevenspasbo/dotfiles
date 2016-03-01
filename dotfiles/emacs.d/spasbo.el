@@ -33,6 +33,7 @@
       helm-projectile
       dash
       ;; Modes
+      auto-complete
       racket-mode
       scheme-complete
       slime
@@ -44,6 +45,7 @@
       cider
       clojure-mode
       clojure-mode-extra-font-locking
+      tagedit
       hi2
       ghc
       scala-mode2
@@ -55,6 +57,7 @@
       smart-mode-line
       smart-mode-line-powerline-theme
       elm-mode
+      elpy
       ;; Themes
       hipster-theme
       moe-theme
@@ -92,12 +95,13 @@
   (interactive)
   ;; Add custom themes dir
   (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
-
   (cond ((string-equal window-system "ns") ; Emacs client settings
          (load-theme 'farmhouse-dark t)
          (custom-set-faces '(default ((t (:height 130 :width normal :family "Fira Code"))))))
         ((string-equal window-system nil) ; Terminal settings
-         (load-theme 'afternoon t))))
+         ;; (load-theme 'afternoon t)
+         (load-theme 'monokai t)
+         )))
 
 (defun load-directory (directory)
   "Load recursively all `.el' files in DIRECTORY."
