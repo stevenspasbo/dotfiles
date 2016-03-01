@@ -2,6 +2,7 @@ brew tap homebrew/dupes 2>&1 /dev/null
 brew tap thoughtbot/formulae 2>&1 /dev/null
 brew tap homebrew/php 2>&1 /dev/null
 brew tap caskroom/fonts 2>&1 /dev/null
+brew tap dart-lang/dart 2>&1 /dev/null
 
 homebrew_formulas=(
     # Applications
@@ -24,6 +25,9 @@ homebrew_formulas=(
     "homebrew/fuse/sshfs"
     "tmux"
     "wget"
+    "readline"
+    "cloc"
+    "caskroom/cask/brew-cask"
 
     # Shells
     "bash"
@@ -39,14 +43,19 @@ homebrew_formulas=(
     "homebrew/x11/mit-scheme"
     "python"
     "sbcl"
+    "dart --with-content-shell --with-dartium"
 
     # DBs
     "mysql"
     "mongodb"
     "postgresql"
-    "readline"
     "sqlite"
 )
+
+# Install homebrew apps
+for i in "${homebrew_formulas[@]}"; do
+    brew install $i
+done
 
 cask_apps=(
     "vlc"
@@ -68,19 +77,12 @@ cask_apps=(
     "ynab"
 )
 
-brew install caskroom/cask/brew-cask
-
 if [ ! -e "/opt/homebrew-cask/Caskroom" ]; then
     brew cask
 fi
 
 for i in "${cask_apps[@]}"; do
     brew cask install $i
-done
-
-# Install homebrew apps
-for i in "${homebrew_formulas[@]}"; do
-    brew install $i
 done
 
 # Install fonts
