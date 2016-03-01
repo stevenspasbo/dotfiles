@@ -10,6 +10,8 @@
 (global-set-key (kbd "C-M-=") 'text-scale-increase)
 (global-set-key (kbd "C-M--") 'text-scale-decrease)
 
+;; Hippie expand
+(global-set-key (kbd "M-/") 'hippie-expand)
 
 ;;; Dash
 (global-set-key (kbd "C-c C-d") 'dash-at-point)
