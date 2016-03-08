@@ -1,5 +1,7 @@
 ;;;; spasbo.el - Load thems, packages, stuff I need before loading files from custom/ directory
 
+
+
 (defun spasbo/load ()
   (require 'cl)
   (require 'package)
@@ -32,8 +34,11 @@
       projectile
       helm-projectile
       dash
+      yasnippet
       ;; Modes
-      auto-complete
+      company
+      robe
+      flymake-ruby
       racket-mode
       scheme-complete
       slime
@@ -53,11 +58,11 @@
       php-mode
       vimrc-mode
       js2-mode
-      ac-js2
       smart-mode-line
       smart-mode-line-powerline-theme
       elm-mode
       elpy
+      alchemist
       ;; Themes
       hipster-theme
       moe-theme
@@ -72,6 +77,8 @@
       gotham-theme
       farmhouse-theme
       afternoon-theme))
+
+  (add-to-list 'package-pinned-packages '(alchemist . "melpa-stable") t)
 
   (setq package-archives
         '(("marmalade"   . "http://marmalade-repo.org/packages/")
