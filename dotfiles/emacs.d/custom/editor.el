@@ -100,6 +100,11 @@
 
 (setq-default frame-title-format "%b (%f)")
 
+(global-company-mode t)
+
+(require 'yasnippet)
+(yas-global-mode 1)
+
 ;; (nyan-mode)
 ;; (setq nyan-wavy-trail t)
 
