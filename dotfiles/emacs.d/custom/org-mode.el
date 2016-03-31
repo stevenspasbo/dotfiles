@@ -1,5 +1,7 @@
 ;;;; Org mode settings
 
+(require 'org)
+
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
 (global-set-key "\C-ca" 'org-agenda)
@@ -7,5 +9,3 @@
 
 ;;; Babel
 (setq org-babel-tangle-pad-newline nil)
-
-(add-hook 'org-mode-hook 'linum-mode)

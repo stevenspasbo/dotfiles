@@ -1,69 +1,153 @@
 ;;;; System stuff
 
-;;; Personalization
-(setq shell-file-name "/usr/local/bin/zsh"
-      user-full-name "Steven Spasbo"
-      user-mail-address "stevenspasbo@gmail.com")
+(require 'rainbow-delimiters)
+(require 'diminish)
+(require 'saveplace)
+(require 'golden-ratio)
+(require 'undo-tree)
+(require 'helm)
+(require 'helm-buffers)
+(require 'helm-files)
+(require 'helm-config)
+(require 'helm-descbinds)
+(require 'helm-swoop)
+(require 'helm-projectile)
+(require 'company)
 
-;;; Window
-;(global-linum-mode 1)  ; Enable line numbers
+(golden-ratio-mode 1)
+(blink-cursor-mode 0)
 (global-hl-line-mode)  ; Highline current line
 (column-number-mode 1) ; Enable (line,column)
 (menu-bar-mode -1)     ; Disable menu
+(scroll-bar-mode -1) ; Disable scroll bar
+(tool-bar-mode -1)   ; Disable tool bar
+(delete-selection-mode t) ; Allows deletions on highlighted text
+(global-undo-tree-mode 1)
+(helm-descbinds-mode)
+(helm-mode 1) ; Sets global helm-mode
 (electric-pair-mode 1)
-(setq-default linum-format "%4d ") ; Add space after linum)
+(beacon-mode 1)
+(global-auto-revert-mode 1)
 
-(when window-system    ; If standalone emacs application
-  (scroll-bar-mode -1) ; Disable scroll bar
-  (tool-bar-mode -1)   ; Disable tool bar
-  (global-unset-key (kbd "C-z"))) ; Disable minimize to dock key
+(transient-mark-mode 1)
+(which-function-mode 1)
+;; (display-time-mode 1)
 
-;;; Text
-;; Rainbow-delimiters
-(require 'rainbow-delimiters)
-(defun prog-setup ()
-  (rainbow-delimiters-mode)
-  (rainbow-mode)
-  (linum-mode))
+(projectile-global-mode)
+(setq projectile-completion-system "helm")
+(helm-projectile-on)
 
-(add-hook 'prog-mode-hook 'prog-setup)
+;;; Personalization
+(setq shell-file-name "/usr/local/bin/zsh"
+      user-full-name "Steven Spasbo"
+      user-mail-address "stevenspasbo@gmail.com"
+      save-place-file (concat user-emacs-directory "places")
+      inhibit-splash-screen t  ; Don't show splash screen
+      inhibit-startup-screen t ; Or startup screen
+      debug-on-error t
+      comint-prompt-read-only t
+      auto-revert-verbose nil
+      helm-buffers-fuzzy-matching t
+      helm-recentf-fuzzy-match    t ; For helm-mini
+      helm-M-x-fuzzy-match t
+      helm-swoop-split-direction 'split-window-vertically
+      helm-ff-file-name-history-use-recentf t)
 
-(setq rainbow-delimiters-max-face-count 4)
-(set-face-attribute 'rainbow-delimiters-depth-1-face nil
-                    :foreground "#FFFFFF")
-(set-face-attribute 'rainbow-delimiters-depth-2-face nil
-                    :foreground "#E8079B")
-(set-face-attribute 'rainbow-delimiters-depth-3-face nil
-                    :foreground "#2100FF")
-(set-face-attribute 'rainbow-delimiters-depth-4-face nil
-                    :foreground "#0CD2E8")
-(set-face-attribute 'rainbow-delimiters-unmatched-face nil
-                    :foreground "#E8079B"
-                    :background "#00FF00"
-                    :weight 'ultra-bold
-                    :strike-through t)
+(set-face-background 'company-tooltip-annotation (face-background 'company-tooltip))
+(set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection))
 
-(add-hook 'prog-mode-hook
-          (lambda()
-            (setq show-trailing-whitespace t)))
+;; (require 'helm-flycheck) ;; Not necessary if using ELPA package
+(eval-after-load 'flycheck
+  '(define-key flycheck-mode-map (kbd "C-c ! h") 'helm-flycheck))
 
-(show-paren-mode 1) ; Highlight matching parens
 (setq-default tab-always-indent 'complete ; Enable tab completion
               indent-tabs-mode nil ; Disable all tabs
               require-final-newline 'visit-save ; Insert final newline
-              )
-(add-hook 'before-save-hook
-	  'delete-trailing-whitespace) ; Remove whitespace on save
+              indicate-empty-lines t
+              linum-format "%4d  " ; Add space after linum)
+              ;; When you visit a file, point goes to the last place where it
+              ;; was when you previously visited the same file.
+              ;; http://www.emacswiki.org/emacs/SavePlace
+              save-place t
+              scroll-margin 5        ; Scroll when cursor is 5 lines from top or bottom
+              line-spacing 1         ; Easier on the eyes
+              undo-limit 10000       ; Who needs 80k undos?
+              vc-follow-symlinks t   ; Silently follow symlinks
+              make-backup-files nil  ; Disable backup~
+              auto-save-default nil  ; Disable #autosave# files
+              auto-save-list-file-prefix nil
+              ring-bell-function (lambda ()
+                                   (message "*beep*"))
+              confirm-kill-emacs 'y-or-n-p ; Disallow accidental exits
+              initial-scratch-message ""
+              frame-title-format "%b (%f)")
 
-(delete-selection-mode t) ; Allows deletions on highlighted text
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq buffer-file-encoding-system 'utf-8)
+(setenv "LC_CTYPE" "UTF-8")
+(setenv "LC_ALL" "en_US.UTF-8")
+(setenv "LANG" "en_US.UTF-8")
 
-;; When you visit a file, point goes to the last place where it
-;; was when you previously visited the same file.
-;; http://www.emacswiki.org/emacs/SavePlace
-(require 'saveplace)
-(setq-default save-place t)
-;; keep track of saved places in ~/.emacs.d/places
-(setq save-place-file (concat user-emacs-directory "places"))
+(defun ignore-minor-modes ()
+  (diminish 'rainbow-mode)
+  (diminish 'undo-tree-mode)
+  (diminish 'company-mode)
+  (diminish 'helm-mode)
+  (diminish 'yas-minor-mode)
+  (diminish 'eldoc-mode)
+  (diminish 'golden-ratio-mode)
+  (diminish 'beacon-mode)
+  (diminish 'auto-revert-mode)
+  (diminish 'abbrev-mode)
+  (diminish 'auto-fill-mode))
+
+(setq comint-prompt-read-only t)
+
+(defun prog-setup ()
+  (require 'yasnippet)
+  (rainbow-delimiters-mode)
+  (font-lock-mode 1)
+  (rainbow-mode)
+  (linum-mode)
+  (setq show-trailing-whitespace t)
+  ;; Highlight matching parens
+  (show-paren-mode 1)
+  (company-mode)
+  (flycheck-mode)
+  (yas-minor-mode-on)
+  ;; Add yasnippet support for all company backends
+  ;; https://github.com/syl20bnr/spacemacs/pull/179
+  (defvar company-mode/enable-yas t
+    "Enable yasnippet for all backends.")
+  (defun company-mode/backend-with-yas (backend)
+    (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+        backend
+      (append (if (consp backend) backend (list backend))
+              '(:with company-yasnippet))))
+
+  (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)
+        rainbow-delimiters-max-face-count 4)
+  (set-face-attribute 'rainbow-delimiters-depth-1-face nil
+                    :foreground "#FFFFFF")
+  (set-face-attribute 'rainbow-delimiters-depth-2-face nil
+                    :foreground "#E8079B")
+  (set-face-attribute 'rainbow-delimiters-depth-3-face nil
+                    :foreground "#2100FF")
+  (set-face-attribute 'rainbow-delimiters-depth-4-face nil
+                    :foreground "#0CD2E8")
+  (set-face-attribute 'rainbow-delimiters-unmatched-face nil
+                    :foreground "#E8079B"
+                    :background "#00FF00"
+                    :weight 'ultra-bold
+                    :strike-through t))
+
+(add-hook 'prog-mode-hook 'prog-setup)
+
+(when (not indicate-empty-lines)
+    (toggle-indicate-empty-lines))
 
 ;; Startup
 (when (and
@@ -71,51 +155,10 @@
        (string= system-type "darwin")) ; And if on a mac
   (exec-path-from-shell-initialize))   ; Match PATH from shell
 
-(setq inhibit-splash-screen t  ; Don't show splash screen
-      inhibit-startup-screen t ; Or startup screen
-      debug-on-error t)
-
 (defalias 'yes-or-no-p 'y-or-n-p) ; y/n instead of yes/no
 
 (add-to-list 'completion-styles 'initials t)
+(add-to-list 'golden-ratio-exclude-buffer-names " *NeoTree*") ; It needs the space
 
-(setq-default
- scroll-margin 5        ; Scroll when cursor is 5 lines from top or bottom
- line-spacing 1         ; Easier on the eyes
- undo-limit 10000       ; Who needs 80k undos?
- vc-follow-symlinks t   ; Silently follow symlinks
- make-backup-files nil  ; Disable backup~
- auto-save-default nil  ; Disable #autosave# files
- ring-bell-function (lambda ()
-                      (message "*beep*"))
- confirm-kill-emacs 'y-or-n-p ; Disallow accidental exits
- initial-scratch-message ""
- )
-
-(require 'golden-ratio)
-(golden-ratio-mode 1)
-
-;; Disable blinking cursor
-(blink-cursor-mode 0)
-
-(setq-default frame-title-format "%b (%f)")
-
-(global-company-mode t)
-
-(require 'yasnippet)
-(yas-global-mode 1)
-
-;; (nyan-mode)
-;; (setq nyan-wavy-trail t)
-
-;; smart-mode-line
-;; (setq sml/no-confirm-load-theme t)
-;; (setq sml/theme 'dark)
-;; (sml/setup)
-;; (add-to-list 'sml/replacer-regexp-list '("^~/dotfiles" ":DOTFILES:"))
-;; (setq hidden-minor-modes '(
-;;                            " AC"
-;;                            "Undo-Tree"
-;;                            "Golden"
-;;                            "Helm"))
-;; (setq sml/hidden-modes (mapconcat 'identity hidden-minor-modes "\\| *"))
+(add-hook 'after-change-major-mode-hook 'ignore-minor-modes)
+(add-hook 'before-save-hook 'delete-trailing-whitespace) ; Remove whitespace on save

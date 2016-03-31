@@ -1,11 +1,15 @@
 ;;;; Keybindings
 
-(require 'undo-tree)
-(global-undo-tree-mode 1)
+;;; prog-mode only keys
+(defun set-prog-mode-keys ()
+  ;; Dash
+  (local-set-key (kbd "C-c C-d") 'dash-at-point))
+
+(add-hook 'prog-mode-hook 'set-prog-mode-keys)
+
 (defalias 'redo 'undo-tree-redo)
 (global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-S-z") 'redo)
-
 ;;; Adjust text size
 (global-set-key (kbd "C-M-=") 'text-scale-increase)
 (global-set-key (kbd "C-M--") 'text-scale-decrease)
@@ -13,39 +17,23 @@
 ;; Hippie expand
 (global-set-key (kbd "M-/") 'hippie-expand)
 
-;;; Dash
-(global-set-key (kbd "C-c C-d") 'dash-at-point)
-
 ;;; Custom
 (global-set-key (kbd "C-M-<backspace>") 'sanityinc/kill-back-to-indentation)
 
 ;;; Helm
-(require 'helm)
-(require 'helm-config)
-(require 'helm-descbinds)
-(helm-descbinds-mode)
-(helm-mode 1) ; Sets global helm-mode
+(global-set-key (kbd "C-c h") 'helm-command-prefix)
 (global-set-key (kbd "C-x b") 'helm-mini)
 (global-set-key (kbd "C-x r b") 'helm-bookmarks)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-
 (global-set-key (kbd "C-M-z") 'helm-resume)
-
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-
 (global-set-key (kbd "C-h a") 'helm-apropos)
-
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 (global-set-key (kbd "M-x") 'helm-M-x)
-
-(require 'helm-swoop)
 (global-set-key (kbd "M-i") 'helm-swoop)
 (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
-
-(setq helm-buffers-fuzzy-matching t
-      helm-recentf-fuzzy-match    t ; For helm-mini
-      helm-swoop-split-direction 'split-window-vertically
-      )
+(define-key isearch-mode-map (kbd "M-i") 'helm-swoop-from-isearch)
+(define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-all-from-helm-swoop)
 
 ;; Magit
 (global-set-key (kbd "C-x g") 'magit-status)
