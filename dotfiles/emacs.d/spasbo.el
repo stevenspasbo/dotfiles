@@ -88,14 +88,15 @@
       farmhouse-theme
       afternoon-theme))
 
-  (add-to-list 'package-pinned-packages '(alchemist . "melpa-stable") t)
 
   (setq package-archives
         '(("marmalade"   . "http://marmalade-repo.org/packages/")
           ("gnu"         . "http://elpa.gnu.org/packages/")
           ("org"         . "http://orgmode.org/elpa/")
-          ("melpa"       . "http://melpa.milkbox.net/packages/")))
+          ("melpa"       . "https://melpa.org/packages/")
+          ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
+  (add-to-list 'package-pinned-packages '(alchemist . "melpa-stable") t)
   (package-initialize) ; Activates all packages
 
   (unless package-archive-contents
