@@ -1,7 +1,5 @@
 ;;;; spasbo.el - Load thems, packages, stuff I need before loading files from custom/ directory
 
-
-
 (defun spasbo/load ()
   (require 'cl)
   (require 'package)
@@ -20,10 +18,15 @@
       rainbow-mode
       paredit
       undo-tree
+      beacon
       helm
       helm-swoop
+      helm-flycheck
       magit
+      boxquote
       git-timemachine
+      esup
+      avy
       exec-path-from-shell
       nyan-mode
       android-mode
@@ -35,10 +38,14 @@
       helm-projectile
       dash
       yasnippet
+      neotree
+      diminish
       ;; Modes
       company
       robe
-      flymake-ruby
+      flycheck
+      flycheck-clojure
+      flycheck-pos-tip
       racket-mode
       scheme-complete
       slime
@@ -47,10 +54,12 @@
       ruby-electric
       inf-ruby
       yaml-mode
-      cider
       clojure-mode
+      cider
       clojure-mode-extra-font-locking
+      clojure-cheatsheet
       tagedit
+      python-mode
       hi2
       ghc
       scala-mode2
@@ -62,6 +71,7 @@
       smart-mode-line-powerline-theme
       elm-mode
       elpy
+      company-jedi
       alchemist
       ;; Themes
       hipster-theme
@@ -92,7 +102,7 @@
     (package-refresh-contents))
 
   (dolist (p mypackages)
-    (message "Checking for %s" p)
+;;    (message "Checking for %s" p)
     (unless (package-installed-p p)
       (message "Installing %s" p)
       (package-install p))))
@@ -103,12 +113,12 @@
   ;; Add custom themes dir
   (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
   (cond ((string-equal window-system "ns") ; Emacs client settings
-         (load-theme 'farmhouse-dark t)
+         ;; (load-theme 'farmhouse-dark t)
+         (load-theme 'material t)
          (custom-set-faces '(default ((t (:height 130 :width normal :family "Fira Code"))))))
         ((string-equal window-system nil) ; Terminal settings
          ;; (load-theme 'afternoon t)
-         (load-theme 'monokai t)
-         )))
+         (load-theme 'monokai t))))
 
 (defun load-directory (directory)
   "Load recursively all `.el' files in DIRECTORY."
