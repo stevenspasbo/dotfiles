@@ -26,3 +26,6 @@
 
 ;;;; Scheme
 (setq scheme-program-name "scheme")
+
+(with-eval-after-load 'flycheck
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
