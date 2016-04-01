@@ -19,8 +19,6 @@
 (global-hl-line-mode)  ; Highline current line
 (column-number-mode 1) ; Enable (line,column)
 (menu-bar-mode -1)     ; Disable menu
-(scroll-bar-mode -1) ; Disable scroll bar
-(tool-bar-mode -1)   ; Disable tool bar
 (delete-selection-mode t) ; Allows deletions on highlighted text
 (global-undo-tree-mode 1)
 (helm-descbinds-mode)
@@ -28,7 +26,10 @@
 (electric-pair-mode 1)
 (beacon-mode 1)
 (global-auto-revert-mode 1)
-
+(if (display-graphic-p)
+    (progn
+      ((scroll-bar-mode -1) ; Disable scroll bar
+       (tool-bar-mode -1))))   ; Disable tool bar
 (transient-mark-mode 1)
 (which-function-mode 1)
 ;; (display-time-mode 1)
