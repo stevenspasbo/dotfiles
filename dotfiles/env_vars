@@ -11,6 +11,7 @@ export HISTSIZE=100000
 export HISTFILESIZE=100000
 export SAVEHIST=100000
 export HISTFILE=~/.history
+export HISTFORMAT='%F %T '
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 export CLICOLOR=1

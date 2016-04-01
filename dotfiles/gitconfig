@@ -1,20 +1,21 @@
-[user]
-	email = stevenspasbo@gmail.com
-	name = Steven Spasbo
+[include]
+        path = ~/Dropbox/.github
 [apply]
 	whitespace = nowarn
 [alias]
-	review = "!f() { if [ -z $1 ]; then echo \"Usage: git review <branch> <topic>\"; else if [ -z $2 ]; then git push origin HEAD:refs/for/$1; else git push origin HEAD:refs/for/$1/$2 ; fi; fi; }; f"
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 	diff = diff --ignore-space-at-eol -b -w --ignore-blank-lines
 	amend = commit --amend
 	bclean = "!f() { git branch --merged ${1-production} | grep -v " ${1-production}$" | xargs git branch -d; }; f"
 	status = status --ignore-submodules
+        lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
 
 [core]
 	editor = emacs
 	excludesfile = /Users/steven.spasbo/.gitignore
 	filemode = false
+	whitespace = trailing-space,space-before-tab
+        pager = "diff-highlight | diff-so-fancy | less --tabs=1,5 -R"
 
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
@@ -23,12 +24,31 @@
 	cmd = /opt/homebrew-cask/Caskroom/sourcetree/2.0.5.2/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 
+[diff]
+       mnemonicprefix = true
+[color]
+       ui = always
+
+[color "diff"]
+       meta = yellow bold
+       commit = green bold
+       frag = magenta bold
+       old = red bold
+       new = green bold
+       whitespace = red reverse
+
 [color "status"]
 	added = green
 	changed = red
 	untracked = magenta
 
 [color "branch"]
-	remote = yellow
-[diff]
-	mnemonicprefix = true
+ 	remote = yellow
+
+[advice]
+	statusHints = false
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
