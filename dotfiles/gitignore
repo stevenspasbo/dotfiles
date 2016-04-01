@@ -1,0 +1,32 @@
+# OS Files
+.DS_Store
+.idea/ # OS-ish
+backups/*
+.netrwhist
+
+# Vagrant
+.vagrant/
+.bundle/
+
+# Emacs
+**/eshell/history
+**/eshell/lastdir
+.emacs.desktop
+ac-comphist.dat
+recentf
+url/
+request/
+.mc-lists.el
+projectile-bookmarks.eld
+*~
+\#*\#
+*.elc
+auto-save-list
+tramp
+.\#*
+elpa/
+places
+/emacs.d/cider-history
+dotfiles/emacs.d/cider-history
+el-get
+*/emacs.d/langs/el*
