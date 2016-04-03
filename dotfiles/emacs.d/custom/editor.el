@@ -107,6 +107,10 @@
 
 (setq comint-prompt-read-only t)
 
+;; Don't warn about narrowing
+(put 'narrow-to-region 'disabled nil)
+(put 'set-goal-column 'disabled nil)
+
 (defun prog-setup ()
   (require 'yasnippet)
   (rainbow-delimiters-mode)

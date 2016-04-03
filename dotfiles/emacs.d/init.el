@@ -2,8 +2,6 @@
 ;;;; Created:    11-30-2014
 ;;;; Updated:    10-18-2015
 
-(package-initialize)
-
 (load-file (expand-file-name "spasbo.el" user-emacs-directory))
 
 (spasbo/load)
