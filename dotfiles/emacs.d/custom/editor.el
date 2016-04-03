@@ -14,6 +14,8 @@
 (require 'helm-projectile)
 (require 'company)
 
+(set-frame-font "Source Code Pro for Powerline-13")
+
 (golden-ratio-mode 1)
 (blink-cursor-mode 0)
 (global-hl-line-mode)  ; Highline current line
@@ -26,10 +28,8 @@
 (electric-pair-mode 1)
 (beacon-mode 1)
 (global-auto-revert-mode 1)
-(if (display-graphic-p)
-    (progn
-      ((scroll-bar-mode -1) ; Disable scroll bar
-       (tool-bar-mode -1))))   ; Disable tool bar
+(scroll-bar-mode -1) ; Disable scroll bar
+(tool-bar-mode -1)   ; Disable tool bar
 (transient-mark-mode 1)
 (which-function-mode 1)
 ;; (display-time-mode 1)

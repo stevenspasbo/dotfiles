@@ -12,16 +12,29 @@
   (load custom-file))
 
 (defun load-packages ()
-  (setq mypackages
-    '( ;; Stand alone
+  (package-initialize) ; Activates all packages
+
+  (setq package-archives
+        '(("marmalade"   . "http://marmalade-repo.org/packages/")
+          ("gnu"         . "http://elpa.gnu.org/packages/")
+          ("org"         . "http://orgmode.org/elpa/")
+          ("melpa"       . "https://melpa.org/packages/")
+          ("melpa-stable" . "https://stable.melpa.org/packages/")))
+
+  (add-to-list 'package-pinned-packages '(alchemist . "melpa-stable") t)
+
+  (let ((my-packages '(
       rainbow-delimiters
       rainbow-mode
       paredit
       undo-tree
-      beacon
       helm
       helm-swoop
       helm-flycheck
+      helm-descbinds
+      helm-dash
+      projectile
+      helm-projectile
       magit
       boxquote
       git-timemachine
@@ -32,10 +45,6 @@
       android-mode
       golden-ratio
       dash-at-point
-      helm-descbinds
-      helm-dash
-      projectile
-      helm-projectile
       dash
       yasnippet
       neotree
@@ -86,39 +95,21 @@
       monokai-theme
       gotham-theme
       farmhouse-theme
-      afternoon-theme))
-
-
-  (setq package-archives
-        '(("marmalade"   . "http://marmalade-repo.org/packages/")
-          ("gnu"         . "http://elpa.gnu.org/packages/")
-          ("org"         . "http://orgmode.org/elpa/")
-          ("melpa"       . "https://melpa.org/packages/")
-          ("melpa-stable" . "https://stable.melpa.org/packages/")))
-
-  (add-to-list 'package-pinned-packages '(alchemist . "melpa-stable") t)
-  (package-initialize) ; Activates all packages
-
-  (unless package-archive-contents
-    (package-refresh-contents))
-
-  (dolist (p mypackages)
-;;    (message "Checking for %s" p)
+      afternoon-theme
+      persistent-scratch))
+      (refreshed? nil))
+  (dolist (p my-packages)
     (unless (package-installed-p p)
-      (message "Installing %s" p)
-      (package-install p))))
+      (when (null refreshed?)
+        (package-refresh-contents)
+        (setq refreshed? t))
+      (package-install p)))))
 
 (defun set-theme ()
   "Sets the theme depending on window-system"
-  (interactive)
-  ;; Add custom themes dir
-  (add-to-list 'custom-theme-load-path (concat user-emacs-directory "themes"))
   (cond ((string-equal window-system "ns") ; Emacs client settings
-         ;; (load-theme 'farmhouse-dark t)
-         (load-theme 'material t)
-         (custom-set-faces '(default ((t (:height 130 :width normal :family "Fira Code"))))))
+         (load-theme 'material t))
         ((string-equal window-system nil) ; Terminal settings
-         ;; (load-theme 'afternoon t)
          (load-theme 'monokai t))))
 
 (defun load-directory (directory)

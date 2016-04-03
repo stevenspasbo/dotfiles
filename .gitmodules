@@ -30,10 +30,6 @@
 	path = dotfiles/oh-my-zsh
 	url = https://github.com/stevenspasbo/oh-my-zsh.git
 	ignore = all
-[submodule "dotfiles/emacs.d/themes/emacs-color-theme-solarized"]
-	path = dotfiles/emacs.d/themes/emacs-color-theme-solarized
-	url = https://github.com/sellout/emacs-color-theme-solarized.git
-	ignore = all
 [submodule "iterm2/iTerm2-Color-Schemes"]
 	path = iterm2/iTerm2-Color-Schemes
 	url = https://github.com/mbadolato/iTerm2-Color-Schemes.git
