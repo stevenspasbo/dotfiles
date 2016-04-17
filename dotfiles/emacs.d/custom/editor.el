@@ -13,9 +13,14 @@
 (require 'helm-swoop)
 (require 'helm-projectile)
 (require 'company)
+(require 'flycheck)
+(require 'multiple-cursors)
 
 (set-frame-font "Source Code Pro for Powerline-13")
 
+(global-company-mode +1)
+(global-flycheck-mode +1)
+(yas-global-mode)
 (golden-ratio-mode 1)
 (blink-cursor-mode 0)
 (global-hl-line-mode)  ; Highline current line
@@ -26,17 +31,17 @@
 (helm-descbinds-mode)
 (helm-mode 1) ; Sets global helm-mode
 (electric-pair-mode 1)
-(beacon-mode 1)
 (global-auto-revert-mode 1)
 (scroll-bar-mode -1) ; Disable scroll bar
 (tool-bar-mode -1)   ; Disable tool bar
 (transient-mark-mode 1)
-(which-function-mode 1)
-;; (display-time-mode 1)
 
+;; Projectile
 (projectile-global-mode)
 (setq projectile-completion-system "helm")
 (helm-projectile-on)
+(setq projectile-switch-project-action 'projectile-commander)
+
 
 ;;; Personalization
 (setq shell-file-name "/usr/local/bin/zsh"
@@ -52,14 +57,62 @@
       helm-recentf-fuzzy-match    t ; For helm-mini
       helm-M-x-fuzzy-match t
       helm-swoop-split-direction 'split-window-vertically
-      helm-ff-file-name-history-use-recentf t)
+      helm-ff-file-name-history-use-recentf t
+      company-minimum-prefix-length 2
+      company-idle-delay 0.2
+      company-tooltip-align-annotations t
+      )
 
 (set-face-background 'company-tooltip-annotation (face-background 'company-tooltip))
 (set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection))
 
-;; (require 'helm-flycheck) ;; Not necessary if using ELPA package
+(add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
+
 (eval-after-load 'flycheck
   '(define-key flycheck-mode-map (kbd "C-c ! h") 'helm-flycheck))
+(with-eval-after-load 'flycheck
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+
+  (defun nadvice/flycheck-mode-line-status-text (&optional status)
+    (let ((text (pcase (or status flycheck-last-status-change)
+                  (`not-checked "")
+                  (`no-checker "-")
+                  (`running "*")
+                  (`errored "!")
+                  (`finished
+                   (if flycheck-current-errors
+                       (let ((error-counts (flycheck-count-errors
+                                            flycheck-current-errors)))
+                         (format "%s/%s"
+                                 (or (cdr (assq 'error error-counts)) "")
+                                 (or (cdr (assq 'warning error-counts)) "")))
+                     ""))
+                  (`interrupted "-")
+                  (`suspicious "?"))))
+      (concat (if (display-graphic-p) " ✓" " Γ") text)))
+
+(advice-add 'flycheck-mode-line-status-text :override
+            #'nadvice/flycheck-mode-line-status-text)
+
+
+
+
+(set-face-background 'flycheck-fringe-warning nil)
+
+(set-face-attribute 'flycheck-error nil
+                    :foreground nil
+                    :background nil
+                    :underline "#dc322f")
+
+(set-face-attribute 'flycheck-warning nil
+                    :foreground nil
+                    :background nil
+                    :underline "#b58900")
+
+(set-face-attribute 'flycheck-info nil
+                    :foreground nil
+                    :background nil
+                    :underline "#268bd2")
 
 (setq-default tab-always-indent 'complete ; Enable tab completion
               indent-tabs-mode nil ; Disable all tabs
@@ -70,7 +123,7 @@
               ;; was when you previously visited the same file.
               ;; http://www.emacswiki.org/emacs/SavePlace
               save-place t
-              scroll-margin 5        ; Scroll when cursor is 5 lines from top or bottom
+
               line-spacing 1         ; Easier on the eyes
               undo-limit 10000       ; Who needs 80k undos?
               vc-follow-symlinks t   ; Silently follow symlinks
@@ -103,7 +156,8 @@
   (diminish 'beacon-mode)
   (diminish 'auto-revert-mode)
   (diminish 'abbrev-mode)
-  (diminish 'auto-fill-mode))
+  (diminish 'auto-fill-mode)
+  (diminish 'visual-line-mode))
 
 (setq comint-prompt-read-only t)
 
@@ -120,9 +174,7 @@
   (setq show-trailing-whitespace t)
   ;; Highlight matching parens
   (show-paren-mode 1)
-  (company-mode)
-  (flycheck-mode)
-  (yas-minor-mode-on)
+  ;; (yas-minor-mode-on)
   ;; Add yasnippet support for all company backends
   ;; https://github.com/syl20bnr/spacemacs/pull/179
   (defvar company-mode/enable-yas t
@@ -134,20 +186,21 @@
               '(:with company-yasnippet))))
 
   (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)
-        rainbow-delimiters-max-face-count 4)
-  (set-face-attribute 'rainbow-delimiters-depth-1-face nil
+        rainbow-delimiters-max-face-count 4))
+
+(set-face-attribute 'rainbow-delimiters-depth-1-face nil
                     :foreground "#FFFFFF")
-  (set-face-attribute 'rainbow-delimiters-depth-2-face nil
+(set-face-attribute 'rainbow-delimiters-depth-2-face nil
                     :foreground "#E8079B")
-  (set-face-attribute 'rainbow-delimiters-depth-3-face nil
+(set-face-attribute 'rainbow-delimiters-depth-3-face nil
                     :foreground "#2100FF")
-  (set-face-attribute 'rainbow-delimiters-depth-4-face nil
+(set-face-attribute 'rainbow-delimiters-depth-4-face nil
                     :foreground "#0CD2E8")
-  (set-face-attribute 'rainbow-delimiters-unmatched-face nil
+(set-face-attribute 'rainbow-delimiters-unmatched-face nil
                     :foreground "#E8079B"
                     :background "#00FF00"
                     :weight 'ultra-bold
-                    :strike-through t))
+                    :strike-through t)
 
 (add-hook 'prog-mode-hook 'prog-setup)
 

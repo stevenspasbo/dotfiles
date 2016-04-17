@@ -22,8 +22,11 @@
           ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
   (add-to-list 'package-pinned-packages '(alchemist . "melpa-stable") t)
+  ;; (add-to-list 'package-pinned-packages '(org-mode . "org") t)
 
-  (let ((my-packages '(
+  (let ((my-packages
+         '(
+           org-bullets
       rainbow-delimiters
       rainbow-mode
       paredit
@@ -95,6 +98,7 @@
       monokai-theme
       gotham-theme
       farmhouse-theme
+      material-theme
       afternoon-theme
       persistent-scratch))
       (refreshed? nil))

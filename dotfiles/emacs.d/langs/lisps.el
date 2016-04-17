@@ -1,6 +1,7 @@
 ;;;; All the slimy settings
 (require 'slime)
 (require 'slime-autoloads)
+(require 'scheme)
 
 ;; (defun slime-setup ()
 ;;   (slime-mode t)
@@ -13,10 +14,12 @@
   `(define-key slime-prefix-map (kbd "M-h") 'slime-documentation-lookup))
 (slime-setup '(slime-fancy))
 
+(defun emacs-lisp-stuff ()
+  (eldoc-mode)
+  (prettify-symbols-mode))
+
 ;;;; Emacs Lisp
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (eldoc-mode 1)))
+(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-stuff)
 (define-key emacs-lisp-mode-map (kbd "C-c v") 'eval-buffer)
 
 (add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
@@ -26,6 +29,3 @@
 
 ;;;; Scheme
 (setq scheme-program-name "scheme")
-
-(with-eval-after-load 'flycheck
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
