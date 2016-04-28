@@ -31,7 +31,8 @@
   (enable-paredit-mode)
   (eldoc-mode)
   (setq nrepl-log-messages t)
-  (setq nrepl-hide-special-buffers t))
+  (setq nrepl-hide-special-buffers t)
+  (add-to-list 'prettify-symbols-alist '("defn" . ?ƒ)))
 
 (add-hook 'clojure-mode-hook 'clojure-stuff)
 
