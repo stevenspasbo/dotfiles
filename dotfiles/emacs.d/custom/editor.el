@@ -14,8 +14,6 @@
 (require 'helm-projectile)
 (require 'company)
 (require 'flycheck)
-(require 'multiple-cursors)
-
 
 (global-company-mode +1)
 (global-flycheck-mode +1)
