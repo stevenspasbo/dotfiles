@@ -16,7 +16,6 @@
 (require 'flycheck)
 (require 'multiple-cursors)
 
-(set-frame-font "Source Code Pro for Powerline-13")
 
 (global-company-mode +1)
 (global-flycheck-mode +1)

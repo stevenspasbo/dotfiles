@@ -111,10 +111,12 @@
 
 (defun set-theme ()
   "Sets the theme depending on window-system"
-  (cond ((string-equal window-system "ns") ; Emacs client settings
-         (load-theme 'material t))
-        ((string-equal window-system nil) ; Terminal settings
-         (load-theme 'monokai t))))
+  (interactive)
+  (if (display-graphic-p)
+      (progn
+        (load-theme 'material t)
+        (set-frame-font "Source Code Pro for Powerline-13"))
+    (load-theme 'sanityinc-tomorrow-night t)))
 
 (defun load-directory (directory)
   "Load recursively all `.el' files in DIRECTORY."
