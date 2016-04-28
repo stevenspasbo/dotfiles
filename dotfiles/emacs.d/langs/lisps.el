@@ -16,7 +16,9 @@
 
 (defun emacs-lisp-stuff ()
   (eldoc-mode)
-  (prettify-symbols-mode))
+  (prettify-symbols-mode)
+  (add-to-list 'prettify-symbols-alist '("defun" . ?ƒ)))
+
 
 ;;;; Emacs Lisp
 (add-hook 'emacs-lisp-mode-hook 'emacs-lisp-stuff)
