@@ -29,7 +29,7 @@
               indicate-empty-lines t
               linum-format "%4d  " ; Add space after linum)
               line-spacing 1         ; Easier on the eyes
-              undo-limit 10000
+              undo-limit 100000
               vc-follow-symlinks t   ; Silently follow symlinks
               make-backup-files nil  ; Disable backup~
               auto-save-default nil  ; Disable #autosave# files
@@ -47,7 +47,6 @@
 (set-default-coding-systems 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (set-language-environment 'utf-8)
-(set-keyboard-coding-system 'utf-8-mac) ; For old Carbon emacs on OS X only
 (set-terminal-coding-system 'utf-8)
 (setq locale-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
@@ -108,19 +107,8 @@ point reaches the beginning or end of the buffer, stop there."
    nil '(("\\<\\(FIXME\\|TODO\\|NOCOMMIT\\)\\>"
           1 '((:foreground "#d7a3ad") (:weight bold)) t))))
 
-(defun my/turn-on-hl-line-mode ()
-  "Turn on hl-line-mode"
-  (interactive)
-  (hl-line-mode 1))
-
 (add-hook 'prog-mode-hook #'my/add-watchwords)
-(add-hook 'prog-mode-hook #'my/turn-on-hl-line-mode)
-
-;; Reloads init.el
-(defun my/reload-init ()
-    (interactive)
-    (load-file (concat user-emacs-directory "/init.el")))
-(global-set-key (kbd "C-c r") 'my/reload-init)
+(add-hook 'prog-mode-hook #'hl-line-mode)
 
 ;; Stolen from http://pages.sachachua.com/.emacs.d/Sacha.html#orgheadline131
 (defun sanityinc/kill-back-to-indentation ()
@@ -156,19 +144,17 @@ point reaches the beginning or end of the buffer, stop there."
         ("gnu"          . "http://elpa.gnu.org/packages/")
         ("org"          . "http://orgmode.org/elpa/")
         ("melpa"        . "https://melpa.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")
-        ("org" . "http://orgmode.org/elpa/")))
+        ("melpa-stable" . "https://stable.melpa.org/packages/")))
+
 (setq package-enable-at-startup nil)
 (let ((elapsed (float-time (time-subtract (current-time)
                                           emacs-start-time))))
   (message "Loaded packages in %.3fs" elapsed))
 (let ((my-packages
-       '(use-package diminish
-          ;; Themes
-          hipster-theme moe-theme zenburn-theme ujelly-theme tronesque-theme
-          tangotango-theme color-theme-sanityinc-tomorrow cyberpunk-theme
-          solarized-theme monokai-theme gotham-theme farmhouse-theme
-          material-theme afternoon-theme))
+       '(use-package diminish hipster-theme moe-theme zenburn-theme
+          ujelly-theme tronesque-theme tangotango-theme  solarized-theme
+          color-theme-sanityinc-tomorrow cyberpunk-theme monokai-theme
+          farmhouse-theme material-theme afternoon-theme  gotham-theme))
          (refreshed? nil))
   (dolist (p my-packages)
     (unless (package-installed-p p)
@@ -181,15 +167,6 @@ point reaches the beginning or end of the buffer, stop there."
   :defer
   :config
   (setq comint-prompt-read-only nil))
-
-
-;; (use-package use-package
-;;   :config
-;; (setq use-package-verbose t)
-;; )
-;;         ;; use-package-always-ensure t))
-
-;; (use-package diminish :ensure :defer)
 
 ;;; Packages - theming
 (use-package powerline
@@ -221,6 +198,7 @@ point reaches the beginning or end of the buffer, stop there."
 (use-package paredit
   :ensure
   :defer
+  :diminish "()"
   :config
   ;; making paredit work with delete-selection-mode
   (put 'paredit-forward-delete 'delete-selection 'supersede)
@@ -236,6 +214,7 @@ point reaches the beginning or end of the buffer, stop there."
   (defalias 'redo 'undo-tree-redo)
   :bind (("C-z" . undo)
          ("C-S-z" . redo)))
+
 (use-package autorevert
   :defer
   :config
@@ -273,18 +252,12 @@ point reaches the beginning or end of the buffer, stop there."
   :diminish rainbow-mode
   :commands rainbow-mode)
 
-
-(when (not indicate-empty-lines)
-    (toggle-indicate-empty-lines))
-
-
 ;;; Packages - Code checking
 (use-package flycheck
   :ensure
-  :init
   :bind (:map flycheck-mode-map
               ("C-c ! h" . helm-flycheck))
-  :diminish "" ; Currently using spaceline that sets custom flycheck... checking
+  :diminish ""
   :config
   ;; Set flycheck faces
   (set-face-background 'flycheck-fringe-warning nil)
@@ -303,20 +276,6 @@ point reaches the beginning or end of the buffer, stop there."
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 (use-package helm-flycheck :defer :ensure)
 (use-package flycheck-pos-tip :defer :ensure)
-
-;; (require 'ivy)
-;; (use-package ivy
-;;   :ensure swiper
-;;   :commands (ivy-mode)
-;;   :defer
-;;   :config
-;;   (setq ivy-use-virtual-buffers t)
-;;   (setq ivy-height 10)
-;;   (setq ivy-count-format "(%d/%d) ")
-;;   :bind
-;;   (("C-s" . swiper)
-;;    ("M-x" . counsel-M-x)))
-;; (ivy-mode 1)
 
 ;;; Packages - Buffer navigation
 (use-package ibuffer
@@ -344,9 +303,23 @@ point reaches the beginning or end of the buffer, stop there."
          ("C-M-z" . helm-resume)
          ("C-f" . helm-semantic-or-imenu)
          :map helm-map
-         ("<tab>" . helm-execute-persistent-action))
+         ("<tab>" . helm-execute-persistent-action)
+         ("C-i" . helm-execute-persistent-action) ; make TAB work in terminal
+         ("C-z" . helm-select-action))
   :config
   (setq helm-split-window-in-side-p t))
+
+(defun pl/helm-alive-p ()
+  "Prevents conflicts between helm and golden-ratio-mode"
+  (if (boundp 'helm-alive-p)
+      (symbol-value 'helm-alive-p)))
+
+
+(use-package helm-net
+  :defer
+  :config
+  (when (executable-find "curl")
+    (setq helm-net-prefer-curl t)))
 
 (use-package helm-ag :ensure :defer)
 
@@ -369,13 +342,13 @@ point reaches the beginning or end of the buffer, stop there."
   :config
   (setq helm-recentf-fuzzy-match t ; For helm-mini
         helm-ff-file-name-history-use-recentf t
-        helm-ff-skip-boring-files t)
+        helm-ff-skip-boring-files t
+        helm-ff-search-library-in-sexp t )
   (add-to-list 'helm-boring-file-regexp-list "GTAGS$"))
 
 (use-package helm-descbinds
   :ensure
-  :defer 10
-  :init (helm-descbinds-mode)
+  :defer 5
   :bind (("C-h b" . helm-descbinds)))
 
 (use-package helm-swoop
@@ -396,26 +369,27 @@ point reaches the beginning or end of the buffer, stop there."
   :config
   (setq-default neo-smart-open t
                 neo-dont-be-alone t)
-  (setq neo-theme 'classic)
-  )
+  (setq neo-theme 'classic))
 
 (use-package projectile
   :ensure
-  :commands (projectile-mode)
+  :commands (projectile-mode projectile-global-mode)
   :config
   (progn
     (setq projectile-completion-system "helm")
     (helm-projectile-on)
     (setq projectile-switch-project-action 'projectile-commander)))
+
+(use-package helm-projectile :ensure :defer)
+
 (use-package magit
   :ensure
   :bind (("C-x g" . magit-status)))
-(use-package helm-projectile :ensure :defer)
 
-;;; Packages - code completion
+;;; Packages - Company
 (use-package company
   :ensure
-  :defer 1
+  :defer 5
   :diminish ""
   :config
   (setq company-minimum-prefix-length 2
@@ -426,8 +400,8 @@ point reaches the beginning or end of the buffer, stop there."
 
 (use-package yasnippet
   :ensure
+  :diminish yas-minor-mode
   :commands (yas-global-mode yas-minor-mode)
-  :diminish (yas-minor-mode "y")
   ;; :config
   ;; ;; Add yasnippet support for all company backends
   ;; ;; https://github.com/syl20bnr/spacemacs/pull/179
@@ -445,16 +419,12 @@ point reaches the beginning or end of the buffer, stop there."
   :bind
   (("M-/" . hippie-expand))
   :init
-  (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand))
-
-
+  (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand))
 
 ;;; Packagess - System
 (use-package exec-path-from-shell :ensure :defer)
 
-(use-package keyfreq
-  :ensure
-  :defer)
+(use-package keyfreq :ensure :defer)
 
 (use-package esup :ensure :defer)
 
@@ -463,13 +433,8 @@ point reaches the beginning or end of the buffer, stop there."
   :defer
   :diminish ""
   :config
+  (add-to-list 'golden-ratio-inhibit-functions #'pl/helm-alive-p)
   (add-to-list 'golden-ratio-exclude-buffer-names " *NeoTree*"))
-
-;; Startup
-;; (when (and
-;;        (not (null (window-system)))    ; If running in a window
-;;        (string= system-type "darwin")) ; And if on a mac
-;;   (exec-path-from-shell-initialize))   ; Match PATH from shell
 
 ;; (add-to-list 'completion-styles 'initials t)
 
@@ -504,7 +469,7 @@ point reaches the beginning or end of the buffer, stop there."
   (electric-pair-mode 1)
   (transient-mark-mode 1)
   (yas-global-mode 1)
-
+  (projectile-global-mode)
   (helm-mode 1)
   (helm-descbinds-mode 1)
 
@@ -516,10 +481,9 @@ point reaches the beginning or end of the buffer, stop there."
   (if (display-graphic-p)
       (progn
         (load-theme 'farmhouse-dark t)
-        ;; (powerline-default-theme)
         (spaceline-emacs-theme)
         (spaceline-helm-mode)
-        (set-frame-font "Source Code Pro for Powerline-13"))
+        (set-frame-font "Roboto Mono for Powerline-13"))
     (load-theme 'sanityinc-tomorrow-night t)))
 
 (defun prog-setup ()
@@ -529,23 +493,24 @@ point reaches the beginning or end of the buffer, stop there."
   (setq show-trailing-whitespace t)
   ;; Highlight matching parens
   (show-paren-mode 1)
-  (rainbow-delimiters-mode))
+  (rainbow-delimiters-mode)
+
+  (add-to-list 'prettify-symbols-alist '("<=" . ?≤))
+  (add-to-list 'prettify-symbols-alist '(">=" . ?≥))
+  (add-to-list 'prettify-symbols-alist '("!=" . ?≠))
+  (add-to-list 'prettify-symbols-alist '("sum" . ?∑))
+  (add-to-list 'prettify-symbols-alist '("defun" . ?ƒ))
+  (add-to-list 'prettify-symbols-alist '("lambda" . 955))
+  (add-to-list 'prettify-symbols-alist '("defn" . ?ƒ)))
 
 ;;;; Hooks
 (add-hook 'before-save-hook #'delete-trailing-whitespace) ; Remove whitespace on save
 (add-hook 'prog-mode-hook #'prog-setup)
-(add-hook 'before-save-hook
-          (lambda ()
-            ;; nothing yet
-            ))
-
-
 (add-hook 'after-init-hook #'after-init-enable-global-modes)
-
 
 ;;;; Langs
 
-;;; Javascript
+;;; Lang - Javascript
 (use-package js2-mode
   :ensure
   :mode (("\\.js$" . js2-mode))
@@ -555,9 +520,7 @@ point reaches the beginning or end of the buffer, stop there."
     (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))))
 
 ;;; Elm
-(use-package elm-mode
-  :ensure
-  :defer)
+(use-package elm-mode :ensure :defer)
 
 ;;; Lang - Elixer
 (use-package alchemist
@@ -584,14 +547,12 @@ point reaches the beginning or end of the buffer, stop there."
           haskell-process-auto-import-loaded-modules t
           haskell-process-log t)))
 
-
 (add-hook 'haskell-mode-hook
           (lambda ()
             (push 'company-ghci company-backends)
             (haskell-doc-mode)
             (turn-on-haskell-indent)
             (interactive-haskell-mode)))
-
 
 (eval-after-load 'flycheck
   '(add-hook 'flycheck-mode-hook #'flycheck-haskell-setup))
@@ -626,13 +587,9 @@ point reaches the beginning or end of the buffer, stop there."
   (setq scheme-program-name "scheme"))
 
 ;;; Lang - Racket
-(use-package racket-mode
-  :ensure
-  :defer)
+(use-package racket-mode :ensure :defer)
 
-(use-package geiser
-  :ensure
-  :defer)
+(use-package geiser :ensure :defer)
 
 ;;; Lang - LISP??? WHICH??
 (use-package lisp-mode
@@ -640,11 +597,11 @@ point reaches the beginning or end of the buffer, stop there."
               ("C-c v" . eval-buffer)))
 
 (defun emacs-lisp-stuff ()
-  (eldoc-mode)
-  (add-to-list 'prettify-symbols-alist '("defun" . ?ƒ)))
-(add-hook 'emacs-lisp-mode-hook 'emacs-lisp-stuff)
-(add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
-(add-hook 'ielm-mode-hook 'eldoc-mode)
+  (paredit-mode)
+  (eldoc-mode))
+(add-hook 'emacs-lisp-mode-hook #'emacs-lisp-stuff)
+(add-hook 'lisp-interaction-mode-hook #'emacs-lisp-stuff)
+(add-hook 'ielm-mode-hook #'emacs-lisp-stuff)
 
 ;;; Lang - python
 (use-package python-mode
@@ -664,7 +621,6 @@ point reaches the beginning or end of the buffer, stop there."
   :bind (:map python-mode-map
               ("RET" . newline-and-indent))
   :config
-  (add-to-list 'prettify-symbols-alist '("lambda" . 955))
   (elpy-enable))
 
 ;;; Lang - Android
@@ -719,8 +675,7 @@ point reaches the beginning or end of the buffer, stop there."
   (enable-paredit-mode)
   (eldoc-mode)
   (setq nrepl-log-messages t)
-  (setq nrepl-hide-special-buffers t)
-  (add-to-list 'prettify-symbols-alist '("defn" . ?ƒ)))
+  (setq nrepl-hide-special-buffers t))
 
 (use-package cider
   :ensure
@@ -741,7 +696,7 @@ point reaches the beginning or end of the buffer, stop there."
      cider-repl-history-file "~/.emacs.d/cider-history"
      ;; Wrap when navigating history.
      cider-repl-wrap-history t)
-    (cider-turn-on-eldoc-mode)
+
 
     (defun cider-start-http-server ()
       (interactive)
@@ -760,7 +715,7 @@ point reaches the beginning or end of the buffer, stop there."
       (cider-repl-set-ns "user"))))
 
 ;;; Lang - PHP / Drupal
-(use-package company :ensure)
+;; (use-package company :ensure)
 (use-package ac-php :ensure :defer)
 (use-package ac-php-company :defer)
 
@@ -771,13 +726,18 @@ point reaches the beginning or end of the buffer, stop there."
   (setq php-mode-coding-style `Drupal
         tab-width 2
         c-basic-offset 2
-        indent-tabs-mode nil)
-
-  )
+        indent-tabs-mode nil))
 
 (use-package helm-gtags
   :ensure
-  :defer
+  :bind (:map helm-gtags-mode-map
+              ("C-c g a" . helm-gtags-tags-in-this-function)
+              ("C-c g r" . helm-gtags-find-rtag)
+              ("C-c >" . helm-gtags-next-history)
+              ("C-c <" . helm-gtags-previous-history)
+              ("M-," . helm-gtags-pop-stack)
+              ("M-." . helm-gtags-dwim)
+              ("C-j" . helm-gtags-select))
   :config
   (setq helm-gtags-ignore-case t
         helm-gtags-auto-update t
@@ -786,27 +746,17 @@ point reaches the beginning or end of the buffer, stop there."
         helm-gtags-suggested-key-mapping t
         helm-gtags-prefix-key "\C-cg"))
 
-
 (use-package ggtags
   :ensure
-  :defer
+  :bind (:map ggtags-mode-map
+              ("C-c g u" . ggtags-update-tags)
+              ("C-c g c" . ggtags-create-tags)
+              ("C-c g s" . ggtags-find-other-symbol)
+              ("C-c g h" . ggtags-view-tag-history)
+              ("C-c g r" . ggtags-find-reference)
+              ("C-c g f" . ggtags-find-file)
+              ("M-," . pop-tag-mark))
   :config
-  (define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
-  (define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
-  ;; (define-key ggtags-mode-map (kbd "C-c g r") 'ggtags-find-reference)
-  (define-key ggtags-mode-map (kbd "C-c g f") 'ggtags-find-file)
-  (define-key ggtags-mode-map (kbd "C-c g c") 'ggtags-create-tags)
-  (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags)
-  (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
-
-  (define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
-  (define-key helm-gtags-mode-map (kbd "C-c g r") 'helm-gtags-find-rtag)
-  (define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
-  (define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
-  (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
-  (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
-  (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
-
   ;;;; Patch ggtags-process-string
   (defun ggtags-process-string (program &rest args)
     (with-temp-buffer
@@ -845,7 +795,6 @@ point reaches the beginning or end of the buffer, stop there."
 	:type 'boolean
 	:group 'drupal)
 
-  (prettify-symbols-mode)
   (php-enable-drupal-coding-style)
   (add-to-list 'company-backends 'company-ac-php-backend)
   (ggtags-mode 1)
@@ -892,6 +841,16 @@ point reaches the beginning or end of the buffer, stop there."
 
 (use-package yaml-mode :ensure :defer)
 
+(add-to-list 'completion-ignored-extensions ".rbc") ; Ignore rubinius bytecode
+
+(use-package robe
+  :ensure
+  :defer
+  :config
+  (push 'company-robe company-backends))
+(use-package ruby-electric :ensure :defer)
+(use-package inf-ruby :ensure :defer)
+
 (use-package ruby-mode
   :defer
   :bind (("C-c C-c" . run-ruby-and-start-robe))
@@ -899,22 +858,14 @@ point reaches the beginning or end of the buffer, stop there."
          ("\\.rake$" . ruby-mode)
          ("Rakefile$" . ruby-mode)
          ("\\.gemspec$" . ruby-mode))
-  :init
-  (use-package robe
-    :ensure
-    :defer
-    :config
-    (push 'company-robe company-backends))
-  (use-package ruby-electric :ensure :defer)
-  (use-package inf-ruby :ensure :defer)
-
   :config
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil
         ruby-deep-indent-paren nil)
   (ruby-electric-mode t)
     (unless (derived-mode-p 'prog-mode)
-    (run-hooks 'prog-mode-hook)))
+      (run-hooks 'prog-mode-hook))
+    (robe-mode))
 
 (add-hook 'ruby-mode-hook
           (lambda ()
@@ -923,17 +874,11 @@ point reaches the beginning or end of the buffer, stop there."
             (unless (derived-mode-p 'prog-mode)
               (run-hooks 'prog-mode-hook))))
 
-(add-hook 'ruby-mode-hook 'robe-mode)
-
-(add-to-list 'completion-ignored-extensions ".rbc") ; Ignore rubinius bytecode
-
-
 ;;;; Org mode
 (use-package org-bullets
   :ensure t
   :config
-  (setq org-bullets-bullet-list
-        '("◉" "◎" "⚫" "○" "►" "◇"))
+  (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇"))
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
 (use-package org-capture
@@ -941,6 +886,11 @@ point reaches the beginning or end of the buffer, stop there."
   :config
   (progn
     (setq org-capture-templates '())
+
+    ;; Logbook
+    (add-to-list 'org-capture-templates
+                 '("l" "Logbook entry" entry (file+datetree org-default-notes-file)
+                   "* %U - %^{Activity}  :LOG:"))
 
     ;; Prefixes
     ;; Creates Personal and Work prefixes so we can access to more keys
@@ -960,7 +910,7 @@ point reaches the beginning or end of the buffer, stop there."
     ;; Personal templates
     (add-to-list 'org-capture-templates
                  '("pt" "Personal task" entry (file+olp org-default-notes-file "Personal" "TODOs")
-                   "* TODO %^{Task}%^g\nSCHEDULED: %T"))
+                   "* TODO %^{Task} %^g\nSCHEDULED: %T"))
 
     ;; Work templates
     (add-to-list 'org-capture-templates
@@ -971,18 +921,10 @@ point reaches the beginning or end of the buffer, stop there."
                  '("wt" "Work task" entry (file+olp org-default-notes-file "Work" "TODOs")
                    "* TODO %^{Task} %^g\nSCHEDULED: %T"))
 
-    (add-to-list 'org-capture-templates
-                 '("wl" "Logbook entry" entry (file+datetree org-default-notes-file)
-                   "* %U - %^{Activity}  :LOG:"))
-
     ;; Misc templates
-    ;; (add-to-list 'org-capture-templates
-    ;;              '("p" "Programming TODO"))
-    ;; (add-to-list 'org-capture-templates
-    ;;              '("b" "Birthday" entry (file+headline org-default-notes-file "Birthdays")
-    ;;                "* %^{Name} - "))
-
-    ))
+    (add-to-list 'org-capture-templates
+                 '("pp" "Programming TODO" entry (file+headline org-default-notes-file "Programming")
+                   "* TODO %^{Programming task} %^g\nSCHEDULED: %T"))))
 
 ;; (require 'recentf)
 ;; (setq recentf-max-saved-items 200
@@ -990,7 +932,6 @@ point reaches the beginning or end of the buffer, stop there."
 ;; (recentf-mode)
 
 (use-package org
-  :ensure
   :defer 1
   :init
   (global-set-key (kbd "C-c o") (lambda () (interactive) (find-file org-default-notes-file)))
@@ -1016,22 +957,16 @@ point reaches the beginning or end of the buffer, stop there."
 
      org-refile-targets '((org-agenda-files . (:maxlevel . 4)))
 
-     org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "APPT(a)" "|" "DONE(d)")
-                         (sequence "WAITING(w)" "|")
-                         (sequence "|" "CANCELED(c)"))
+     org-todo-keywords '((sequence "TODO" "IN PROGRESS" "|" "DONE")
+                         (sequence "WAITING" "|")
+                         (sequence "|" "CANCELED"))
 
-     org-columns-default-format "%15CATEGORY %50ITEM %9TODO(Status) %TAGS(Tags)"
+     org-columns-default-format "%15CATEGORY(Category) %50ITEM(Item) %12TODO(Status) %TAGS(Tags)"
 
-     org-todo-keyword-faces
-     '(("TODO" . org-warning)
-       ("STARTED" . (:background "dark cyan" :foreground "light green" :weight "bold"))
-       ("WAITING" . (:background "dark magenta" :foreground "white"))
-       ("CANCELED" . (:background "red" :foreground "yellow" :strike-through)))
      org-log-done t
      org-ellipsis " ⤵"
      org-src-fontify-natively t
      org-reverse-note-order t)))
-
 
   (defun get-abbriv-cd ()
   "Gets the current directory, replaces home with ~"
@@ -1042,43 +977,38 @@ point reaches the beginning or end of the buffer, stop there."
   "Returns current git branch as a string.
 If string is empty, current directory is not a git repo"
   (interactive)
-  (when (and (eshell-search-path "git")
-	     (locate-dominating-file pwd ".git"))
+  (when (and (eshell-search-path "git") (locate-dominating-file pwd ".git"))
     (let ((git-output (shell-command-to-string (concat "cd " pwd " && git branch | grep '\\*' | sed -e 's/^\\* //'"))))
       (if (> (length git-output) 0)
 	  (concat " (" (substring git-output 0 -1) ")" )
 	""))))
 
-(use-package eshell-prompt-extras :ensure :defer)
 (use-package eshell
   :bind (("C-c s"  . eshell))
   :config
   (progn
+    (use-package vc)
+    (use-package eshell-prompt-extras :ensure)
     (use-package em-prompt)
     (use-package em-cmpl)
-    ;; (setq eshell-prompt-function
-    ;;   (lambda ()
-    ;;     (let* ((dirz (get-abbriv-cd))
-    ;;            (my/host (system-name))
-    ;;            (uzr (getenv "USER"))
-    ;;            (git-branch (or (current-git-branch (substring (pwd) 10)) "")))
-    ;;       (concat
-    ;;        (propertize "[" 'face `(:foreground "#FFFFFF"))
-    ;;        (propertize uzr 'face `(:foreground "#1585C6"))
-    ;;        (propertize "@" 'face `(:foreground "#D63883" :weight bold))
-    ;;        (propertize my/host 'face `(:foreground "#22A198"))
-    ;;        (propertize ": " 'face `(:foreground "#22A198"))
-    ;;        (propertize dirz 'face `(:foreground "#7BC783"))
-    ;;        (propertize "]" 'face `(:foreground "#FFFFFF"))
-    ;;        (propertize git-branch 'face `(:foreground "#FFFFFF"))
-    ;;        (propertize "\nλ " 'face `(:foreground "#7BC783"))))))
-    ;; (setq eshell-prompt-regexp ". ")
-
+    (setq eshell-prompt-function
+      (lambda ()
+        (let* ((dirz (get-abbriv-cd))
+               (my/host (system-name))
+               (uzr (getenv "USER"))
+               (git-branch (or (current-git-branch (substring (pwd) 10)) "")))
+          (concat
+           (propertize "[" 'face `(:foreground "#FFFFFF"))
+           (propertize uzr 'face `(:foreground "#1585C6"))
+           (propertize "@" 'face `(:foreground "#D63883" :weight bold))
+           (propertize my/host 'face `(:foreground "#22A198"))
+           (propertize ": " 'face `(:foreground "#22A198"))
+           (propertize dirz 'face `(:foreground "#7BC783"))
+           (propertize "]" 'face `(:foreground "#FFFFFF"))
+           (propertize git-branch 'face `(:foreground "#FFFFFF"))
+           (propertize "\nλ " 'face `(:foreground "#7BC783"))))))
+    (setq eshell-prompt-regexp "^. ")
     ;; (setq eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")
-    (with-eval-after-load "esh-opt"
-      (autoload 'epe-theme-lambda "eshell-prompt-extras")
-      (setq eshell-highlight-prompt nil
-            eshell-prompt-function 'epe-theme-dakrone))
     ))
 
 (add-to-list 'auto-mode-alist '(".*bash.*" . sh-mode))
@@ -1093,14 +1023,6 @@ If string is empty, current directory is not a git repo"
 (add-to-list 'auto-mode-alist
              '(".+history$" . sh-mode)
              '(".+env_vars" . sh-mode))
-
-
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (exec-path-from-shell-initialize)
-            (setq show-trailing-whitespace nil)))
-
-;; Sets the eshell prompt, based on my bash/zsh prompt
 
 ;; (eval-after-load 'esh
 ;;   '(progn
