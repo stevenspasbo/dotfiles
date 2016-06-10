@@ -22,9 +22,9 @@
 #+END_SRC
 
 ** Custom-file
+Disable custom file, put any changes you want in their relevant package configurations.
 #+BEGIN_SRC emacs-lisp
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
+(setq custom-file (make-temp-file ""))
 #+END_SRC
 
 ** Variables
