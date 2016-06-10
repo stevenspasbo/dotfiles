@@ -35,7 +35,8 @@ Disable custom file, put any changes you want in their relevant package configur
       inhibit-splash-screen t  ; Don't show splash screen
       inhibit-startup-screen t ; Or startup screen
       debug-on-error t
-      system-uses-terminfo nil)
+      system-uses-terminfo nil
+      scroll-conservatively 1000)
 
 (setq-default tab-always-indent 'complete ; Enable tab completion
               indent-tabs-mode nil ; Disable all tabs
