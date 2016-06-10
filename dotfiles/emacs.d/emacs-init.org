@@ -627,9 +627,20 @@ Displays git changes in fringe area
 (use-package recentf
   :defer
   :config
-  (setq recentf-max-saved-items 500
-        recentf-auto-cleanup 'never
-        recentf-max-menu-items 20))
+  (progn
+    (setq recentf-max-saved-items 500
+          recentf-auto-cleanup 'never
+          recentf-max-menu-items 20)
+
+    ;; Prevents package.el updates from adding compiled files to recentf list
+    (defsubst file-was-visible-p (file)
+      "Return non-nil if FILE's buffer exists and has been displayed."
+      (let ((buf (find-buffer-visiting file)))
+        (if buf
+            (let ((display-count (buffer-local-value 'buffer-display-count buf)))
+              (if (> display-count 0) display-count nil)))))
+
+    (setq recentf-keep '(keep-default-and-visible-recentf-p))))
 #+END_SRC
 ** Project navigation
 *** projectile
