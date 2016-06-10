@@ -1000,7 +1000,7 @@ Displays git changes in fringe area
 (use-package elm-mode :ensure :defer)
 #+END_SRC
 
-** Lang - Elixer
+** Elixer
 #+BEGIN_SRC emacs-lisp
 (use-package alchemist
   :ensure
@@ -1012,7 +1012,7 @@ Displays git changes in fringe area
   (setq alchemist-compile-command "/usr/local/bin/elixirc"))
 #+END_SRC
 
-** Lang - Haskell
+** Haskell
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
   :ensure
