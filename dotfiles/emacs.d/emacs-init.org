@@ -436,7 +436,13 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 *** Helm grep / ag
 #+BEGIN_SRC emacs-lisp
-(use-package helm-ag :ensure :defer)
+(use-package helm-ag
+  :ensure
+  :defer
+  :config
+  (progn
+    (setq helm-ag-base-command "ag --nocolor --nogroup --ignore-case"
+          helm-ag-insert-at-point 'symbol)))
 
 (use-package helm-grep
   :bind
