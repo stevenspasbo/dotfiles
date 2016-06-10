@@ -849,7 +849,9 @@ Displays git changes in fringe area
 (use-package flyspell
   :commands (flyspell-mode flyspell-prog-mode))
 
-(add-hook 'org-mode-hook #'flyspell-mode)
+(add-hook 'prog-mode-hook #'flyspell-prog-mode)
+(add-hook 'text-mode-hook #'turn-on-flyspell)
+
 #+END_SRC
 
 *** ispell
