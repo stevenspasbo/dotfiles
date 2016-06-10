@@ -673,8 +673,10 @@ Displays git changes in fringe area
   :diminish ""
   :config
   (setq company-minimum-prefix-length 2
-        company-idle-delay 0.2
-        company-tooltip-align-annotations t)
+        company-idle-delay 0.1
+        company-tooltip-align-annotations t
+        company-selection-wrap-around t)
+
   (set-face-background 'company-tooltip-annotation (face-background 'company-tooltip))
   (set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection)))
 
