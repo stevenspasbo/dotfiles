@@ -14,9 +14,9 @@
 ** Constants and aliases
 #+BEGIN_SRC emacs-lisp
 (defconst emacs-start-time (current-time))
-(defconst is-a-mac (eq system-type 'darwin))
+(defconst *is-a-mac* (eq system-type 'darwin))
 (defconst real-emacs-directory (file-truename user-emacs-directory))
-(defconst is-window (eq window-system 'ns))
+(defconst *is-window* (eq window-system 'ns))
 
 (defalias 'yes-or-no-p 'y-or-n-p) ; y/n instead of yes/no
 #+END_SRC
@@ -258,7 +258,7 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (defun tangle-and-byte-compile-init ()
   (when (equal (buffer-file-name)
-               (expand-file-name (concat user-emacs-directory "emacs-init.org")))
+               (file-truename (concat user-emacs-directory "emacs-init.org")))
     (let ((prog-mode-hook nil))
       (org-babel-tangle))))
 (add-hook 'after-save-hook 'tangle-and-byte-compile-init)
@@ -728,7 +728,7 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package exec-path-from-shell :ensure :defer)
 
-(if is-a-mac
+(if *is-a-mac*
     (add-hook 'after-init-hook 'exec-path-from-shell-initialize))
 #+END_SRC
 
@@ -820,7 +820,7 @@ Displays git changes in fringe area
 ** Text
 *** Display emojis
 #+BEGIN_SRC emacs-lisp
-(when is-a-mac
+(when *is-a-mac*
   (if (fboundp 'set-fontset-font)
     (set-fontset-font t 'unicode "Apple Color Emoji" nil 'prepend)))
 #+END_SRC
