@@ -556,12 +556,13 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter-fringe
   :ensure
-  :defer
+  :defer 5
   :diminish git-gutter-mode
   :config
-  (setq git-gutter-fr:side 'right-fringe))
+  (setq git-gutter-fr:side 'right-fringe
+        git-gutter:hide-gutter t))
 
-(if is-window (add-hook 'after-init-hook 'global-git-gutter-mode))
+(if *is-window* (add-hook 'after-init-hook 'global-git-gutter-mode))
 #+END_SRC
 *** magit
 [[https://github.com/magit/magit][Github]]
