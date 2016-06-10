@@ -956,10 +956,15 @@ Displays git changes in fringe area
 (use-package calendar
   :defer
   :config
-  (setq calendar-latitude 37.813
-        calendar-longitude -122.256
-        calendar-location-name "Oakland, CA" ; Show my location to the internet
-        calendar-mark-holidays-flag nil)) ; Show holidays
+  (progn
+    (let ((org-diary-file "~/Dropbox/org-files/diary"))
+      (if (file-exists-p org-diary-file)
+          (setq diary-file org-diary-file)))
+
+    (setq calendar-latitude 37.813
+          calendar-longitude -122.256
+          calendar-location-name "Oakland, CA" ; Show my location to the internet
+          calendar-mark-holidays-flag nil))) ; Show holidays
 #+END_SRC
 
 * Programming languages
