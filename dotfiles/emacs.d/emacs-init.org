@@ -91,7 +91,7 @@ Don't warn about narrowing or downcasing
 (global-set-key [triple-wheel-down] 'ignore)
 #+END_SRC
 
-* Start loading packages
+* Enable packages
 #+BEGIN_SRC emacs-lisp
 (package-initialize)
 (require 'package)
