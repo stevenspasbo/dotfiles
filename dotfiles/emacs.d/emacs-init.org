@@ -1,7 +1,7 @@
 #+AUTHOR: Steven Spasbo
 #+TITLE: emacs-init.el
 #+EMAIL: stevenspasbo@gmail.com
-#+PROPERTY: header-args :tangle emacs-init.el
+#+PROPERTY: header-args :tangle ~/.emacs.d/emacs-init.el :comments org
 
 * Startup
 ** Catch errors
@@ -119,9 +119,23 @@ Don't warn about narrowing or downcasing
         (setq refreshed? t))
       (package-install p))))
 
+;(setq use-package-debug t)
+
 #+END_SRC
 
 * Functions
+** org-comments
+#+BEGIN_SRC emacs-lisp
+;; org-babel-process-comment-text
+;; org-babel-trim
+(defun my-org-babel-process-comment-text (str)
+  ;; if string starts with *
+  ;; replace with ;;;;
+  ;; else put a ; in front
+  (if (string-match "^\\*+" "* Header") (message "k"))
+  )
+
+#+END_SRC
 ** Load secrets
 #+BEGIN_SRC emacs-lisp
 (defun load-my-secrets ()
@@ -266,58 +280,191 @@ If string is empty, current directory is not a git repo"
 
 * General bindings
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-M-=") 'text-scale-increase)
-(global-set-key (kbd "C-M--") 'text-scale-decrease)
+(use-package face-remap
+  :bind (("C-M-=" . text-scale-increase)
+         ("C-M--" . text-scale-decrease)))
 #+END_SRC
 
-* Org
-** org-tangle
+* Configure packages
+** ERC
 #+BEGIN_SRC emacs-lisp
+(use-package erc-hl-nicks :ensure :defer)
+
+(use-package erc
+  :defer
+  :requires (erc-join erc-track erc-hl-nicks erc-log)
+  :functions (erc-update-modules)
+  :config
+  (progn
+    (load-my-secrets)
+    (erc-hl-nicks-mode)
+    (erc-autojoin-mode)
+    (erc-track-disable)
+    (add-to-list 'erc-modules 'log)
+
+    (defadvice save-buffers-kill-emacs (before save-logs (arg) activate)
+      (save-some-buffers t (lambda () (when (eq major-mode 'erc-mode) t))))
+
+    (setq erc-join-buffer 'bury
+          erc-prompt  (lambda () (concat (buffer-name) "> "))
+          erc-prompt-for-password nil
+          erc-server "weber.freenode.net"
+          erc-port 6667
+          erc-nick "_sjs"
+          erc-user-full-name user-full-name
+          erc-password spasbo/erc-pwd
+          erc-autojoin-timing 'ident
+          erc-autojoin-channels-alist
+          '((".*\\.freenode.net" ; freenode.net
+             "#emacs" "#racket" "#scheme"
+             "#haskell" "#haskell-beginners" "#lisp"
+             "#stackoverflow" "#programming" "#php"
+             "#startups" "#drupal-support" "#drupal"
+             "#clojure" "#scala"))
+          erc-track-exclude-types
+          '("JOIN" "NICK" "PART" "QUIT" "MODE"
+            "324" "329" "332" "333" "353" "477")
+          erc-hide-list '("JOIN" "PART" "QUIT" "NICK")
+          erc-log-channels-directory "~/.erc/logs/"
+          erc-save-buffer-on-part t
+          erc-enable-logging 'erc-log-all-but-server-buffers)
+
+    (if (not (file-exists-p erc-log-channels-directory))
+        (mkdir erc-log-channels-directory t))
+
+    (defun start-irc ()
+      "Connect to IRC."
+      (interactive)
+      (when (y-or-n-p "Do you want to start IRC? ")
+        (erc :server erc-server :port erc-port :nick erc-nick)))
+
+    (erc-update-modules)))
+
+
+(add-hook 'erc-mode-hook #'flyspell-mode)
+
+#+END_SRC
+
+** eshell
+#+BEGIN_SRC emacs-lisp
+(use-package company-shell
+  :ensure
+  :after company
+  :config
+  (add-to-list 'company-backends #'company-shell))
+
+(use-package eshell-prompt-extras :ensure :defer)
+
+(use-package em-dirs :defer)
+(use-package vc :defer)
+(use-package em-prompt :defer)
+(use-package em-cmpl :defer)
+(use-package esh-ext :defer)
+(use-package em-hist :defer)
+
+;; (add-to-list 'auto-mode-alist '(".*bash.*" . sh-mode))
+;; (add-to-list 'auto-mode-alist '(".*zsh.*" . sh-mode))
+;; (add-to-list 'auto-mode-alist '(".+[^bash|zsh|vim]rc$" . sh-mode))
+;; (add-to-list 'auto-mode-alist '(".+login$" . sh-mode))
+;; (add-to-list 'auto-mode-alist '(".+env_vars" . sh-mode))
+
+;; (add-to-list 'auto-mode-alist
+;;              '(".+env_vars" . sh-mode))
+
+(use-package eshell
+  :bind (("C-c s" . eshell))
+  :mode (("[bash|zsh|vim]rc$" . sh-mode)
+          ("[bash_]?profile$" . sh-mode)
+          ("[history|aliases]$" . sh-mode))
+  :config
+  (progn
+    (setq eshell-prompt-function
+      (lambda ()
+        (let* ((dirz (get-abbriv-directory))
+               (my/host (system-name))
+               (uzr (getenv "USER"))
+               (git-branch (or (current-git-branch (substring (pwd) 10)) "")))
+          (concat
+           (propertize "[" 'face `(:foreground "#FFFFFF"))
+           (propertize uzr 'face `(:foreground "#1585C6"))
+           (propertize "@" 'face `(:foreground "#D63883" :weight bold))
+           (propertize my/host 'face `(:foreground "#22A198"))
+           (propertize ": " 'face `(:foreground "#22A198"))
+           (propertize dirz 'face `(:foreground "#7BC783"))
+           (propertize "]" 'face `(:foreground "#FFFFFF"))
+           (propertize git-branch 'face `(:foreground "#FFFFFF"))
+           (propertize "\nλ " 'face `(:foreground "#7BC783")))))
+      eshell-prompt-regexp "^. "
+      eshell-cmpl-ignore-case t
+      eshell-glob-case-insensitive t
+      eshell-save-history-on-exit t)))
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key eshell-mode-map
+                [remap eshell-pcomplete]
+              'helm-esh-pcomplete)
+            (define-key eshell-mode-map
+                (kbd "M-p")
+              'helm-eshell-history)))
+
+(defun eshell/clear ()
+  "Clears the shell buffer ala Unix's clear."
+  ;; the shell prompts are read-only, so clear that for the duration
+  (let ((inhibit-read-only t))
+    ;; simply delete the region
+    (erase-buffer)))
+#+END_SRC
+
+** Org
+*** org
+#+BEGIN_SRC emacs-lisp
+(use-package org-agenda
+  :bind (("C-c a" . org-agenda)))
+
+(use-package org-indent :defer)
 (use-package ob-tangle :defer)
-#+END_SRC
-
-** org
-#+BEGIN_SRC emacs-lisp
 (use-package org
+  :defer 1
   :bind (("C-c b" . org-iswitchb)
          ("C-c l" . org-store-link)
          ("C-c C-n" . org-add-note))
   :config
   (progn
-    (use-package org-indent
-      :diminish "")
+    (let ((db-org "~/Dropbox/org-files/"))
+      (if (file-exists-p db-org) (setq org-directory db-org)))
 
-    (add-hook 'org-mode-hook #'visual-line-mode)
-    (add-hook 'org-mode-hook #'hl-line-mode)
-
-    (let ((db-org "~/Dropbox/org-files"))
-      (if (file-exists-p db-org)
-          (setq org-directory db-org)))
-    (setq
-     ;; org-src-tab-acts-natively t
-     org-pretty-entities t
-     org-default-notes-file "~/Dropbox/org-files/planner.org"
-     org-startup-indented t
-     org-refile-targets '((org-agenda-files . (:maxlevel . 4)))
-     org-todo-keywords '((sequence "TODO" "STARTED" "|" "DONE")
-                         (sequence "WAITING" "|")
-                         (sequence "|" "CANCELED"))
-     org-columns-default-format "%14CATEGORY(Category) %50ITEM(Item) %10TODO(Status) %30TAGS(Tags)"
-     org-log-done t
-     org-ellipsis " ⤵"
-     org-src-fontify-natively t
-     org-reverse-note-order t
-     org-src-preserve-indentation t
-     org-hide-emphasis-markers t
-     org-src-tab-acts-natively t
-     org-pretty-entities t)
+    (setq org-pretty-entities t
+          org-agenda-files (list "~/Dropbox/org-files/planner.org"
+                                 "~/Dropbox/org-files/archive.org"
+                                 (file-truename (concat user-emacs-directory "emacs-init.org")))
+          org-default-notes-file "~/Dropbox/org-files/planner.org"
+          org-startup-indented t
+          org-refile-targets '((org-agenda-files . (:maxlevel . 10)))
+          org-todo-keywords '((sequence "TODO" "STARTED" "|" "DONE")
+                              (sequence "WAITING" "|")
+                              (sequence "|" "CANCELED"))
+          org-columns-default-format "%14CATEGORY(Category) %50ITEM(Item) %10TODO(Status) %30TAGS(Tags)"
+          org-log-done t
+          org-ellipsis " ⤵"
+          org-src-fontify-natively t
+          org-reverse-note-order t
+          org-src-preserve-indentation t
+          org-hide-emphasis-markers t
+          org-src-tab-acts-natively t
+          org-pretty-entities t
+          org-outline-path-complete-in-steps nil
+          org-refile-use-outline-path 'file)
 
     (defun open-org-planner-file ()
       (interactive)
       (find-file org-default-notes-file))))
+
+(add-hook 'org-mode-hook #'visual-line-mode)
+(add-hook 'org-mode-hook #'hl-line-mode)
 #+END_SRC
 
-** org-bullets
+*** org-bullets
 #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
   :ensure t
@@ -326,15 +473,10 @@ If string is empty, current directory is not a git repo"
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 #+END_SRC
 
-** org-agenda
-#+BEGIN_SRC emacs-lisp
-(use-package org-agenda
-  :bind ("C-c a" . org-agenda))
-#+END_SRC
-
-** org-capture
+*** org-capture
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-c o") (lambda () (interactive) (find-file "~/Dropbox/org-files/planner.org")))
+
 (use-package org-capture
   :bind ("C-c c" . org-capture)
   :config
@@ -382,15 +524,13 @@ If string is empty, current directory is not a git repo"
                    "* TODO %^{Programming task} %^g\nSCHEDULED: %U"))))
 #+END_SRC
 
-* Configure packages
 ** Helm
-*** Helm core / config
+*** Helm core
 #+BEGIN_SRC emacs-lisp
-(use-package helm-config)
+(use-package helm-config :defer)
 (use-package helm
   :ensure
   :diminish helm-mode
-  :config
   :bind (("C-c h" . helm-command-prefix)
          ("M-x" . helm-M-x)
          ("C-x b" . helm-mini)
@@ -406,16 +546,15 @@ If string is empty, current directory is not a git repo"
          ("C-i" . helm-execute-persistent-action) ; make TAB work in terminal
          ("C-z" . helm-select-action))
   :config
-  (global-unset-key (kbd "C-x c"))
-  (setq helm-split-window-in-side-p t)
-  ;; (add-to-list 'helm-completing-read-handlers-alist '(org-set-tags))
-  )
+  (progn
+    (global-unset-key (kbd "C-x c"))
+    (setq helm-split-window-in-side-p t
+          helm-M-x-fuzzy-match t)))
 
-
-(use-package helm-command
-  :defer
-  :config
-  (setq helm-M-x-fuzzy-match t))
+ (use-package helm-command
+   :defer
+   :config
+   (setq helm-M-x-fuzzy-match t))
 
 (use-package helm-buffers
   :defer
@@ -599,7 +738,13 @@ Displays git changes in fringe area
   :defer
   :config
   (setq dired-recursive-copies 'always
-        dired-listing-switches "-alh"))
+        dired-recursive-deletes 'always
+        dired-listing-switches "-al"))
+
+(use-package dired+
+  :ensure
+  :defer)
+
 #+END_SRC
 *** autorevert
 #+BEGIN_SRC emacs-lisp
@@ -617,9 +762,6 @@ Displays git changes in fringe area
 (use-package saveplace
   :config
   (setq save-place-file (concat user-emacs-directory "places"))
-  ;; When you visit a file, point goes to the last place where it
-  ;; was when you previously visited the same file.
-  ;; http://www.emacswiki.org/emacs/SavePlace
   (setq-default save-place t))
 #+END_SRC
 *** recentf
@@ -728,7 +870,7 @@ Displays git changes in fringe area
               ("C-c g r" . ggtags-find-reference)
               ("C-c g f" . ggtags-find-file)
               ("M-," . pop-tag-mark))
-  :config
+  ;; :config
   ;;;; Patch ggtags-process-string
   ;; (defun ggtags-process-string (program &rest args)
   ;;   (with-temp-buffer
@@ -774,6 +916,12 @@ Displays git changes in fringe area
 
 
 (use-package esup :ensure :defer)
+
+(defun esup-emacs-init ()
+  "By default esup will only show how long it takes to load files from init.el"
+  (interactive)
+  (esup (file-truename "~/.emacs.d/emacs-init.el")))
+
 #+END_SRC
 
 ** Theming
@@ -809,21 +957,22 @@ Displays git changes in fringe area
 (use-package rainbow-delimiters
   :ensure
   :defer
-  :config
-  (setq rainbow-delimiters-max-face-count 4)
-  (set-face-attribute 'rainbow-delimiters-depth-1-face nil
-                      :foreground "#FFFFFF")
-  (set-face-attribute 'rainbow-delimiters-depth-2-face nil
-                      :foreground "#E8079B")
-  (set-face-attribute 'rainbow-delimiters-depth-3-face nil
-                      :foreground "#2100FF")
-  (set-face-attribute 'rainbow-delimiters-depth-4-face nil
-                      :foreground "#0CD2E8")
-  (set-face-attribute 'rainbow-delimiters-unmatched-face nil
-                      :foreground "#E8079B"
-                      :background "#00FF00"
-                      :weight 'ultra-bold
-                      :strike-through t))
+  ;; :config
+  ;; (setq rainbow-delimiters-max-face-count 4)
+  ;; (set-face-attribute 'rainbow-delimiters-depth-1-face nil
+  ;;                     :foreground "#FFFFFF")
+  ;; (set-face-attribute 'rainbow-delimiters-depth-2-face nil
+  ;;                     :foreground "#E8079B")
+  ;; (set-face-attribute 'rainbow-delimiters-depth-3-face nil
+  ;;                     :foreground "#2100FF")
+  ;; (set-face-attribute 'rainbow-delimiters-depth-4-face nil
+  ;;                     :foreground "#0CD2E8")
+  ;; (set-face-attribute 'rainbow-delimiters-unmatched-face nil
+  ;;                     :foreground "#E8079B"
+  ;;                     :background "#00FF00"
+  ;;                     :weight 'ultra-bold
+  ;;                     :strike-through t)
+)
 #+END_SRC
 *** golden-ratio
 #+BEGIN_SRC emacs-lisp
@@ -833,25 +982,31 @@ Displays git changes in fringe area
   :diminish ""
   :config
   (add-to-list 'golden-ratio-inhibit-functions #'pl/helm-alive-p)
-  (add-to-list 'golden-ratio-exclude-buffer-names " *NeoTree*"))
+  (add-to-list 'golden-ratio-exclude-buffer-names " *NeoTree*")
+  (add-to-list 'golden-ratio-exclude-modes "calendar-mode"))
 ;; (add-to-list 'completion-styles 'initials t)
 #+END_SRC
 
 ** Text
+*** Strings
+#+BEGIN_SRC emacs-lisp
+(use-package s :ensure :defer)
+#+END_SRC
 *** Display emojis
 #+BEGIN_SRC emacs-lisp
 (when *is-a-mac*
   (if (fboundp 'set-fontset-font)
     (set-fontset-font t 'unicode "Apple Color Emoji" nil 'prepend)))
 #+END_SRC
+
 *** flyspell
 #+BEGIN_SRC emacs-lisp
 (use-package flyspell
+  :diminish (flyspell-mode)
   :commands (flyspell-mode flyspell-prog-mode))
 
 (add-hook 'prog-mode-hook #'flyspell-prog-mode)
 (add-hook 'text-mode-hook #'turn-on-flyspell)
-
 #+END_SRC
 
 *** ispell
@@ -866,7 +1021,6 @@ Displays git changes in fringe area
   ;; https://addons.mozilla.org/en-us/firefox/language-tools/
   ;; https://cgit.freedesktop.org/libreoffice/dictionaries/tree/
   (setq ispell-local-dictionary "en_US"))
-
 #+END_SRC
 
 *** multiple-cursors
@@ -919,6 +1073,21 @@ Displays git changes in fringe area
   :defer)
 #+END_SRC
 
+*** Whitespace
+#+BEGIN_SRC emacs-lisp
+;; (use-package whitespace
+;;   :diminish (global-whitespace-mode
+;;              whitespace-mode
+;;              whitespace-newline-mode)
+;;   :commands (whitespace-buffer
+;;              whitespace-cleanup
+;;              whitespace-mode)
+;;   :config
+;;   (progn
+;;     ;; (setq whitespace-global-modes '(prog-mode))
+;;     ))
+
+#+END_SRC
 ** Buffer / frame navigation
 *** linum
 #+BEGIN_SRC emacs-lisp
@@ -936,18 +1105,21 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package smooth-scrolling
   :ensure
+  :defer
   :config
   (progn
-    (setq smooth-scroll-margin 1)))
-
+    (setq smooth-scroll-margin 2)))
+(add-hook 'after-init-hook 'smooth-scrolling-mode)
 #+END_SRC
+
 *** ibuffer
 #+BEGIN_SRC emacs-lisp
 (use-package ibuffer
   :bind
   (("C-x C-b" . ibuffer))
   :config
-  (setq ibuffer-default-sorting-mode 'major-mode))
+  (progn
+    (setq ibuffer-default-sorting-mode 'major-mode)))
 #+END_SRC
 
 ** Calendar
@@ -963,11 +1135,28 @@ Displays git changes in fringe area
 
     (setq calendar-latitude 37.813
           calendar-longitude -122.256
-          calendar-location-name "Oakland, CA" ; Show my location to the internet
-          calendar-mark-holidays-flag nil))) ; Show holidays
+          calendar-location-name "Oakland, CA")))
+
+;; (defvar holiday-work-holidays
+;;   '((holiday-fixed 1 1 "New Year's Day")
+;;     ()))
+
+
 #+END_SRC
 
-* Programming languages
+* programming languages
+** General
+#+BEGIN_SRC emacs-lisp
+(defvar prog-mode-prettify-alist '()
+  "General programming mode symbols to prettify")
+(add-to-list 'prog-mode-prettify-alist
+             '("<=" . (?· (Br . Bl) ?≤)))
+(add-to-list 'prog-mode-prettify-alist
+             '(">=" . (?· (Br . Bl) ?≥)))
+
+;; (add-hook 'prog-mode-hook)
+
+#+END_SRC
 ** Web
 #+BEGIN_SRC emacs-lisp
 (use-package web-mode
@@ -987,8 +1176,8 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package js2-mode
   :ensure
-  :mode (("\\.js$" . js2-mode)
-         ("\\.json" . js2-mode))
+  :mode (("\\.js[on]?$" . js2-mode)
+         ("\\.lock$" . js2-mode))
   :interpreter ("node" . js2-mode)
   :config
   (setq js2-basic-offset 2
@@ -1032,7 +1221,13 @@ Displays git changes in fringe area
             (interactive-haskell-mode)))
 
 (use-package flycheck-haskell :ensure :defer)
-(use-package company-ghci :ensure :defer)
+
+(use-package company-ghci
+  :ensure
+  :after company
+  :config
+  (add-to-list 'company-backends #'company-ghci))
+
 (use-package ghc :ensure :defer)
 (use-package hi2 :ensure :defer)
 
@@ -1170,7 +1365,11 @@ Displays git changes in fringe area
 
 ** Python
 #+BEGIN_SRC emacs-lisp
-(use-package company-jedi :ensure :defer)
+(use-package company-jedi
+  :ensure
+  :after company
+  :config
+  (add-to-list 'company-backends #'company-jedi))
 
 (use-package elpy
   :ensure
@@ -1205,24 +1404,32 @@ Displays git changes in fringe area
 
 ** C
 #+BEGIN_SRC emacs-lisp
-(use-package cc-mode
-  :defer
-  :init
-  (use-package company-c-headers
-    :ensure
-    :defer
-    :config)
+
+(use-package company-c-headers
+  :ensure
+  :after company
   :config
-  (add-to-list 'company-backends 'company-c-headers)
-  ;; (global-semanticdb-minor-mode 1)
-  ;; (global-semantic-idle-scheduler-mode 1)
-  ;; (semantic-mode 1)
-)
+  (add-to-list 'company-backends 'company-c-headers))
+
+(use-package company-irony
+  :ensure
+  :after company
+  :config
+  (add-to-list 'company-backends 'company-c-headers))
+
+(use-package flycheck-irony :ensure :defer)
+(use-package irony-eldoc :ensure :defer)
+
+(use-package irony :ensure :defer)
+
+(use-package cc-mode :defer)
+
+;; (add-hook 'c-mode-hook #'irony-mode)
 #+END_SRC
 
 ** PHP / Drupal
 #+BEGIN_SRC emacs-lisp
-;; (use-package company :ensure)
+
 (use-package ac-php :ensure :defer)
 (use-package ac-php-company :defer)
 
@@ -1343,139 +1550,6 @@ Displays git changes in fringe area
               (run-hooks 'prog-mode-hook))))
 #+END_SRC
 
-* eshell
-#+BEGIN_SRC emacs-lisp
-(use-package em-dirs
-  :defer
-  :functions eshell/pwd)
-
-(use-package esh-ext
-  :defer
-  :functions eshell-search-path)
-
-(use-package vc :defer)
-(use-package eshell-prompt-extras :ensure :defer)
-
-(use-package em-prompt :defer)
-(use-package em-cmpl :defer)
-
-(use-package eshell
-  :bind (("C-c s" . eshell))
-  :config
-  (progn
-    (use-package em-hist
-      :config
-      (progn
-        (setq eshell-save-history-on-exit t)))
-
-    (setq eshell-prompt-function
-      (lambda ()
-        (let* ((dirz (get-abbriv-directory))
-               (my/host (system-name))
-               (uzr (getenv "USER"))
-               (git-branch (or (current-git-branch (substring (pwd) 10)) "")))
-          (concat
-           (propertize "[" 'face `(:foreground "#FFFFFF"))
-           (propertize uzr 'face `(:foreground "#1585C6"))
-           (propertize "@" 'face `(:foreground "#D63883" :weight bold))
-           (propertize my/host 'face `(:foreground "#22A198"))
-           (propertize ": " 'face `(:foreground "#22A198"))
-           (propertize dirz 'face `(:foreground "#7BC783"))
-           (propertize "]" 'face `(:foreground "#FFFFFF"))
-           (propertize git-branch 'face `(:foreground "#FFFFFF"))
-           (propertize "\nλ " 'face `(:foreground "#7BC783"))))))
-    (setq eshell-prompt-regexp "^. ")
-    ;; (setq eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")
-    ))
-
-(add-to-list 'auto-mode-alist '(".*bash.*" . sh-mode))
-(add-to-list 'auto-mode-alist '(".*zsh.*" . sh-mode))
-(add-to-list 'auto-mode-alist '(".+[^bash|zsh|vim]rc$" . sh-mode))
-(add-to-list 'auto-mode-alist '(".+login$" . sh-mode))
-(add-to-list 'auto-mode-alist '(".+profile$" . sh-mode))
-(add-to-list 'auto-mode-alist '(".+aliases$" . sh-mode))
-(add-to-list 'auto-mode-alist '(".+history$" . sh-mode))
-(add-to-list 'auto-mode-alist '(".+env_vars" . sh-mode))
-
-(add-to-list 'auto-mode-alist
-             '(".+history$" . sh-mode)
-             '(".+env_vars" . sh-mode))
-
-  (defun eshell/clear ()
-    "Clears the shell buffer ala Unix's clear."
-    ;; the shell prompts are read-only, so clear that for the duration
-    (let ((inhibit-read-only t))
-      ;; simply delete the region
-      (erase-buffer)))
-#+END_SRC
-
-* ERC
-#+BEGIN_SRC emacs-lisp
-(use-package erc-hl-nicks :ensure :commands (erc-hl-nicks-mode))
-
-(use-package erc
-  :defer
-  :functions (erc-update-modules)
-  :config
-  (progn
-    (use-package erc-log
-      :init
-      (erc-log-enable)
-      :config
-      (progn
-        (setq erc-log-channels-directory "~/.erc/logs/"
-              erc-save-buffer-on-part t
-              erc-enable-logging 'erc-log-all-but-server-buffers)))
-
-    (use-package erc-stamp
-      :config
-      (progn
-        (setq erc-insert-timestamp-function 'erc-insert-timestamp-left
-              erc-timestamp-only-if-changed-flag nil)))
-
-    (load-my-secrets)
-    (erc-hl-nicks-mode)
-    (erc-autojoin-mode)
-    (erc-track-disable)
-    (add-to-list 'erc-modules 'log)
-
-    (defadvice save-buffers-kill-emacs (before save-logs (arg) activate)
-      (save-some-buffers t (lambda () (when (eq major-mode 'erc-mode) t))))
-
-    (setq erc-join-buffer 'bury
-          erc-prompt  (lambda () (concat (buffer-name) "> "))
-          erc-prompt-for-password nil
-          erc-server "weber.freenode.net"
-          erc-port 6667
-          erc-nick "_sjs"
-          erc-user-full-name user-full-name
-          erc-password spasbo/erc-pwd
-          erc-autojoin-timing 'ident
-          erc-autojoin-channels-alist
-          '((".*\\.freenode.net" ; freenode.net
-             "#emacs" "#racket" "#scheme"
-             "#haskell" "#haskell-beginners" "#lisp"
-             "#stackoverflow" "#programming" "#php"
-             "#startups" "#drupal-support" "#drupal"
-             "#clojure" "#scala"))
-          erc-track-exclude-types
-          '("JOIN" "NICK" "PART" "QUIT" "MODE"
-            "324" "329" "332" "333" "353" "477")
-          erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))
-
-    (if (not (file-exists-p erc-log-channels-directory))
-        (mkdir erc-log-channels-directory t))
-
-    (erc-update-modules)))
-
-(defun start-irc ()
-  "Connect to IRC."
-  (interactive)
-  (when (y-or-n-p "Do you want to start IRC? ")
-    (erc :server erc-server :port erc-port :nick erc-nick)))
-
-#+END_SRC
-
 * global and mode hooks
 ** Global
 #+BEGIN_SRC emacs-lisp
@@ -1490,7 +1564,7 @@ Displays git changes in fringe area
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
   (global-font-lock-mode 1)
-  (golden-ratio-mode 1)
+  ; (golden-ratio-mode 1)
   (global-prettify-symbols-mode)
   (electric-pair-mode 1)
   (transient-mark-mode 1)
@@ -1498,23 +1572,13 @@ Displays git changes in fringe area
   (projectile-global-mode)
   (helm-descbinds-mode 1)
 
+  (recentf-mode 1)
+
   (let ((ad-redefinition-action 'accept))
     (helm-mode 1))
 
   (diminish 'visual-line-mode)
   (diminish 'helm-mode)
-
-  (add-to-list 'prettify-symbols-alist '("<=" . ?≤))
-  (add-to-list 'prettify-symbols-alist '(">=" . ?≥))
-  (add-to-list 'prettify-symbols-alist '("!=" . ?≠))
-  (add-to-list 'prettify-symbols-alist '("sum" . ?∑))
-  (add-to-list 'prettify-symbols-alist '("defun" . ?ƒ))
-  (add-to-list 'prettify-symbols-alist '("lambda" . ?λ))
-  (add-to-list 'prettify-symbols-alist '("defn" . ?ƒ))
-  (add-to-list 'prettify-symbols-alist '("delta" . ?Δ))
-  (add-to-list 'prettify-symbols-alist '("gamma" . ?Γ))
-  (add-to-list 'prettify-symbols-alist '("phi" . ?φ))
-  (add-to-list 'prettify-symbols-alist '("psi" . ?ψ))
 
   (global-set-key (kbd "C-c i") (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
 
@@ -1534,7 +1598,21 @@ Displays git changes in fringe area
   (setq show-trailing-whitespace t)
   (show-paren-mode 1)
   (rainbow-delimiters-mode)
-  (local-set-key (kbd "RET") 'newline-and-indent))
+  (local-set-key (kbd "RET") 'newline-and-indent)
+
+  (add-to-list 'prettify-symbols-alist '("<=" . ?≤))
+  (add-to-list 'prettify-symbols-alist '(">=" . ?≥))
+  (add-to-list 'prettify-symbols-alist '("!=" . ?≠))
+  (add-to-list 'prettify-symbols-alist '("sum" . ?∑))
+  (add-to-list 'prettify-symbols-alist '("defun" . ?ƒ))
+  (add-to-list 'prettify-symbols-alist '("lambda" . ?λ))
+  (add-to-list 'prettify-symbols-alist '("defn" . ?ƒ))
+  (add-to-list 'prettify-symbols-alist '("delta" . ?Δ))
+  (add-to-list 'prettify-symbols-alist '("gamma" . ?Γ))
+  (add-to-list 'prettify-symbols-alist '("phi" . ?φ))
+  (add-to-list 'prettify-symbols-alist '("psi" . ?ψ))
+  (add-to-list 'prettify-symbols-alist '("->" . 8594)) ; →
+  (add-to-list 'prettify-symbols-alist '("=>" . 8658))) ; ⇒
 #+END_SRC
 
 ** Hooks
@@ -1548,8 +1626,6 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (setq debug-on-error nil
       debug-on-quit nil)
-
-
 #+END_SRC
 
 * Blogging
