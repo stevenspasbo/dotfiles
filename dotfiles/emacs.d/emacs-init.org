@@ -437,7 +437,7 @@ If string is empty, current directory is not a git repo"
 
 *** org
 #+BEGIN_SRC emacs-lisp
-(use-package org-indent :after org)
+(use-package org-indent :defer :diminish "")
 (use-package ob-tangle :defer)
 (use-package org
   :init
@@ -836,14 +836,13 @@ Displays git changes in fringe area
 
   (set-face-background 'company-tooltip-annotation (face-background 'company-tooltip))
   (set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection)))
-
-(add-hook 'after-init-hook #'global-company-mode)
 #+END_SRC
 
 *** yasnippet
 #+BEGIN_SRC emacs-lisp
-(use-package yasnippet
+(use-package yasnippet ;; TODO remove; currently down to 1602
   :ensure
+  :after company
   :diminish yas-minor-mode
   :commands (yas-global-mode yas-minor-mode)
   :config
@@ -851,14 +850,15 @@ Displays git changes in fringe area
   ;; https://github.com/syl20bnr/spacemacs/pull/179
   (defvar company-mode/enable-yas t
     "Enable yasnippet for all backends.")
+
   (defun company-mode/backend-with-yas (backend)
     (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
         backend
       (append (if (consp backend) backend (list backend))
-              '(:with company-yasnippet)))))
+              '(:with company-yasnippet))))
 
-(defun update-company-backends-with-snippets ()
-  (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends)))
+  (defun update-company-backends-with-snippets ()
+    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))))
 #+END_SRC
 
 *** hippie
@@ -1042,6 +1042,7 @@ Displays git changes in fringe area
   (put 'paredit-forward-delete 'delete-selection 'supersede)
   (put 'paredit-backward-delete 'delete-selection 'supersede)
   (put 'paredit-newline 'delete-selection t))
+(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
 #+END_SRC
 
 *** undo-tree
