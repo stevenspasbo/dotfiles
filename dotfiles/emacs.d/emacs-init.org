@@ -1187,8 +1187,23 @@ Displays git changes in fringe area
 #+END_SRC
 
 ** Elm
+*** elm-mode
 #+BEGIN_SRC emacs-lisp
-(use-package elm-mode :ensure :defer)
+(add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
+
+(use-package elm-mode
+  :ensure
+  :defer
+  :config
+  (add-to-list 'company-backends 'company-elm)
+  (setq elm-tags-exclude-elm-stuff nil))
+#+END_SRC
+
+*** flycheck-elm
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck-elm :ensure :defer)
+
+(add-hook 'flycheck-mode-hook 'flycheck-elm-setup)
 #+END_SRC
 
 ** Elixer
