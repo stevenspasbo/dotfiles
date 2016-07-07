@@ -54,6 +54,20 @@ alias nethack='telnet nethack.alt.org'
 # Functions
 #-------------------------------------------------------------
 
+#-------------------------------------------------------------
+# HTTP
+#-------------------------------------------------------------
+alias get='curl -s -XGET'
+alias post='curl -s -XPOST'
+alias put='curl -s -XPUT'
+alias delete='curl -s -XDELETE'
+
+function sha1-string () {
+    echo -n "Password: "
+    read -s password
+    echo -n $password | openssl sha1
+}
+
 function setjdk() {
   if [ $# -ne 0 ]; then
     removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
