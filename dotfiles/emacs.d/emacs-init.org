@@ -22,7 +22,7 @@ Disable custom file, put any changes you want in their relevant package configur
 
 ** Variables
 #+BEGIN_SRC emacs-lisp
-(setq shell-file-name "/usr/local/bin/zsh"
+(setq shell-file-name "zsh"
       user-full-name "Steven Spasbo"
       user-mail-address "stevenspasbo@gmail.com"
       inhibit-splash-screen t  ; Don't show splash screen
