@@ -394,17 +394,14 @@ If string is empty, current directory is not a git repo"
 (use-package em-hist :after erc :config (setq eshell-save-history-on-exit t))
 
 (use-package eshell
-  :init
+  :config
   (defun eshell/clear ()
     "Clears the shell buffer ala Unix's clear."
     ;; the shell prompts are read-only, so clear that for the duration
     (let ((inhibit-read-only t))
       ;; simply delete the region
       (erase-buffer)))
-  :bind (("C-c s" . eshell))
-  :mode (("\\.[bash|zsh|vim]rc$" . sh-mode)
-          ("\\.[bash_]?profile$" . sh-mode)
-          ("\\.[history|aliases]$" . sh-mode)))
+  :bind (("C-c s" . eshell)))
 
 (use-package em-glob :after erc :config (setq eshell-glob-case-insensitive t))
 (add-hook 'eshell-mode-hook
@@ -432,7 +429,12 @@ If string is empty, current directory is not a git repo"
   (progn
     (setq org-src-window-setup 'current-window
           org-src-tab-acts-natively t
-          org-src-preserve-indentation t)))
+          org-src-preserve-indentation t)
+    ;; Fixes flycheck in src blocks
+    (defadvice org-edit-src-code (around set-buffer-file-name activate compile)
+      (let ((file-name (buffer-file-name)))
+        ad-do-it
+        (setq buffer-file-name file-name)))))
 #+END_SRC
 
 *** org
@@ -530,6 +532,9 @@ If string is empty, current directory is not a git repo"
     (add-to-list 'org-capture-templates
                  '("wt" "Work task" entry (file+olp org-default-notes-file "Work" "TODOs")
                    "* TODO %^{Task} %^g\nSCHEDULED: %U"))
+    (add-to-list 'org-capture-templates
+                 '("wn" "Work note" entry (file+olp org-default-notes-file "Work" "Notes")
+                   "* %^{Notes title}\n%?"))
 
     ;; Misc templates
     (add-to-list 'org-capture-templates
@@ -725,6 +730,13 @@ Displays git changes in fringe area
 #+END_SRC
 
 ** Files
+*** bookmarks
+#+BEGIN_SRC emacs-lisp
+(use-package bookmark
+  :defer
+  :config
+  (setq bookmark-save-flag 1))
+#+END_SRC
 *** ediff
 #+BEGIN_SRC emacs-lisp
 (use-package ediff
@@ -832,7 +844,8 @@ Displays git changes in fringe area
   (setq company-minimum-prefix-length 2
         company-idle-delay 0.1
         company-tooltip-align-annotations t
-        company-selection-wrap-around t)
+        company-selection-wrap-around t
+        company-global-modes '(not org-mode))
 
   (set-face-background 'company-tooltip-annotation (face-background 'company-tooltip))
   (set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection)))
@@ -938,7 +951,11 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config
   :ensure spaceline
-  :commands (spaceline-emacs-theme spacemacs-helm-mode)
+  :commands (spaceline-emacs-theme spaceline-helm-mode)
+  :if *is-window*
+  :init
+  (add-hook 'after-init-hook 'spaceline-emacs-theme)
+  (add-hook 'after-init-hook 'spaceline-helm-mode)
   :config
   ;; Valid Values: alternate, arrow, arrow-fade, bar, box, brace,
   ;; butt, chamfer, contour, curve, rounded, roundstub, wave, zigzag,
@@ -949,30 +966,18 @@ Displays git changes in fringe area
 
 *** nyan-mode
 #+BEGIN_SRC emacs-lisp
-(use-package nyan-mode :ensure :defer)
+(use-package nyan-mode
+  :ensure
+  :if nil ; *is-window*
+  :config
+  (add-hook 'after-init-hook 'nyan-mode))
 #+END_SRC
 
 *** rainbow-delimiters
 #+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
   :ensure
-  :defer
-  ;; :config
-  ;; (setq rainbow-delimiters-max-face-count 4)
-  ;; (set-face-attribute 'rainbow-delimiters-depth-1-face nil
-  ;;                     :foreground "#FFFFFF")
-  ;; (set-face-attribute 'rainbow-delimiters-depth-2-face nil
-  ;;                     :foreground "#E8079B")
-  ;; (set-face-attribute 'rainbow-delimiters-depth-3-face nil
-  ;;                     :foreground "#2100FF")
-  ;; (set-face-attribute 'rainbow-delimiters-depth-4-face nil
-  ;;                     :foreground "#0CD2E8")
-  ;; (set-face-attribute 'rainbow-delimiters-unmatched-face nil
-  ;;                     :foreground "#E8079B"
-  ;;                     :background "#00FF00"
-  ;;                     :weight 'ultra-bold
-  ;;                     :strike-through t)
-)
+  :defer)
 #+END_SRC
 *** golden-ratio
 #+BEGIN_SRC emacs-lisp
@@ -1303,6 +1308,9 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package clojure-mode
   :ensure
+  :init
+  (add-hook 'clojure-mode-hook #'eldoc-mode)
+  (add-hook 'clojure-mode-hook #'paredit-mode)
   :mode (("\\.edn$" . clojure-mode)
          ("\\.boot$" . clojure-mode)
          ("\\.cljs.*$" . clojure-mode)
@@ -1319,15 +1327,16 @@ Displays git changes in fringe area
        ("(\\(background?\\)"
         (1 font-lock-keyword-face)))))
   :config
-  ;; This is useful for working with camel-case tokens, like names of
-  ;; Java classes (e.g. JavaClassName)
   (subword-mode)
-  (enable-paredit-mode)
-  (eldoc-mode)
-  (setq nrepl-log-messages t)
-  (setq nrepl-hide-special-buffers t))
+  ;; (enable-paredit-mode)
+  ;; (eldoc-mode))
+  )
+(use-package flycheck-clojure
+  :ensure
+  :after flycheck
+  :config
+  (flycheck-clojure-setup))
 
-(use-package flycheck-clojure :ensure :defer)
 (use-package clojure-cheatsheet :ensure :defer)
 (use-package clojure-mode-extra-font-locking :ensure :defer)
 
@@ -1340,19 +1349,21 @@ Displays git changes in fringe area
   :config
   (progn
     (enable-paredit-mode)
-    (setq
-     cider-repl-use-clojure-font-lock t
-     ;; go right to the REPL buffer when it's finished connecting
-     cider-repl-pop-to-buffer-on-connect t
-     ;; When there's a cider error, show its buffer and switch to it
-     cider-show-error-buffer t
-     cider-auto-select-error-buffer t
-     ;; Where to store the cider history.
-     cider-repl-history-file "~/.emacs.d/cider-history"
-     ;; Wrap when navigating history.
-     cider-repl-wrap-history t
-     ;; Hide *nrepl-connection* and *nrepl-server* buffers.
-     nrepl-hide-special-buffers t)
+    (setq cider-repl-use-clojure-font-lock t
+          ;; go right to the REPL buffer when it's finished connecting
+          cider-repl-pop-to-buffer-on-connect t
+          ;; When there's a cider error, show its buffer and switch to it
+          cider-show-error-buffer t
+          cider-auto-select-error-buffer t
+          ;; Where to store the cider history.
+          cider-repl-history-file "~/.emacs.d/cider-history"
+          ;; Wrap when navigating history.
+          cider-repl-wrap-history t
+          ;; Hide *nrepl-connection* and *nrepl-server* buffers.
+          nrepl-hide-special-buffers t
+
+          nrepl-hide-special-buffers t
+          nrepl-log-messages t)
 
     ;; (defun cider-start-http-server ()
     ;;   (interactive)
@@ -1374,30 +1385,33 @@ Displays git changes in fringe area
 
 ** Python
 #+BEGIN_SRC emacs-lisp
-(use-package python-mode
+(use-package python
   :ensure
   :mode ("\\.py" . python-mode)
   :bind (:map python-mode-map
               ("RET" . newline-and-indent)))
 
-(use-package company-jedi
-  :ensure
-  :after company
-  :config
-  (add-to-list 'company-backends #'company-jedi))
-
 (use-package elpy
   :ensure
   :init
-  (add-hook 'python-mode-hook #'elpy-enable)
-  (add-hook 'python-mode-hook #'elpy-mode)
+  (add-hook 'after-init-hook #'elpy-enable)
   :commands elpy-enable
   :functions elpy-use-ipython
   :config
   (when (executable-find "ipython")
     (elpy-use-ipython))
   (when (require 'flycheck nil t)
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))))
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
+          elpy-modules (delq 'elpy-module-pyvenv elpy-modules)
+          elpy-rpc-backend "jedi")))
+
+(use-package py-autopep8
+  :ensure
+  :after elpy
+  :init
+  (add-hook 'elpy-mode-hook #'py-autopep8-enable-on-save)
+  :commands py-autopep8-enable-on-save)
+
 #+END_SRC
 
 ** Android
@@ -1513,50 +1527,38 @@ Displays git changes in fringe area
 
 ;; (add-hook 'php-mode-hook 'drupal-mode)
 #+END_SRC
+
 ** ruby
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode :ensure :defer)
 
 (add-to-list 'completion-ignored-extensions ".rbc") ; Ignore rubinius bytecode
 
-(use-package robe
-  :ensure
-  :defer
-  :config
-  (push 'company-robe company-backends)
-  (update-company-backends-with-snippets))
-
-(use-package ruby-electric :ensure :defer)
 (use-package inf-ruby :ensure :defer)
 
+(use-package robe
+  :ensure
+  :after company
+  :commands robe-mode
+  :config
+  (push 'company-robe company-backends))
+
+(use-package ruby-electric :ensure :defer)
+
 (use-package ruby-mode
-  :functions (robe-start robe-mode inf-ruby)
-  :bind (:map ruby-mode-map
-              ("C-c C-c" . run-ruby-and-start-robe))
   :mode (("Vagrantfile$" . ruby-mode)
          ("\\.rake$" . ruby-mode)
          ("Rakefile$" . ruby-mode)
          ("\\.gemspec$" . ruby-mode))
+  :init
+  (add-hook 'ruby-mode-hook #'robe-mode)
   :config
-  (defun run-ruby-and-start-robe ()
-    (interactive)
-    (inf-ruby)
-    (robe-start))
-
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil
         ruby-deep-indent-paren nil)
   (ruby-electric-mode t)
     (unless (derived-mode-p 'prog-mode)
-      (run-hooks 'prog-mode-hook))
-    (robe-mode))
-
-(add-hook 'ruby-mode-hook
-          (lambda ()
-            ;; Stupidly the non-bundled ruby-mode isn't a derived mode of
-            ;; prog-mode: we run the latter's hooks anyway in that case.
-            (unless (derived-mode-p 'prog-mode)
-              (run-hooks 'prog-mode-hook))))
+      (run-hooks 'prog-mode-hook)))
 #+END_SRC
 
 * global and mode hooks
@@ -1595,8 +1597,8 @@ Displays git changes in fringe area
       (progn
         (load-theme 'farmhouse-dark t)
         ;; (load-theme 'gotham t)
-        (spaceline-emacs-theme)
-        (spaceline-helm-mode)
+        ;; (spaceline-emacs-theme)
+        ;; (spaceline-helm-mode)
         (set-frame-font "Roboto Mono for Powerline-13"))
         ;; (set-frame-font "Monoid-11"))
     (load-theme 'sanityinc-tomorrow-night t)))
