@@ -729,6 +729,13 @@ Displays git changes in fringe area
 #+END_SRC
 
 ** Files
+*** PDF's
+#+BEGIN_SRC emacs-lisp
+(use-package pdf-tools
+  :ensure
+  :defer)
+
+#+END_SRC
 *** bookmarks
 #+BEGIN_SRC emacs-lisp
 (use-package bookmark
@@ -1012,7 +1019,7 @@ Displays git changes in fringe area
     (set-fontset-font t 'unicode "Apple Color Emoji" nil 'prepend)))
 #+END_SRC
 
-*** flyspell
+*** Flyspell
 #+BEGIN_SRC emacs-lisp
 (use-package flyspell
   :init
@@ -1611,6 +1618,7 @@ Displays git changes in fringe area
         ;; (set-frame-font "Monoid-11"))
     (load-theme 'sanityinc-tomorrow-night t)))
 #+END_SRC
+
 ** prog-mode
 #+BEGIN_SRC emacs-lisp
 (defun prog-setup ()
@@ -1640,6 +1648,7 @@ Displays git changes in fringe area
 (add-hook 'prog-mode-hook #'prog-setup)
 (add-hook 'after-init-hook #'after-init-enable-global-modes)
 #+END_SRC
+
 * Blogging
 ** Create new post
 #+BEGIN_SRC emacs-lisp
