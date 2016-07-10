@@ -1153,28 +1153,32 @@ Displays git changes in fringe area
           calendar-location-name "Oakland, CA")))
 #+END_SRC
 
-#+END_SRC
-
-* programming languages
-** General
+* Major modes
+** Shell
 #+BEGIN_SRC emacs-lisp
-(defvar prog-mode-prettify-alist '()
-  "General programming mode symbols to prettify")
-(add-to-list 'prog-mode-prettify-alist
-             '("<=" . (?· (Br . Bl) ?≤)))
-(add-to-list 'prog-mode-prettify-alist
-             '(">=" . (?· (Br . Bl) ?≥)))
-
-;; (add-hook 'prog-mode-hook)
-
+(use-package sh-script
+  :mode (("[bash|zsh|vim]rc?$" . sh-mode)
+         ("[bash_|z]?profile$" . sh-mode)
+         ("[history|aliases]$" . sh-mode))
+  :config
+  (setq sh-indentation 2
+        sh-basic-offset 2))
 #+END_SRC
+
+** Java
+#+BEGIN_SRC emacs-lisp
+(use-package jdee
+  :ensure
+  :mode (("\\.java$" . jdee-mode)))
+#+END_SRC
+
 ** Web
 #+BEGIN_SRC emacs-lisp
 (use-package web-mode
   :ensure
   :mode (("\\.html?\\'" . web-mode)))
-
 #+END_SRC
+
 ** comint-mode
 #+BEGIN_SRC emacs-lisp
 (use-package comint
