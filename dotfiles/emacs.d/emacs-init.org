@@ -1151,11 +1151,7 @@ Displays git changes in fringe area
     (setq calendar-latitude 37.813
           calendar-longitude -122.256
           calendar-location-name "Oakland, CA")))
-
-;; (defvar holiday-work-holidays
-;;   '((holiday-fixed 1 1 "New Year's Day")
-;;     ()))
-
+#+END_SRC
 
 #+END_SRC
 
