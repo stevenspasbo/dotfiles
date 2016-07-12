@@ -40,13 +40,21 @@ ZSH_CUSTOM=$HOME/.zsh-custom
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git brew brew-cask colored-man tmux vagrant)
+# Start with some defaults
+plugins=(colored-man)
+[[ -s $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
+# Check for executables
+for p (git brew colored-man tmux vagrant grunt); do
+  if type $p > /dev/null; then
+    plugins+=($p)
+  fi
+done
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export PATH=$HOME/.bin:/usr/local/bin:$PATH
+# export PATH=$HOME/.bin:/usr/local/bin:$PATH
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # Compilation flags
@@ -59,8 +67,4 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
-
-source ~/.aliases
-source ~/.env_vars
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm"
+[[ -s $HOME/.aliases ]] && . $HOME/.aliases
