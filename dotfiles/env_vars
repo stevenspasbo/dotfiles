@@ -1,3 +1,16 @@
+#! /usr/bin/env sh
+
+case "$(uname -s)" in
+  Darwin)
+    export IS_MAC=true
+    ;;
+  Linux)
+    export IS_LINUX=true
+    ;;
+  *)
+    ;;
+esac
+
 export EDITOR=emacs
 
 export LC_ALL=en_US.UTF-8
