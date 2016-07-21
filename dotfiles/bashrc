@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 #-------------------------------------------------------------
 #           Author: Steven Spasbo
 #-------------------------------------------------------------
@@ -6,12 +8,7 @@
 # Environment stuff
 #-------------------------------------------------------------
 
-if [ -f ~/.profile ]; then
-    source ~/.profile
-fi
-
 if [[ -L ~/.bashrc ]]; then
-  source ~/.paths
   case "$(uname -s)" in
     Darwin)
       export DOTFILE_REPO=`dirname $(greadlink -f ~/.bashrc)`
@@ -23,8 +20,6 @@ if [[ -L ~/.bashrc ]]; then
   esac
   source $DOTFILE_REPO/../git-prompt.sh
 fi
-
-source ~/.env_vars
 
 #-------------------------------------------------------------
 # History stuff
