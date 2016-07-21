@@ -18,7 +18,12 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color'
 alias egrep='egrep --color'
 
-alias ls='ls -h'
+#alias ls='ls -h'
+if [[ $OSTYPE =~ ^darwin ]]; then
+  alias ls="command ls -Gh"
+else
+  alias ls="command ls -h --color"
+fi
 alias ll="ls -la"
 alias l='ls -CF'
 
