@@ -1,7 +1,9 @@
+# Next to load is ~/.zlogin
+
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
-export SHELL=/usr/local/bin/zsh
+export SHELL=zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -13,7 +15,6 @@ ZSH_THEME="spasbo"
 # CASE_SENSITIVE="true"
 
 DISABLE_AUTO_UPDATE="true"
-# export UPDATE_ZSH_DAYS=5
 
 # Uncomment the following line to disable auto-setting terminal title.
 # DISABLE_AUTO_TITLE="true"
