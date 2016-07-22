@@ -69,3 +69,4 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 [[ -s $HOME/.aliases ]] && . $HOME/.aliases
+[[ -s $HOME/.exports ]] && . $HOME/.exports
