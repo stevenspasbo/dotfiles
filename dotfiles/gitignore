@@ -30,3 +30,9 @@ places
 dotfiles/emacs.d/cider-history
 el-get
 */emacs.d/langs/el*
+
+# Tags
+GPATH
+GRTAGS
+GTAGS
+TAGS
