@@ -2,11 +2,17 @@
 
 Installation is pretty straight forward.
 
+** Make sure required packages are installed
+Don't run this unless you trust me.
+#+BEGIN_SRC sh
+bash <(curl -s https://raw.githubusercontent.com/stevemspasbo/dotfiles/master/install.sh)
+#+END_SRC
+
 ** Check out the repository
 #+begin_src sh
 git clone --recursive https://github.com/stevenspasbo/dotfiles.git
 #+end_src
-Note: When cloning, include --repository flag to also clone submodules, otherwise you'll need to run 
+Note: When cloning, include --repository flag to also clone submodules, otherwise you'll need to run
 #+begin_src sh
 git submodule update --init
 #+end_src
