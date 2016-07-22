@@ -42,6 +42,10 @@ alias cal='cal | grep --before-context 6 --after-context 6 --color -e " $(date +
 
 alias cloc='cloc --force-lang-def=$HOME/cloc-def'
 
+if [[ $OSTYPE =~ ^linux ]]; then
+  alias emacs='emacs -nw'
+fi
+
 #-------------------------------------------------------------
 # Shortcuts and directory stuff
 #-------------------------------------------------------------
