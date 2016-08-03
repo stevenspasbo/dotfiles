@@ -1,7 +1,7 @@
 #+AUTHOR: Steven Spasbo
 #+TITLE: emacs-init.el
 #+EMAIL: stevenspasbo@gmail.com
-#+PROPERTY: header-args :tangle /home/steven/.emacs.d/emacs-init.el :comments org
+#+PROPERTY: header-args :tangle ~/.emacs.d/emacs-init.el :comments org
 
 * Startup
 ** Constants and aliases
@@ -9,7 +9,6 @@
 (defconst emacs-start-time (current-time))
 (defconst *is-a-mac* (eq system-type 'darwin))
 (defconst real-emacs-directory (file-truename user-emacs-directory))
-(defconst *is-window* (not (fboundp window-system)))
 
 (defalias 'yes-or-no-p 'y-or-n-p) ; y/n instead of yes/no
 #+END_SRC
@@ -103,7 +102,7 @@ Don't warn about narrowing or downcasing
           ujelly-theme tronesque-theme tangotango-theme  solarized-theme
           color-theme-sanityinc-tomorrow cyberpunk-theme monokai-theme
           farmhouse-theme material-theme afternoon-theme  gotham-theme))
-         (refreshed? nil))
+      (refreshed? nil))
   (dolist (p my-packages)
     (unless (package-installed-p p)
       (when (null refreshed?)
@@ -712,14 +711,11 @@ Displays git changes in fringe area
 (use-package git-gutter-fringe
   :ensure
   :commands global-git-gutter-mode
-  :if *is-window*
+  :if window-system
   :init
   (setq git-gutter-fr:side 'right-fringe
         git-gutter:hide-gutter t)
-  (add-hook 'after-init-hook 'global-git-gutter-mode)
-  :diminish git-gutter-mode
-  :config
-  )
+  :diminish git-gutter-mode)
 
 #+END_SRC
 *** magit
@@ -958,19 +954,19 @@ Displays git changes in fringe area
 
 *** spaceline
 #+BEGIN_SRC emacs-lisp
-(use-package spaceline-config
-  :ensure spaceline
-  :commands (spaceline-emacs-theme spaceline-helm-mode)
-  :if *is-window*
-  :init
-  (add-hook 'after-init-hook 'spaceline-emacs-theme)
-  (add-hook 'after-init-hook 'spaceline-helm-mode)
-  :config
-  ;; Valid Values: alternate, arrow, arrow-fade, bar, box, brace,
-  ;; butt, chamfer, contour, curve, rounded, roundstub, wave, zigzag,
-  ;; utf-8.
-  ;; (setq powerline-default-separator 'utf-8)
-  (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state))
+  (use-package spaceline-config
+    :ensure spaceline
+    :commands (spaceline-emacs-theme spaceline-helm-mode)
+    :if (fboundp window-system)
+    :init
+    (add-hook 'after-init-hook 'spaceline-emacs-theme)
+    (add-hook 'after-init-hook 'spaceline-helm-mode)
+    :config
+    ;; Valid Values: alternate, arrow, arrow-fade, bar, box, brace,
+    ;; butt, chamfer, contour, curve, rounded, roundstub, wave, zigzag,
+    ;; utf-8.
+    ;; (setq powerline-default-separator 'utf-8)
+    (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state))
 
 #+END_SRC
 
@@ -978,7 +974,7 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package nyan-mode
   :ensure
-  :if nil ; *is-window*
+  :if nil
   :config
   (add-hook 'after-init-hook 'nyan-mode))
 #+END_SRC
@@ -1038,9 +1034,10 @@ Displays git changes in fringe area
 (use-package ispell
   :defer
   :config
-  (let ((hun "hunspell"))
-    (if (executable-find hun)
-        (setq-default ispell-program-name hun)))
+  ;; Possible values: hunspell, aspell, ispell
+  (let ((desired-spell-checker "hunspell"))
+    (if (executable-find desired-spell-checker)
+        (setq-default ispell-program-name desired-spell-checker)))
   ;; To check if system has any valid dictionaries, check output of
   ;; hunspell -D
   ;; If no dictionaries exist, download from either:
@@ -1067,7 +1064,7 @@ Displays git changes in fringe area
   (put 'paredit-forward-delete 'delete-selection 'supersede)
   (put 'paredit-backward-delete 'delete-selection 'supersede)
   (put 'paredit-newline 'delete-selection t))
-(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+(add-hook 'prog-mode-hook #'paredit-mode)
 #+END_SRC
 
 *** undo-tree
@@ -1171,9 +1168,6 @@ Displays git changes in fringe area
 ;; (use-package go-mode
 ;;   :ensure
 ;;   :init
-;;   (exec-path-from-shell-getenv "GOBIN")
-;;   :pin melpa
-;;   :mode "\\.go\\'"
 ;;   :config
 ;;   (go-eldoc-setup)
 ;;   (add-hook 'before-save-hook 'gofmt-before-save)
@@ -1192,9 +1186,9 @@ Displays git changes in fringe area
 ** Shell
 #+BEGIN_SRC emacs-lisp
 (use-package sh-script
-  :mode (("[bash|zsh|vim]rc?$" . sh-mode)
-         ("[bash_|z]?profile$" . sh-mode)
-         ("[history|aliases]$" . sh-mode))
+  ;; :mode (("[bash|zsh|vim]rc?$" . sh-mode)
+  ;;        ("[bash_|z]?profile$" . sh-mode)
+  ;;        ("[history|aliases]$" . sh-mode))
   :config
   (setq sh-indentation 2
         sh-basic-offset 2))
@@ -1211,7 +1205,11 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package web-mode
   :ensure
-  :mode (("\\.html?\\'" . web-mode)))
+  :mode (("\\.html\\'" . web-mode)
+         ("\\.html\\.erb\\'" . web-mode)
+         ("\\.css\\'" . web-mode)
+         ("\\.sass\\'" . web-mode)
+         ("\\.scss\\'" . web-mode)))
 #+END_SRC
 
 ** comint-mode
@@ -1232,6 +1230,10 @@ Displays git changes in fringe area
   :config
   (setq js2-basic-offset 2
         js2-bounce-indent-p nil))
+
+(use-package tern
+  :ensure
+  :defer)
 #+END_SRC
 
 ** Elm
@@ -1314,8 +1316,7 @@ Displays git changes in fringe area
               ("C-c b" . eval-buffer)))
 
 (defun emacs-lisp-stuff ()
-  (set (make-local-variable 'company-backends) '(company-elisp))
-  (update-company-backends-with-snippets))
+  (set (make-local-variable 'company-backends) '(company-elisp)))
 
 (add-hook 'emacs-lisp-mode-hook #'emacs-lisp-stuff)
 (add-hook 'lisp-interaction-mode-hook #'emacs-lisp-stuff)
@@ -1330,9 +1331,9 @@ Displays git changes in fringe area
   :config
   (add-to-list 'slime-contribs 'slime-fancy)
   (slime-setup '(slime-fancy))
-  (let ((homebrew-sbcl "/usr/local/bin/sbcl"))
-    (if (file-exists-p homebrew-sbcl)
-        (setq inferior-lisp-program homebrew-sbcl)))
+  (let ((sbcl "sbcl"))
+    (setq inferior-lisp-program (executable-find sbcl)))
+
   (setq lisp-indent-function 'common-lisp-indent-function))
 
 (add-hook 'sldb-mode-hook 'sldb-font-lock)
@@ -1430,7 +1431,6 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package python
   :ensure
-  :mode ("\\.py" . python-mode)
   :bind (:map python-mode-map
               ("RET" . newline-and-indent)))
 
@@ -1573,35 +1573,52 @@ Displays git changes in fringe area
 
 ** ruby
 #+BEGIN_SRC emacs-lisp
-(use-package yaml-mode :ensure :defer)
+(use-package yaml-mode
+  :ensure
+  :defer)
 
-(add-to-list 'completion-ignored-extensions ".rbc") ; Ignore rubinius bytecode
-
-(use-package inf-ruby :ensure :defer)
 
 (use-package robe
   :ensure
   :after company
-  :commands robe-mode
-  :config
-  (push 'company-robe company-backends))
-
-(use-package ruby-electric :ensure :defer)
-
-(use-package ruby-mode
-  :mode (("Vagrantfile$" . ruby-mode)
-         ("\\.rake$" . ruby-mode)
-         ("Rakefile$" . ruby-mode)
-         ("\\.gemspec$" . ruby-mode))
   :init
   (add-hook 'ruby-mode-hook #'robe-mode)
   :config
+  (push 'company-robe company-backends))
+
+
+(use-package rvm
+  :ensure
+  :init
+  (add-hook 'ruby-mode-hook #'rvm-activate-corresponding-ruby))
+
+(use-package ruby-electric
+  :ensure
+  :init
+  (add-hook 'ruby-mode-hook #'ruby-electric-mode))
+
+(use-package ruby-mode
+  :mode (("Vagrantfile$" . ruby-mode)
+         ("rake\\'" . ruby-mode)
+         ("Rakefile" . ruby-mode)
+         ("\\.gemspec$" . ruby-mode)
+         ("Gemfile" . ruby-mode))
+  :config
+  (use-package inf-ruby :ensure)
+  (use-package ruby-electric :ensure)
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil
         ruby-deep-indent-paren nil)
-  (ruby-electric-mode t)
+  (defun ruby-mode-stuff ()
+    (ruby-electric-mode 1)
+    (robe-mode 1)
+    (enable-paredit-mode)
+    (rvm-activate-corresponding-ruby)
     (unless (derived-mode-p 'prog-mode)
       (run-hooks 'prog-mode-hook)))
+  (add-hook 'ruby-mode-hook #'ruby-mode-stuff))
+
+
 #+END_SRC
 
 * global and mode hooks
@@ -1618,7 +1635,6 @@ Displays git changes in fringe area
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
   (global-font-lock-mode 1)
-  ; (golden-ratio-mode 1)
   (global-prettify-symbols-mode)
   (electric-pair-mode 1)
   (transient-mark-mode 1)
@@ -1643,8 +1659,8 @@ Displays git changes in fringe area
         ;; (spaceline-emacs-theme)
         ;; (spaceline-helm-mode)
         (set-frame-font "Roboto Mono for Powerline-13"))
-        ;; (set-frame-font "Monoid-11"))
-    (load-theme 'sanityinc-tomorrow-night t)))
+    ;; (set-frame-font "Monoid-11"))
+    (load-theme 'hipster t)))
 #+END_SRC
 
 ** prog-mode
