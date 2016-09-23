@@ -16,18 +16,21 @@
 ** Custom-file
 Disable custom file, put any changes you want in their relevant package configurations.
 #+BEGIN_SRC emacs-lisp
-(setq custom-file (make-temp-file ""))
+(setq custom-file "~/.emacs.d/custom.el")
+(if (file-exists-p "~/.emacs.d/custom.el")
+    (load-file "~/.emacs.d/custom.el"))
 #+END_SRC
 
 ** Variables
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Steven Spasbo"
-       user-mail-address "stevenspasbo@gmail.com"
-       inhibit-splash-screen t  ; Don't show splash screen
-       inhibit-startup-screen t ; Or startup screen
-       debug-on-error t
-       system-uses-terminfo nil
-       scroll-conservatively 1000)
+      user-mail-address "stevenspasbo@gmail.com"
+      inhibit-splash-screen t  ; Don't show splash screen
+      inhibit-startup-screen t ; Or startup screen
+      debug-on-error t
+      system-uses-terminfo nil
+      scroll-conservatively 1000
+      scroll-preserve-screen-position 'always ) ;; might want to change this
 
 (setq-default tab-always-indent 'complete ; Enable tab completion
               indent-tabs-mode nil ; Disable all tabs
@@ -88,7 +91,7 @@ Don't warn about narrowing or downcasing
 (require 'package)
 (setq package-archives
       '(("marmalade"    . "http://marmalade-repo.org/packages/")
-        ("gnu"          . "http://elpa.gnu.org/packages/")
+        ("gnu"          . "https://elpa.gnu.org/packages/")
         ("org"          . "http://orgmode.org/elpa/")
         ("melpa"        . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")))
@@ -110,7 +113,7 @@ Don't warn about narrowing or downcasing
         (setq refreshed? t))
       (package-install p))))
 
-(defun toggle-show-use-package-expression ()
+(defun toggle-use-package-debug ()
   (interactive)
   (if use-package-debug
       (setq use-package-debug nil)
@@ -194,7 +197,6 @@ point reaches the beginning or end of the buffer, stop there."
           1 '((:foreground "#d7a3ad") (:weight bold)) t))))
 
 (add-hook 'prog-mode-hook #'my/add-watchwords)
-(add-hook 'prog-mode-hook #'hl-line-mode)
 #+END_SRC
 
 ** kill-back-to-indentation
@@ -274,9 +276,9 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
   :ensure
-  :commands which-key-mode
-  :init
-  (add-hook 'after-init-hook #'which-key-mode))
+  :defer 5
+  :config
+  (which-key-mode 1))
 #+END_SRC
 
 ** ERC
@@ -441,7 +443,6 @@ If string is empty, current directory is not a git repo"
 (use-package org
   :init
   (add-hook 'org-mode-hook #'visual-line-mode)
-  (add-hook 'org-mode-hook #'hl-line-mode)
   :bind (("C-c b" . org-iswitchb)
          ("C-c l" . org-store-link)
          ("C-c C-n" . org-add-note))
@@ -607,7 +608,9 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package helm-descbinds
   :ensure
-  :bind (("C-h b" . helm-descbinds)))
+  :bind (("C-h b" . helm-descbinds))
+  :config
+  (helm-descbinds-mode 1))
 #+END_SRC
 
 *** helm-swoop
@@ -617,13 +620,15 @@ If string is empty, current directory is not a git repo"
   :bind (("M-i" . helm-swoop)
          ("M-I" . helm-multi-swoop)
          :map helm-swoop-map
-         ("M-I" . helm-multi-swoop-all-from-helm-swoop)
+         ("M-i" . helm-multi-swoop-all-from-helm-swoop)
          :map isearch-mode-map
          ("M-i" . helm-swoop-from-isearch))
   :config
-  (setq helm-swoop-split-direction 'split-window-vertically
+  (setq helm-multi-swoop-edit-save t
+        helm-swoop-split-direction 'split-window-vertically
         helm-swoop-use-fuzzy-match t
-        helm-swoop-split-with-multiple-windows t))
+        helm-swoop-split-with-multiple-windows t
+        helm-swoop-speed-or-color nil))
 #+END_SRC
 
 *** helm-gtags
@@ -652,13 +657,14 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure
-  :commands (global-flycheck-mode)
-  :init
-  (add-hook 'after-init-hook #'global-flycheck-mode)
+  ;; :commands (global-flycheck-mode)
+  ;; :init
+  ;; (add-hook 'after-init-hook #'global-flycheck-mode)
   :bind (:map flycheck-mode-map
               ("C-c ! h" . helm-flycheck))
   :diminish ""
   :config
+  (global-flycheck-mode 1)
   ;; Set flycheck faces
   (set-face-background 'flycheck-fringe-warning nil)
   (set-face-attribute 'flycheck-error nil
@@ -689,9 +695,13 @@ If string is empty, current directory is not a git repo"
 ** Version control
 *** gitconfig-mode
 #+BEGIN_SRC emacs-lisp
-(use-package gitconfig-mode :ensure :defer)
+(use-package gitconfig-mode
+  :ensure
+  :mode (("gitconfig\\'" . gitconfig-mode)))
 
-(use-package gitignore-mode :ensure :defer)
+(use-package gitignore-mode
+  :ensure
+  :mode (("gitignore\\'" . gitignore-mode)))
 #+END_SRC
 *** git-gutter-fringe
 Displays git changes in fringe area
@@ -986,7 +996,19 @@ Displays git changes in fringe area
 ;; (add-to-list 'completion-styles 'initials t)
 #+END_SRC
 
+*** highlight-line-mode
+#+BEGIN_SRC emacs-lisp
+(use-package hl-line
+  :config
+  (global-hl-line-mode 1))
+#+END_SRC
 ** Text
+*** Electric pair
+#+BEGIN_SRC emacs-lisp
+(use-package elec-pair
+  :config
+  (electric-pair-mode 1))
+#+END_SRC
 *** Formatting
 #+BEGIN_SRC emacs-lisp
 (use-package aggressive-indent
@@ -1052,7 +1074,7 @@ Displays git changes in fringe area
   (put 'paredit-forward-delete 'delete-selection 'supersede)
   (put 'paredit-backward-delete 'delete-selection 'supersede)
   (put 'paredit-newline 'delete-selection t))
-(add-hook 'prog-mode-hook #'paredit-mode)
+;(add-hook 'prog-mode-hook #'paredit-mode)
 #+END_SRC
 
 *** undo-tree
@@ -1212,14 +1234,21 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package js2-mode
   :ensure
-  :mode (("\\.js[on]?$" . js2-mode)
-         ("\\.lock$" . js2-mode))
+  :mode (("\\.js[on]?\\'" . js2-mode)
+         ("\\.lock\\'" . js2-mode))
   :interpreter ("node" . js2-mode)
   :config
-  (setq js2-basic-offset 2
+  (setq js-indent-level 2
+        js2-basic-offset 2
         js2-bounce-indent-p nil))
 
 (use-package tern
+  :ensure
+  :defer
+  :init
+  (add-hook 'js2-mode-hook 'tern-mode))
+
+(use-package company-tern
   :ensure
   :defer)
 #+END_SRC
@@ -1424,11 +1453,9 @@ Displays git changes in fringe area
 
 (use-package elpy
   :ensure
-  :init
-  (add-hook 'after-init-hook #'elpy-enable)
-  :commands elpy-enable
-  :functions elpy-use-ipython
+  :after python
   :config
+  (elpy-enable)
   (when (executable-find "ipython")
     (elpy-use-ipython))
   (when (require 'flycheck nil t)
@@ -1484,8 +1511,16 @@ Displays git changes in fringe area
 ** PHP / Drupal
 #+BEGIN_SRC emacs-lisp
 
-(use-package ac-php :ensure :defer)
-(use-package ac-php-company :defer)
+(use-package ac-php :ensure
+  :bind (:map php-mode-map
+              ("C-]" . ac-php-find-symbol-at-point)
+              ("C-t" . ac-php-location-stack-back)))
+
+(use-package company-php
+  :ensure
+  :after php-mode
+  :config
+  (add-to-list 'company-backends 'company-ac-php-backend))
 
 (use-package php-mode
   :ensure
@@ -1528,7 +1563,7 @@ Displays git changes in fringe area
 ;;   (helm-gtags-mode)
 ;;   (run-hooks 'drupal-mode-hook))
 
-(add-to-list 'auto-mode-alist '("/drupal.*\\.\\(php\\|inc\\)$" . drupal-mode))
+;;   (add-to-list 'auto-mode-alist '("/drupal.*\\.\\(php\\|inc\\)$" . drupal-mode))
 
 ;;; WIP
 ;; (defun drupal-module-name ()
@@ -1615,7 +1650,6 @@ Displays git changes in fringe area
 (defun after-init-enable-global-modes ()
   "Enables, disables, and diminishes some modes"
   (blink-cursor-mode 0)
-  (global-hl-line-mode 1)  ; Highline current line
   (column-number-mode 1) ; Enable (line,column)
   (delete-selection-mode 1) ; Allows deletions on highlighted text
   (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -1624,13 +1658,11 @@ Displays git changes in fringe area
 
   (global-font-lock-mode 1)
   (global-prettify-symbols-mode)
-  (electric-pair-mode 1)
   (transient-mark-mode 1)
-  (yas-global-mode 1)
-  (projectile-global-mode)
-  (helm-descbinds-mode 1)
+  ;; (yas-global-mode 1)
+  ;; (projectile-global-mode)
 
-  (recentf-mode 1)
+  ;; (recentf-mode 1)
 
   (let ((ad-redefinition-action 'accept))
     (helm-mode 1))
@@ -1642,7 +1674,8 @@ Displays git changes in fringe area
 
   (if (display-graphic-p)
       (progn
-        (load-theme 'farmhouse-dark t)
+        (load-theme 'sanityinc-tomorrow-eighties t)
+        ;; (load-theme 'farmhouse-dark t)
         ;; (load-theme 'gotham t)
         ;; (spaceline-emacs-theme)
         ;; (spaceline-helm-mode)
