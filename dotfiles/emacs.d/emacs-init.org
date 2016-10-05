@@ -1496,16 +1496,41 @@ Displays git changes in fringe area
   :ensure
   :after company
   :config
-  (add-to-list 'company-backends 'company-c-headers))
+  (add-to-list 'company-backends 'company-irony)
+  (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
 
-(use-package flycheck-irony :ensure :defer)
-(use-package irony-eldoc :ensure :defer)
+(use-package flycheck-irony
+  :ensure
+  :after flycheck
+  :config
+  (flycheck-irony-setup))
 
-(use-package irony :ensure :defer)
+(use-package irony-eldoc
+  :ensure
+  :after irony
+  :config
+  (add-hook 'irony-mode-hook #'irony-eldoc))
 
-(use-package cc-mode :defer)
+(use-package irony
+  :ensure
+  :defer
+  :config
+  (define-key irony-mode-map [remap completion-at-point]
+    'irony-completion-at-point-async)
+  (define-key irony-mode-map [remap complete-symbol]
+    'irony-completion-at-point-async)
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+  )
 
-;; (add-hook 'c-mode-hook #'irony-mode)
+(use-package cc-mode
+  :defer
+  :config
+  (add-hook 'c-mode-hook #'irony-mode)
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (set
+               (make-local-variable 'company-backends) '(company-c-headers company-irony company-clang company-cmake company-keywords company-dabbrev)))))
+
 #+END_SRC
 
 ** PHP / Drupal
