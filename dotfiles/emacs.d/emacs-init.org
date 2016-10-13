@@ -104,7 +104,7 @@ Don't warn about narrowing or downcasing
        '(use-package diminish hipster-theme moe-theme zenburn-theme
           ujelly-theme tronesque-theme tangotango-theme  solarized-theme
           color-theme-sanityinc-tomorrow cyberpunk-theme monokai-theme
-          farmhouse-theme material-theme afternoon-theme  gotham-theme))
+          farmhouse-theme material-theme afternoon-theme  gotham-theme doom-themes))
       (refreshed? nil))
   (dolist (p my-packages)
     (unless (package-installed-p p)
@@ -469,7 +469,8 @@ If string is empty, current directory is not a git repo"
           org-hide-emphasis-markers t
           org-pretty-entities t
           org-outline-path-complete-in-steps nil
-          org-refile-use-outline-path 'file)
+          org-refile-use-outline-path 'file
+          org-imenu-depth 5)
 
     (add-to-list 'org-structure-template-alist
                  '("se" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC" "<src lang=emacs-lisp\"?\">\n\n</src>"))))
@@ -569,6 +570,9 @@ If string is empty, current directory is not a git repo"
 (use-package helm-sys
   :config (helm-top-poll-mode 1))
 
+(use-package helm-semantic
+  :bind (("C-c i" . helm-semantic-or-imenu)))
+
 (global-set-key (kbd "M-x") 'undefined)
 (global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-M-z") 'helm-resume)
@@ -579,18 +583,28 @@ If string is empty, current directory is not a git repo"
 (global-set-key (kbd "C-h a") 'helm-apropos)
 (define-key global-map (kbd "M-g g") 'helm-do-grep-ag)
 (define-key global-map (kbd "M-g a") 'helm-do-ag)
-(define-key global-map (kbd "M-s o") 'helm-occur)
 
 (define-key global-map [remap switch-to-buffer] 'helm-mini)
 ;; (define-key global-map [remap dabbrev-expand]        'helm-dabbrev)
 (define-key global-map [remap find-tag] 'helm-etags-select)
 
+(add-to-list 'helm-completing-read-handlers-alist '(org-set-tags-command))
+(add-to-list 'helm-completing-read-handlers-alist '(org-set-tags))
+(add-to-list 'helm-completing-read-handlers-alist '(org-match-sparse-tree))
+
 (setq helm-split-window-in-side-p t
+
+      helm-bookmark-show-location t
+
       helm-M-x-fuzzy-match t
-
       helm-buffers-fuzzy-matching t
-
+      helm-semantic-fuzzy-match t
+      helm-apropos-fuzzy-match t
+      helm-imenu-fuzzy-match t
+      helm-lisp-fuzzy-completion t
+      helm-completion-in-region-fuzzy-match t
       helm-recentf-fuzzy-match t ; For helm-mini
+
       helm-ff-file-name-history-use-recentf t
       helm-ff-skip-boring-files t
       helm-ff-search-library-in-sexp t)
@@ -628,7 +642,8 @@ If string is empty, current directory is not a git repo"
         helm-swoop-split-direction 'split-window-vertically
         helm-swoop-use-fuzzy-match t
         helm-swoop-split-with-multiple-windows t
-        helm-swoop-speed-or-color nil))
+        helm-swoop-speed-or-color nil
+        helm-swoop-use-line-number-face t))
 #+END_SRC
 
 *** helm-gtags
@@ -657,14 +672,10 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure
-  ;; :commands (global-flycheck-mode)
-  ;; :init
-  ;; (add-hook 'after-init-hook #'global-flycheck-mode)
   :bind (:map flycheck-mode-map
               ("C-c ! h" . helm-flycheck))
-  :diminish ""
   :config
-  (global-flycheck-mode 1)
+  (global-flycheck-mode)
   ;; Set flycheck faces
   (set-face-background 'flycheck-fringe-warning nil)
   (set-face-attribute 'flycheck-error nil
@@ -794,42 +805,50 @@ Displays git changes in fringe area
 *** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
-  :defer
+  :defer 3
   :config
-  (progn
-    (setq recentf-max-saved-items 500
-          recentf-auto-cleanup 'never
-          recentf-max-menu-items 20)
-
-    ;; Prevents package.el updates from adding compiled files to recentf list
-    (defsubst file-was-visible-p (file)
-      "Return non-nil if FILE's buffer exists and has been displayed."
-      (let ((buf (find-buffer-visiting file)))
-        (if buf
-            (let ((display-count (buffer-local-value 'buffer-display-count buf)))
-              (if (> display-count 0) display-count nil)))))
-
-    (setq recentf-keep '(keep-default-and-visible-recentf-p))))
+  (recentf-mode 1)
+  ;; Prevents package.el updates from adding compiled files to recentf list
+  (defsubst file-was-visible-p (file)
+    "Return non-nil if FILE's buffer exists and has been displayed."
+    (let ((buf (find-buffer-visiting file)))
+      (if buf
+          (let ((display-count (buffer-local-value 'buffer-display-count buf)))
+            (if (> display-count 0) display-count nil)))))
+  (setq recentf-max-saved-items 500
+        recentf-auto-cleanup 'never
+        recentf-max-menu-items 20
+        recentf-keep '(keep-default-and-visible-recentf-p)))
 #+END_SRC
 ** Project navigation
 *** projectile
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure
-  :commands (projectile-mode projectile-global-mode)
   :config
-  (progn
-    (setq projectile-completion-system "helm")
-    (helm-projectile-on)
-    (setq projectile-switch-project-action 'projectile-commander)
-    (add-to-list 'projectile-globally-ignored-files "GTAGS")
-    (add-to-list 'projectile-globally-ignored-files "GPATH")
-    (add-to-list 'projectile-globally-ignored-files "GRTAGS")
-    (add-to-list 'projectile-globally-ignored-files ".DS_Store")))
+  (projectile-global-mode 1)
+  (setq projectile-completion-system "helm"
+        projectile-switch-project-action 'projectile-commander)
+  (add-to-list 'projectile-globally-ignored-files "GTAGS")
+  (add-to-list 'projectile-globally-ignored-files "GPATH")
+  (add-to-list 'projectile-globally-ignored-files "GRTAGS")
+  (add-to-list 'projectile-globally-ignored-files ".DS_Store"))
+
 #+END_SRC
 *** helm-projectile
 #+BEGIN_SRC emacs-lisp
-(use-package helm-projectile :ensure :commands (helm-projectile))
+(use-package helm-projectile
+  :ensure t
+  :after projectile
+  :bind (("C-x f" . helm-projectile-find-file)
+         :map projectile-command-map
+         ("b" . helm-projectile-switch-to-buffer)
+         ("d" . helm-projectile-find-dir)
+         ("f" . helm-projectile-find-file)
+         ("p" . helm-projectile-switch-project)
+         ("s s" . helm-projectile-ag))
+  :config
+  (helm-projectile-on))
 #+END_SRC
 
 ** Completion / tagging
@@ -838,16 +857,14 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package company
   :ensure
-  :commands global-company-mode
-  :init
-  (add-hook 'after-init-hook #'global-company-mode)
   :diminish ""
   :config
+  (global-company-mode 1)
   (setq company-minimum-prefix-length 2
         company-idle-delay 0.1
         company-tooltip-align-annotations t
         company-selection-wrap-around t
-        company-global-modes '(not org-mode))
+        company-global-modes '(not org-mode erc-mode eshell-mode))
 
   (set-face-background 'company-tooltip-annotation (face-background 'company-tooltip))
   (set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection)))
@@ -952,19 +969,16 @@ Displays git changes in fringe area
 
 *** spaceline
 #+BEGIN_SRC emacs-lisp
-  (use-package spaceline-config
-    :ensure spaceline
-    :commands (spaceline-emacs-theme spaceline-helm-mode)
-    :if (fboundp window-system)
-    :init
-    (add-hook 'after-init-hook 'spaceline-emacs-theme)
-    (add-hook 'after-init-hook 'spaceline-helm-mode)
-    :config
-    ;; Valid Values: alternate, arrow, arrow-fade, bar, box, brace,
-    ;; butt, chamfer, contour, curve, rounded, roundstub, wave, zigzag,
-    ;; utf-8.
-    ;; (setq powerline-default-separator 'utf-8)
-    (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state))
+(use-package spaceline-config
+  :ensure spaceline
+  :commands (spaceline-emacs-theme spaceline-helm-mode)
+  :if (display-graphic-p)
+  :config
+  ;; Valid Values: alternate, arrow, arrow-fade, bar, box, brace,
+  ;; butt, chamfer, contour, curve, rounded, roundstub, wave, zigzag,
+  ;; utf-8.
+  ;; (setq powerline-default-separator 'utf-8)
+  (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state))
 
 #+END_SRC
 
@@ -1032,10 +1046,8 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package flyspell
   :init
-  (progn
-    (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-    (add-hook 'text-mode-hook #'turn-on-flyspell))
-  :diminish (flyspell-mode)
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+  (add-hook 'text-mode-hook #'turn-on-flyspell)
   :commands (flyspell-mode flyspell-prog-mode))
 #+END_SRC
 
@@ -1067,26 +1079,26 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package paredit
   :ensure
-  :defer
   :diminish "()"
   :config
+  (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
   ;; making paredit work with delete-selection-mode
   (put 'paredit-forward-delete 'delete-selection 'supersede)
   (put 'paredit-backward-delete 'delete-selection 'supersede)
   (put 'paredit-newline 'delete-selection t))
-;(add-hook 'prog-mode-hook #'paredit-mode)
 #+END_SRC
 
 *** undo-tree
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
   :ensure
+  :defer 5
   :diminish ""
   :config
   (defalias 'redo 'undo-tree-redo)
+  (global-undo-tree-mode)
   :bind (("C-z" . undo)
          ("C-S-z" . redo)))
-(add-hook 'after-init-hook 'global-undo-tree-mode)
 #+END_SRC
 
 *** rainbow-mode
@@ -1123,6 +1135,18 @@ Displays git changes in fringe area
 
 #+END_SRC
 ** Buffer / frame navigation
+*** isearch
+#+BEGIN_SRC emacs-lisp
+(use-package isearch
+  :bind (("C-s" . isearch-forward-regexp)
+         ("C-r" . isearch-backward-regexp)
+         ("C-M-s" . isearch-forward)
+         ("C-M-r" . isearch-backward)))
+#+END_SRC
+*** imenu
+#+BEGIN_SRC emacs-lisp
+(use-package imenu)
+#+END_SRC
 *** linum
 #+BEGIN_SRC emacs-lisp
 (defun fix-linum-size ()
@@ -1173,6 +1197,10 @@ Displays git changes in fringe area
 #+END_SRC
 
 * Major modes
+** yaml
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode :ensure :defer)
+#+END_SRC
 ** Go
 #+BEGIN_SRC emacs-lisp
 ;; (use-package go-mode
@@ -1219,7 +1247,8 @@ Displays git changes in fringe area
          ("\\.html\\.erb\\'" . web-mode)
          ("\\.css\\'" . web-mode)
          ("\\.sass\\'" . web-mode)
-         ("\\.scss\\'" . web-mode)))
+         ("\\.scss\\'" . web-mode)
+         ("\\.twig\\'" . web-mode)))
 #+END_SRC
 
 ** comint-mode
@@ -1293,11 +1322,12 @@ Displays git changes in fringe area
   :init
   (progn
     (add-hook 'haskell-mode-hook 'turn-on-haskell-doc)
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+    (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
     (add-hook 'haskell-mode-hook 'interactive-haskell-mode))
   :config
   (progn
-    (setq haskell-process-suggest-remove-import-lines t
+    (setq haskell-font-lock-symbols t
+          haskell-process-suggest-remove-import-lines t
           haskell-process-auto-import-loaded-modules t
           haskell-process-log t)))
 
@@ -1370,78 +1400,71 @@ Displays git changes in fringe area
 (use-package clojure-mode
   :ensure
   :init
-  (add-hook 'clojure-mode-hook #'eldoc-mode)
+  (add-hook 'clojure-mode-hook #'subword-mode)
   (add-hook 'clojure-mode-hook #'paredit-mode)
+  (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
   :mode (("\\.edn$" . clojure-mode)
          ("\\.boot$" . clojure-mode)
          ("\\.cljs.*$" . clojure-mode)
-         ("lein-env" . enh-ruby-mode))
-  :bind
-  (:map clojure-mode-map
-        ("C-c C-h" . clojure-cheatsheet))
-  :init
-  (progn
-    (font-lock-add-keywords
-     nil
-     '(("(\\(facts?\\)"
-        (1 font-lock-keyword-face))
-       ("(\\(background?\\)"
-        (1 font-lock-keyword-face)))))
-  :config
-  (subword-mode)
-  ;; (enable-paredit-mode)
-  ;; (eldoc-mode))
-  )
-(use-package flycheck-clojure
-  :ensure
-  :after flycheck
-  :config
-  (flycheck-clojure-setup))
+         ("lein-env" . ruby-mode)))
 
-(use-package clojure-cheatsheet :ensure :defer)
-(use-package clojure-mode-extra-font-locking :ensure :defer)
+(use-package clojure-mode-extra-font-locking :after clojure-mode)
+
+;; (use-package flycheck-clojure
+;;   :ensure
+;;   :after flycheck
+;;   :config
+;;   (flycheck-clojure-setup))
+
+(use-package clojure-cheatsheet
+  :ensure
+  :after clojure-mode
+  :bind (:map clojure-mode-map
+              ("C-c C-h" . clojure-cheatsheet)))
+
+;; (defun cider-start-http-server ()
+;;   (interactive)
+;;   (cider-load-current-buffer)
+;;   (let ((ns (cider-current-ns)))
+;;     (cider-repl-set-ns ns)
+;;     (cider-interactive-eval (format "(println '(def server (%s/start))) (println 'server)" ns))
+;;     (cider-interactive-eval (format "(def server (%s/start)) (println server)" ns))))
+
+;; (defun cider-refresh ()
+;;   (interactive)
+;;   (cider-interactive-eval (format "(user/reset)")))
+
+;; (defun cider-user-ns ()
+;;   (interactive)
+;;   (cider-repl-set-ns "user"))
 
 (use-package cider
   :ensure
+  :after clojure-mode
   :bind (:map clojure-mode-map
-              ("C-c C-v" . cider-start-http-server)
-              ("C-M-r" . cider-refresh)
-              ("C-c u" . cider-user-ns))
+              ("C-c C-c" . cider-jack-in)
+              ;; ("C-c C-v" . cider-start-http-server)
+              ;; ("C-M-r" . cider-refresh)
+              ;; ("C-c u" . cider-user-ns)
+              )
   :config
-  (progn
-    (enable-paredit-mode)
-    (setq cider-repl-use-clojure-font-lock t
-          ;; go right to the REPL buffer when it's finished connecting
-          cider-repl-pop-to-buffer-on-connect t
-          ;; When there's a cider error, show its buffer and switch to it
-          cider-show-error-buffer t
-          cider-auto-select-error-buffer t
-          ;; Where to store the cider history.
-          cider-repl-history-file "~/.emacs.d/cider-history"
-          ;; Wrap when navigating history.
-          cider-repl-wrap-history t
-          ;; Hide *nrepl-connection* and *nrepl-server* buffers.
-          nrepl-hide-special-buffers t
+  ;; (add-hook 'cider-mode-hook #'cider-turn-on-eldoc-mode)
+  (add-hook 'cider-mode-hook #'paredit-mode)
+  (setq cider-repl-use-clojure-font-lock t
+        ;; go right to the REPL buffer when it's finished connecting
+        cider-repl-pop-to-buffer-on-connect t
+        ;; When there's a cider error, show its buffer and switch to it
+        cider-show-error-buffer t
+        cider-auto-select-error-buffer t
+        ;; Where to store the cider history.
+        cider-repl-history-file "~/.emacs.d/cider-history"
+        ;; Wrap when navigating history.
+        cider-repl-wrap-history t
+        ;; Hide *nrepl-connection* and *nrepl-server* buffers.
+        nrepl-hide-special-buffers t
 
-          nrepl-hide-special-buffers t
-          nrepl-log-messages t)
-
-    ;; (defun cider-start-http-server ()
-    ;;   (interactive)
-    ;;   (cider-load-current-buffer)
-    ;;   (let ((ns (cider-current-ns)))
-    ;;     (cider-repl-set-ns ns)
-    ;;     (cider-interactive-eval (format "(println '(def server (%s/start))) (println 'server)" ns))
-    ;;     (cider-interactive-eval (format "(def server (%s/start)) (println server)" ns))))
-
-    ;; (defun cider-refresh ()
-    ;;   (interactive)
-    ;;   (cider-interactive-eval (format "(user/reset)")))
-
-    ;; (defun cider-user-ns ()
-    ;;   (interactive)
-    ;;   (cider-repl-set-ns "user"))
-))
+        nrepl-hide-special-buffers t
+        nrepl-log-messages t))
 #+END_SRC
 
 ** Python
@@ -1466,9 +1489,8 @@ Displays git changes in fringe area
 (use-package py-autopep8
   :ensure
   :after elpy
-  :init
-  (add-hook 'elpy-mode-hook #'py-autopep8-enable-on-save)
-  :commands py-autopep8-enable-on-save)
+  :config
+  (add-hook 'elpy-mode-hook #'py-autopep8-enable-on-save))
 
 #+END_SRC
 
@@ -1621,10 +1643,7 @@ Displays git changes in fringe area
 
 ** ruby
 #+BEGIN_SRC emacs-lisp
-(use-package yaml-mode
-  :ensure
-  :defer)
-
+(use-package inf-ruby :ensure :defer)
 
 (use-package robe
   :ensure
@@ -1633,7 +1652,6 @@ Displays git changes in fringe area
   (add-hook 'ruby-mode-hook #'robe-mode)
   :config
   (push 'company-robe company-backends))
-
 
 (use-package rvm
   :ensure
@@ -1652,8 +1670,6 @@ Displays git changes in fringe area
          ("\\.gemspec$" . ruby-mode)
          ("Gemfile" . ruby-mode))
   :config
-  (use-package inf-ruby :ensure)
-  (use-package ruby-electric :ensure)
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil
         ruby-deep-indent-paren nil)
@@ -1665,8 +1681,6 @@ Displays git changes in fringe area
     (unless (derived-mode-p 'prog-mode)
       (run-hooks 'prog-mode-hook)))
   (add-hook 'ruby-mode-hook #'ruby-mode-stuff))
-
-
 #+END_SRC
 
 * global and mode hooks
@@ -1682,12 +1696,8 @@ Displays git changes in fringe area
   (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
   (global-font-lock-mode 1)
-  (global-prettify-symbols-mode)
+  ;;  (global-prettify-symbols-mode)
   (transient-mark-mode 1)
-  ;; (yas-global-mode 1)
-  ;; (projectile-global-mode)
-
-  ;; (recentf-mode 1)
 
   (let ((ad-redefinition-action 'accept))
     (helm-mode 1))
@@ -1695,15 +1705,13 @@ Displays git changes in fringe area
   (diminish 'visual-line-mode)
   (diminish 'helm-mode)
 
-  (global-set-key (kbd "C-c i") (lambda () (interactive) (find-file "~/.emacs.d/init.el")))
-
   (if (display-graphic-p)
       (progn
         (load-theme 'sanityinc-tomorrow-eighties t)
         ;; (load-theme 'farmhouse-dark t)
         ;; (load-theme 'gotham t)
         ;; (spaceline-emacs-theme)
-        ;; (spaceline-helm-mode)
+        (spaceline-helm-mode)
         (set-frame-font "Roboto Mono for Powerline-13"))
     ;; (set-frame-font "Monoid-11"))
     (load-theme 'hipster t)))
