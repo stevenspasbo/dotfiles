@@ -123,7 +123,6 @@ Don't warn about narrowing or downcasing
 #+END_SRC
 
 * Functions
-#+END_SRC
 ** Load secrets
 #+BEGIN_SRC emacs-lisp
 (defun load-my-secrets ()
