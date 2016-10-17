@@ -764,18 +764,6 @@ If string is empty, current directory is not a git repo"
   :ensure
   :mode (("gitignore\\'" . gitignore-mode)))
 #+END_SRC
-*** git-gutter-fringe
-#+BEGIN_SRC emacs-lisp
-(use-package git-gutter-fringe
-  :ensure
-  :commands global-git-gutter-mode
-  :if window-system
-  :init
-  (setq git-gutter-fr:side 'right-fringe
-        git-gutter:hide-gutter t)
-  :diminish git-gutter-mode)
-
-#+END_SRC
 *** magit
 [[https://github.com/magit/magit][Github]]
 #+BEGIN_SRC emacs-lisp
