@@ -273,11 +273,21 @@ If string is empty, current directory is not a git repo"
 
 * Configure packages
 ** Usability
+*** which-key
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
   :ensure
   :defer 5
   :config
+  (setq which-key-side-window-max-height 0.35)
+  (which-key-add-key-based-replacements
+    ;; C-x
+    "C-x a" "abbrev"
+    "C-x 8" "unicode"
+    "C-x RET" "encoding"
+    ;; C-c
+    "C-c !" "flycheck"
+    "C-c &" "yasnippet")
   (which-key-mode 1))
 #+END_SRC
 
