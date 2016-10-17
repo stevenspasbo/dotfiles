@@ -30,7 +30,8 @@ Disable custom file, put any changes you want in their relevant package configur
       debug-on-error t
       system-uses-terminfo nil
       scroll-conservatively 1000
-      scroll-preserve-screen-position 'always ) ;; might want to change this
+      scroll-preserve-screen-position 'always
+      kill-do-not-save-duplicates t)
 
 (setq-default tab-always-indent 'complete ; Enable tab completion
               indent-tabs-mode nil ; Disable all tabs
@@ -102,9 +103,10 @@ Don't warn about narrowing or downcasing
   (message "Loaded packages in %.3fs" elapsed))
 (let ((my-packages
        '(use-package diminish hipster-theme moe-theme zenburn-theme
-          ujelly-theme tronesque-theme tangotango-theme  solarized-theme
+          ujelly-theme tronesque-theme tangotango-theme solarized-theme
           color-theme-sanityinc-tomorrow cyberpunk-theme monokai-theme
-          farmhouse-theme material-theme afternoon-theme  gotham-theme doom-themes))
+          farmhouse-theme material-theme afternoon-theme gotham-theme doom-themes
+          spacemacs-theme))
       (refreshed? nil))
   (dolist (p my-packages)
     (unless (package-installed-p p)
@@ -295,41 +297,42 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package erc-hl-nicks
   :ensure
+  :after erc
   :commands erc-hl-nicks-mode
   :config
-  (add-hook 'erc-mode-hook 'erc-hl-nicks-mode))
+  (erc-hl-nicks-mode 1))
 
-(use-package erc-join :after erc :config (erc-autojoin-mode))
+(use-package erc-join
+  :after erc
+  :config
+  (erc-autojoin-mode 1)
+  (setq erc-autojoin-timing 'ident
+        erc-autojoin-channels-alist
+        '((".*\\.freenode.net" ; freenode.net
+           "#emacs" "#racket" "#scheme"
+           "#haskell" "#haskell-beginners" "#lisp"
+           "#programming" "#php"
+           "#startups" "#drupal-support" "#drupal"
+           "#clojure"))))
 
 (use-package erc-track
-  :init
-  (add-hook 'erc-mode-hook 'erc-track-disable)
-  :commands erc-track-disable)
+  :after erc
+  :config
+  ;; (add-hook 'erc-mode-hook 'erc-track-disable)
+  (erc-track-mode 1)
+  (setq erc-track-exclude-types
+        '("JOIN" "NICK" "PART" "QUIT" "MODE"
+          "324" "329" "332" "333" "353" "477")))
 
-(use-package erc-log :defer)
+;; (use-package erc-services
+;;   :after erc
+;;   :commands (erc-services-mode))
 
-(use-package erc-services
-  :commands (erc-services-mode))
 
 (use-package erc
+  :commands (erc)
   :defer
-  :functions (erc-update-modules)
   :config
-  (progn
-    (load-my-secrets)
-    (add-to-list 'erc-modules 'log)
-
-    (defadvice save-buffers-kill-emacs (before save-logs (arg) activate)
-      (save-some-buffers t (lambda () (when (eq major-mode 'erc-mode) t))))
-
-    (setq erc-join-buffer 'bury
-          erc-prompt  (lambda () (concat (buffer-name) "> "))
-          erc-prompt-for-password nil
-          erc-server "weber.freenode.net"
-          erc-port 6667
-          erc-nick "_sjs"
-          erc-user-full-name user-full-name
-          erc-password spasbo/erc-pwd
           erc-autojoin-timing 'ident
           erc-autojoin-channels-alist
           '((".*\\.freenode.net" ; freenode.net
@@ -338,89 +341,97 @@ If string is empty, current directory is not a git repo"
              "#stackoverflow" "#programming" "#php"
              "#startups" "#drupal-support" "#drupal"
              "#clojure" "#scala"))
-          erc-track-exclude-types
-          '("JOIN" "NICK" "PART" "QUIT" "MODE"
-            "324" "329" "332" "333" "353" "477")
-          erc-hide-list '("JOIN" "PART" "QUIT" "NICK")
-          erc-log-channels-directory "~/.erc/logs/"
-          erc-save-buffer-on-part t
-          erc-enable-logging 'erc-log-all-but-server-buffers)
+  (load-my-secrets)
+  (setq erc-join-buffer 'bury
+        erc-prompt  (lambda () (concat (buffer-name) "> "))
+        erc-prompt-for-password nil
+        erc-server "weber.freenode.net"
+        erc-port 6667
+        erc-nick "_sjs"
+        erc-user-full-name user-full-name
+        erc-password spasbo/erc-pwd
+        erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))
 
-    (if (not (file-exists-p erc-log-channels-directory))
-        (mkdir erc-log-channels-directory t))
-
-    (erc-update-modules)))
+  (erc-update-modules))
 
 (defun start-irc ()
   "Connect to IRC."
   (interactive)
   (when (y-or-n-p "Do you want to start IRC? ")
     (erc :server erc-server :port erc-port :nick erc-nick :password erc-password :full-name user-full-name)))
-
-(add-hook 'erc-mode-hook #'flyspell-mode)
-
 #+END_SRC
 
 ** eshell
 #+BEGIN_SRC emacs-lisp
-(use-package company-shell
+;; (use-package company-shell
+;;   :ensure
+;;   :after company
+;;   :config
+;;   (add-to-list 'company-backends #'company-shell))
+
+(use-package esh-opt
+  :after eshell)
+
+(use-package eshell-prompt-extras
   :ensure
-  :after company
+  :after esh-opt
   :config
-  (add-to-list 'company-backends #'company-shell))
+  (setq eshell-highlight-prompt nil
+        eshell-prompt-function 'epe-theme-lambda))
 
-(use-package eshell-prompt-extras :ensure :defer)
+(use-package em-dirs :after eshell)
 
-(use-package em-dirs :defer)
+;; (use-package em-prompt
+;;   :after eshell
+;;   :config
+;;   (setq eshell-prompt-function
+;;         (lambda ()
+;;           (let* ((dirz (get-abbriv-directory))
+;;                  (my/host (system-name))                  )
+;;             (concat
+;;              (propertize "[" 'face `(:foreground "#FFFFFF"))
+;;              (propertize (epe-user-name) 'face `(:foreground "#1585C6"))
+;;              (propertize "@" 'face `(:foreground "#D63883" :weight bold))
+;;              (propertize my/host 'face `(:foreground "#22A198"))
+;;              (propertize ": " 'face `(:foreground "#22A198"))
+;;              (propertize dirz 'face `(:foreground "#7BC783"))
+;;              (propertize "]" 'face `(:foreground "#FFFFFF"))
+;;              (propertize (epe-git-branch) 'face `(:foreground "#FFFFFF"))
+;;              (propertize "\nλ " 'face `(:foreground "#7BC783")))))
+;;         eshell-prompt-regexp "^. "))
 
-(use-package vc :defer)
-
-(use-package em-prompt
+(use-package em-cmpl
   :after eshell
   :config
-  (setq eshell-prompt-function
-        (lambda ()
-          (let* ((dirz (get-abbriv-directory))
-                 (my/host (system-name))
-                 (uzr (getenv "USER"))
-                 (git-branch (or (current-git-branch (substring (pwd) 10)) "")))
-            (concat
-             (propertize "[" 'face `(:foreground "#FFFFFF"))
-             (propertize uzr 'face `(:foreground "#1585C6"))
-             (propertize "@" 'face `(:foreground "#D63883" :weight bold))
-             (propertize my/host 'face `(:foreground "#22A198"))
-             (propertize ": " 'face `(:foreground "#22A198"))
-             (propertize dirz 'face `(:foreground "#7BC783"))
-             (propertize "]" 'face `(:foreground "#FFFFFF"))
-             (propertize git-branch 'face `(:foreground "#FFFFFF"))
-             (propertize "\nλ " 'face `(:foreground "#7BC783")))))
-        eshell-prompt-regexp "^. "))
+  (setq eshell-cmpl-ignore-case t ))
 
-(use-package em-cmpl :after erc :config (setq eshell-cmpl-ignore-case t ))
 
-(use-package esh-ext :defer)
-
-(use-package em-hist :after erc :config (setq eshell-save-history-on-exit t))
+(use-package em-hist
+  :after eshell
+  :config
+  (setq eshell-save-history-on-exit t
+        eshell-hist-ignoredups t
+        eshell-history-size nil))
 
 (use-package eshell
+  :bind (("C-c s" . eshell))
   :config
   (defun eshell/clear ()
     "Clears the shell buffer ala Unix's clear."
     ;; the shell prompts are read-only, so clear that for the duration
     (let ((inhibit-read-only t))
       ;; simply delete the region
-      (erase-buffer)))
-  :bind (("C-c s" . eshell)))
+      (erase-buffer))))
 
-(use-package em-glob :after erc :config (setq eshell-glob-case-insensitive t))
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (define-key eshell-mode-map
-                [remap eshell-pcomplete]
-              'helm-esh-pcomplete)
-            (define-key eshell-mode-map
-                (kbd "M-p")
-              'helm-eshell-history)))
+;; (define-key eshell-mode-map
+;;   [remap eshell-pcomplete]
+;;   'helm-esh-pcomplete)
+
+(use-package em-glob
+  :after eshell
+  :config
+  (setq eshell-glob-case-insensitive t
+        eshell-glob-include-dot-files t))
 #+END_SRC
 
 ** Org
@@ -554,7 +565,11 @@ If string is empty, current directory is not a git repo"
 ** Helm
 *** Helm core
 #+BEGIN_SRC emacs-lisp
+(use-package helm :ensure :defer)
 (require 'helm-config)
+
+(global-set-key (kbd "C-c h") #'helm-command-prefix)
+(global-unset-key (kbd "C-x c"))
 
 ;;; Enable Modes (helm-mode is loading nearly everything).
 (use-package helm-mode
@@ -564,6 +579,7 @@ If string is empty, current directory is not a git repo"
   :config (helm-adaptive-mode 1))
 
 (use-package helm-ring
+  :bind ("M-y" . helm-show-kill-ring)
   :config (helm-push-mark-mode 1))
 
 (use-package helm-utils
@@ -572,10 +588,13 @@ If string is empty, current directory is not a git repo"
 
 (use-package helm-ag
   :ensure
+  :bind (("C-c h a" . helm-do-ag))
   :config
-  (progn
-    (setq helm-ag-base-command "ag --nocolor --nogroup --ignore-case"
-          helm-ag-insert-at-point 'symbol)))
+  (setq helm-ag-base-command "ag --nocolor --nogroup --ignore-case"
+        helm-ag-insert-at-point 'symbol))
+
+(use-package helm-grep
+  :bind (("C-c h g" . helm-do-grep-ag)))
 
 (use-package helm-sys
   :config (helm-top-poll-mode 1))
@@ -583,19 +602,18 @@ If string is empty, current directory is not a git repo"
 (use-package helm-semantic
   :bind (("C-c i" . helm-semantic-or-imenu)))
 
+(use-package helm-elisp
+  :bind ("C-h a" . helm-apropos))
+
+(use-package helm-files
+  :bind ("C-x C-f" . helm-find-files))
+
 (global-set-key (kbd "M-x") 'undefined)
 (global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-M-z") 'helm-resume)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-;; (global-set-key (kbd "C-c <SPC>")                    'helm-all-mark-rings)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
 (global-set-key (kbd "C-x r b") 'helm-filtered-bookmarks)
-(global-set-key (kbd "C-h a") 'helm-apropos)
-(define-key global-map (kbd "M-g g") 'helm-do-grep-ag)
-(define-key global-map (kbd "M-g a") 'helm-do-ag)
 
 (define-key global-map [remap switch-to-buffer] 'helm-mini)
-;; (define-key global-map [remap dabbrev-expand]        'helm-dabbrev)
 (define-key global-map [remap find-tag] 'helm-etags-select)
 
 (add-to-list 'helm-completing-read-handlers-alist '(org-set-tags-command))
@@ -617,15 +635,51 @@ If string is empty, current directory is not a git repo"
 
       helm-ff-file-name-history-use-recentf t
       helm-ff-skip-boring-files t
-      helm-ff-search-library-in-sexp t)
+      helm-ff-search-library-in-sexp t
+
+      helm-grep-default-command "grep -a -d skip %e -n%cH -e %p %f"
+      helm-grep-default-recurse-command "grep -a -d recurse %e -n%cH -e %p %f"
+      helm-input-idle-delay 0.05
+      helm-buffer-max-length 25
+      helm-reuse-last-window-split-state t
+      helm-always-two-windows t)
+
 (when (executable-find "curl")
   (setq helm-net-prefer-curl t))
+
+;; rebind tab to do persistent action
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+;; make TAB works in terminal
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
+;; list actions using C-z
+(define-key helm-map (kbd "C-z")  'helm-select-action)
+
+(define-key helm-map (kbd "C-p")   'helm-previous-line)
+(define-key helm-map (kbd "C-n")   'helm-next-line)
+(define-key helm-map (kbd "C-M-n") 'helm-next-source)
+(define-key helm-map (kbd "C-M-p") 'helm-previous-source)
+(define-key helm-map (kbd "M-N")   'helm-next-source)
+(define-key helm-map (kbd "M-P")   'helm-previous-source)
+
+;; ggrep is gnu grep on OSX
+(when (executable-find "ggrep")
+  (setq helm-grep-default-command
+        "ggrep -a -d skip %e -n%cH -e %p %f"
+        helm-grep-default-recurse-command
+        "ggrep -a -d recurse %e -n%cH -e %p %f"))
 
 (defun pl/helm-alive-p ()
   "Prevents conflicts between helm and golden-ratio-mode"
   (if (boundp 'helm-alive-p)
       (symbol-value 'helm-alive-p)))
-
+#+END_SRC
+*** helm-fuzzier
+#+BEGIN_SRC emacs-lisp
+(use-package helm-fuzzier
+  :ensure
+  :after helm
+  :config
+  (helm-fuzzier-mode))
 #+END_SRC
 
 *** helm-descbinds
@@ -708,11 +762,6 @@ If string is empty, current directory is not a git repo"
 (use-package helm-flycheck :ensure :commands (helm-flycheck))
 #+END_SRC
 
-*** flycheck-pos-tip
-#+BEGIN_SRC emacs-lisp
-(use-package flycheck-pos-tip :defer :ensure)
-#+END_SRC
-
 ** Version control
 *** gitconfig-mode
 #+BEGIN_SRC emacs-lisp
@@ -725,7 +774,6 @@ If string is empty, current directory is not a git repo"
   :mode (("gitignore\\'" . gitignore-mode)))
 #+END_SRC
 *** git-gutter-fringe
-Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package git-gutter-fringe
   :ensure
@@ -753,21 +801,12 @@ Displays git changes in fringe area
   :defer)
 
 #+END_SRC
-*** bookmarks
-#+BEGIN_SRC emacs-lisp
-(use-package bookmark
-  :defer
-  :config
-  (setq bookmark-save-flag 1))
-#+END_SRC
 *** ediff
 #+BEGIN_SRC emacs-lisp
 (use-package ediff
-  :defer
+  :commands (ediff)
   :config
-  (progn
-    (setq ediff-split-window-function 'split-window-horizontally)))
-
+  (setq ediff-split-window-function 'split-window-horizontally))
 #+END_SRC
 
 *** neotree
@@ -788,11 +827,6 @@ Displays git changes in fringe area
   (setq dired-recursive-copies 'always
         dired-recursive-deletes 'always
         dired-listing-switches "-al"))
-
-(use-package dired+
-  :ensure
-  :defer)
-
 #+END_SRC
 *** autorevert
 #+BEGIN_SRC emacs-lisp
@@ -810,7 +844,8 @@ Displays git changes in fringe area
 (use-package saveplace
   :config
   (setq save-place-file (concat user-emacs-directory "places"))
-  (setq-default save-place t))
+  (setq-default save-place t)
+  (save-place-mode 1))
 #+END_SRC
 *** recentf
 #+BEGIN_SRC emacs-lisp
@@ -829,6 +864,12 @@ Displays git changes in fringe area
         recentf-auto-cleanup 'never
         recentf-max-menu-items 20
         recentf-keep '(keep-default-and-visible-recentf-p)))
+#+END_SRC
+*** dired+
+#+BEGIN_SRC emacs-lisp
+(use-package dired+
+  :ensure
+  :after dired)
 #+END_SRC
 ** Project navigation
 *** projectile
@@ -880,14 +921,24 @@ Displays git changes in fringe area
   (set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection)))
 #+END_SRC
 
+*** company-flx
+#+BEGIN_SRC emacs-lisp
+(use-package company-flx
+  :ensure
+  :after company
+  :config
+  (company-flx-mode +1))
+#+END_SRC
+
 *** yasnippet
 #+BEGIN_SRC emacs-lisp
-(use-package yasnippet ;; TODO remove; currently down to 1602
+(use-package yasnippet
   :ensure
   :after company
   :diminish yas-minor-mode
   :commands (yas-global-mode yas-minor-mode update-company-backends-with-snippets)
   :config
+  (yas-global-mode 1)
   ;; Add yasnippet support for all company backends
   ;; https://github.com/syl20bnr/spacemacs/pull/179
   (defvar company-mode/enable-yas t
@@ -972,23 +1023,23 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package powerline
   :ensure
-  :defer
-  :config
-  (setq ns-use-srgb-colorspace nil)) ;; Displays arrows incorrectly if not set
+  :defer)
 #+END_SRC
 
 *** spaceline
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config
   :ensure spaceline
-  :commands (spaceline-emacs-theme spaceline-helm-mode)
-  :if (display-graphic-p)
+  :commands (spaceline-spacemacs-theme spaceline-emacs-theme spaceline-helm-mode)
+  :after anzu
+  :init
+  (setq ns-use-srgb-colorspace nil) ;; Displays arrows incorrectly if not set
   :config
   ;; Valid Values: alternate, arrow, arrow-fade, bar, box, brace,
   ;; butt, chamfer, contour, curve, rounded, roundstub, wave, zigzag,
-  ;; utf-8.
-  ;; (setq powerline-default-separator 'utf-8)
-  (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state))
+  ;; utf-8
+  (setq powerline-default-separator 'wave
+        spaceline-highlight-face-func 'spaceline-highlight-face-default))
 
 #+END_SRC
 
@@ -1033,12 +1084,12 @@ Displays git changes in fringe area
   :config
   (electric-pair-mode 1))
 #+END_SRC
-*** Formatting
+*** aggressive-indent mode
 #+BEGIN_SRC emacs-lisp
 (use-package aggressive-indent
   :ensure
-  :init
-  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+  ;; :init
+  ;; (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   :commands aggressive-indent-mode)
 #+END_SRC
 *** Strings
@@ -1145,6 +1196,17 @@ Displays git changes in fringe area
 
 #+END_SRC
 ** Buffer / frame navigation
+*** anzu
+#+BEGIN_SRC emacs-lisp
+(use-package anzu
+  :ensure
+  :bind
+  (("C-c r" . anzu-replace-at-cursor-thing))
+  :config
+  (global-set-key [remap query-replace] 'anzu-query-replace)
+  (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+  (global-anzu-mode))
+#+END_SRC
 *** isearch
 #+BEGIN_SRC emacs-lisp
 (use-package isearch
@@ -1211,32 +1273,12 @@ Displays git changes in fringe area
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode :ensure :defer)
 #+END_SRC
-** Go
-#+BEGIN_SRC emacs-lisp
-;; (use-package go-mode
-;;   :ensure
-;;   :init
-;;   :config
-;;   (go-eldoc-setup)
-;;   (add-hook 'before-save-hook 'gofmt-before-save)
-
-;;   (require 'go-mode-autoloads))
-
-;; (use-package go-eldoc
-;;   :ensure
-;;   :commands go-eldoc-setup)
-
-;; (use-package company-go
-;;   :ensure
-;;   :after company)
-
-#+END_SRC
 ** Shell
 #+BEGIN_SRC emacs-lisp
 (use-package sh-script
-  ;; :mode (("[bash|zsh|vim]rc?$" . sh-mode)
-  ;;        ("[bash_|z]?profile$" . sh-mode)
-  ;;        ("[history|aliases]$" . sh-mode))
+  :mode (("\(bash\|zsh\)rc$" . sh-mode)
+         ("\(bash_\|z\)profile$" . sh-mode)
+         ("\(history\|aliases\)$" . sh-mode))
   :config
   (setq sh-indentation 2
         sh-basic-offset 2))
@@ -1283,25 +1325,31 @@ Displays git changes in fringe area
 
 (use-package tern
   :ensure
-  :defer
+  :after js2-mode
   :init
   (add-hook 'js2-mode-hook 'tern-mode))
 
 (use-package company-tern
   :ensure
-  :defer)
+  :after company
+  :config
+  (add-to-list 'company-backends 'company-tern))
+
 #+END_SRC
 
 ** Elm
 *** elm-mode
 #+BEGIN_SRC emacs-lisp
-(add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
+(use-package elm-yasnippets
+  :ensure
+  :after yasnippet)
 
 (use-package elm-mode
   :ensure
   :defer
+  :init
+  (add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
   :config
-  (add-to-list 'company-backends 'company-elm)
   (setq elm-tags-exclude-elm-stuff nil))
 #+END_SRC
 
@@ -1479,22 +1527,20 @@ Displays git changes in fringe area
 
 ** Python
 #+BEGIN_SRC emacs-lisp
-(use-package python
-  :ensure
-  :bind (:map python-mode-map
-              ("RET" . newline-and-indent)))
+(use-package python :ensure :defer)
 
 (use-package elpy
   :ensure
   :after python
   :config
   (elpy-enable)
+  (setq elpy-rpc-backend "jedi")
   (when (executable-find "ipython")
-    (elpy-use-ipython))
+    (elpy-use-ipython)
+    (setq python-shell-interpreter-args "-i --simple-prompt"))
   (when (require 'flycheck nil t)
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
-          elpy-modules (delq 'elpy-module-pyvenv elpy-modules)
-          elpy-rpc-backend "jedi")))
+          elpy-modules (delq 'elpy-module-pyvenv elpy-modules))))
 
 (use-package py-autopep8
   :ensure
@@ -1502,17 +1548,6 @@ Displays git changes in fringe area
   :config
   (add-hook 'elpy-mode-hook #'py-autopep8-enable-on-save))
 
-#+END_SRC
-
-** Android
-#+BEGIN_SRC emacs-lisp
-(use-package android-mode
-  :ensure
-  :defer
-  :config
-  (let ((local-android-home "/Development/Android/sdk"))
-    (if (file-exists-p local-android-home)
-        (setq android-mode-sdk-dir local-android-home))))
 #+END_SRC
 
 ** C
@@ -1715,16 +1750,14 @@ Displays git changes in fringe area
   (diminish 'visual-line-mode)
   (diminish 'helm-mode)
 
+  (spaceline-emacs-theme)
+  (spaceline-helm-mode)
+
   (if (display-graphic-p)
       (progn
-        (load-theme 'sanityinc-tomorrow-eighties t)
-        ;; (load-theme 'farmhouse-dark t)
-        ;; (load-theme 'gotham t)
-        ;; (spaceline-emacs-theme)
-        (spaceline-helm-mode)
-        (set-frame-font "Roboto Mono for Powerline-13"))
-    ;; (set-frame-font "Monoid-11"))
-    (load-theme 'hipster t)))
+        (load-theme 'spacemacs-dark t)
+        (set-frame-font "Source Code Pro for Powerline-15"))
+      (load-theme 'hipster t)))
 #+END_SRC
 
 ** prog-mode
