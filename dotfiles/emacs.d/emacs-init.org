@@ -322,23 +322,16 @@ If string is empty, current directory is not a git repo"
         '("JOIN" "NICK" "PART" "QUIT" "MODE"
           "324" "329" "332" "333" "353" "477")))
 
-;; (use-package erc-services
-;;   :after erc
-;;   :commands (erc-services-mode))
-
-
 (use-package erc
   :commands (erc)
   :defer
   :config
-          erc-autojoin-timing 'ident
-          erc-autojoin-channels-alist
-          '((".*\\.freenode.net" ; freenode.net
-             "#emacs" "#racket" "#scheme"
-             "#haskell" "#haskell-beginners" "#lisp"
-             "#stackoverflow" "#programming" "#php"
-             "#startups" "#drupal-support" "#drupal"
-             "#clojure" "#scala"))
+  '((".*\\.freenode.net" ; freenode.net
+     "#emacs" "#racket" "#scheme"
+     "#haskell" "#haskell-beginners" "#lisp"
+     "#stackoverflow" "#programming" "#php"
+     "#startups" "#drupal-support" "#drupal"
+     "#clojure" "#scala"))
   (load-my-secrets)
   (setq erc-join-buffer 'bury
         erc-prompt  (lambda () (concat (buffer-name) "> "))
