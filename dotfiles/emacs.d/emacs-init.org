@@ -317,7 +317,6 @@ If string is empty, current directory is not a git repo"
 (use-package erc-track
   :after erc
   :config
-  ;; (add-hook 'erc-mode-hook 'erc-track-disable)
   (erc-track-mode 1)
   (setq erc-track-exclude-types
         '("JOIN" "NICK" "PART" "QUIT" "MODE"
