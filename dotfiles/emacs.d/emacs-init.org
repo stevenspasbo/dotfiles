@@ -560,8 +560,10 @@ If string is empty, current directory is not a git repo"
 ** Helm
 *** Helm core
 #+BEGIN_SRC emacs-lisp
-(use-package helm :ensure :defer)
-(require 'helm-config)
+(use-package helm
+  :ensure
+  :init
+  (require 'helm-config))
 
 (global-set-key (kbd "C-c h") #'helm-command-prefix)
 (global-unset-key (kbd "C-x c"))
@@ -826,9 +828,9 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package saveplace
   :config
-  (setq save-place-file (concat user-emacs-directory "places"))
-  (setq-default save-place t)
-  (save-place-mode 1))
+  (if (version< emacs-version "25.0")
+      (setq-default save-place t)
+    (save-place-mode 1)))
 #+END_SRC
 *** recentf
 #+BEGIN_SRC emacs-lisp
@@ -847,12 +849,6 @@ If string is empty, current directory is not a git repo"
         recentf-auto-cleanup 'never
         recentf-max-menu-items 20
         recentf-keep '(keep-default-and-visible-recentf-p)))
-#+END_SRC
-*** dired+
-#+BEGIN_SRC emacs-lisp
-(use-package dired+
-  :ensure
-  :after dired)
 #+END_SRC
 ** Project navigation
 *** projectile
@@ -892,8 +888,10 @@ If string is empty, current directory is not a git repo"
 (use-package company
   :ensure
   :diminish ""
+  :commands (global-company-mode)
+  :init
+  (add-hook 'after-init-hook #'global-company-mode)
   :config
-  (global-company-mode 1)
   (setq company-minimum-prefix-length 2
         company-idle-delay 0.1
         company-tooltip-align-annotations t
@@ -1014,16 +1012,15 @@ If string is empty, current directory is not a git repo"
 (use-package spaceline-config
   :ensure spaceline
   :commands (spaceline-spacemacs-theme spaceline-emacs-theme spaceline-helm-mode)
-  :after anzu
   :init
-  (setq ns-use-srgb-colorspace nil) ;; Displays arrows incorrectly if not set
+  ;; Displays arrows incorrectly if not set
+  (setq ns-use-srgb-colorspace nil)
   :config
   ;; Valid Values: alternate, arrow, arrow-fade, bar, box, brace,
   ;; butt, chamfer, contour, curve, rounded, roundstub, wave, zigzag,
   ;; utf-8
   (setq powerline-default-separator 'wave
         spaceline-highlight-face-func 'spaceline-highlight-face-default))
-
 #+END_SRC
 
 *** nyan-mode
@@ -1733,14 +1730,13 @@ If string is empty, current directory is not a git repo"
   (diminish 'visual-line-mode)
   (diminish 'helm-mode)
 
-  (spaceline-emacs-theme)
-  (spaceline-helm-mode)
-
   (if (display-graphic-p)
       (progn
         (load-theme 'spacemacs-dark t)
-        (set-frame-font "Source Code Pro for Powerline-15"))
-      (load-theme 'hipster t)))
+        (set-frame-font "Source Code Pro for Powerline-15")
+        (spaceline-emacs-theme)
+        (spaceline-helm-mode))
+    (load-theme 'hipster t)))
 #+END_SRC
 
 ** prog-mode
