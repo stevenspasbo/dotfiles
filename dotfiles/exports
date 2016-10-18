@@ -3,6 +3,7 @@
 case "$(uname -s)" in
   Darwin)
     export IS_MAC=true
+    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
     ;;
   Linux)
     export IS_LINUX=true
@@ -11,7 +12,8 @@ case "$(uname -s)" in
     ;;
 esac
 
-export EDITOR='emacs -nw'
+export EDITOR=emacs
+export GIT_EDITOR='emacs -nw'
 
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8

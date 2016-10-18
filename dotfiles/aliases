@@ -9,8 +9,6 @@ else
   export RC_FILE="$HOME/.bashrc"
 fi
 
-export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-
 #-------------------------------------------------------------
 # Command alts
 #-------------------------------------------------------------
@@ -24,7 +22,7 @@ if [[ $OSTYPE =~ ^darwin ]]; then
 else
   alias ls="command ls -h --color"
 fi
-alias ll="ls -la"
+alias ll="ls -laF"
 alias l='ls -CF'
 
 alias df='df -h'
@@ -42,9 +40,7 @@ alias cal='cal | grep --before-context 6 --after-context 6 --color -e " $(date +
 
 alias cloc='cloc --force-lang-def=$HOME/cloc-def'
 
-if [[ $OSTYPE =~ ^linux ]]; then
-  alias emacs='emacs -nw'
-fi
+alias emacs='emacs -nw'
 
 #-------------------------------------------------------------
 # Shortcuts and directory stuff
