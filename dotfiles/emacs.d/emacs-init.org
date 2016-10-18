@@ -283,12 +283,16 @@ If string is empty, current directory is not a git repo"
   (setq which-key-side-window-max-height 0.35)
   (which-key-add-key-based-replacements
     ;; C-x
+    "C-x" "C-x prefix"
     "C-x a" "abbrev"
     "C-x 8" "unicode"
     "C-x RET" "encoding"
     ;; C-c
+    "C-c" "C-c prefix"
     "C-c !" "flycheck"
-    "C-c &" "yasnippet")
+    "C-c &" "yasnippet"
+    ;; M-g
+    "M-g" "goto / errors")
   (which-key-mode 1))
 #+END_SRC
 
