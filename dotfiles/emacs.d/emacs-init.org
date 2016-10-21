@@ -47,7 +47,8 @@ Disable custom file, put any changes you want in their relevant package configur
               ring-bell-function (lambda ())
               confirm-kill-emacs 'y-or-n-p ; Disallow accidental exits
               initial-scratch-message ""
-              frame-title-format "%b (%f)")
+              frame-title-format "%b (%f)"
+              load-prefer-newer t)
 #+END_SRC
 
 ** Text - UTF-8 all the things

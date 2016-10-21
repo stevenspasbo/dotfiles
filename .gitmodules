@@ -37,3 +37,6 @@
 [submodule "fonts"]
 	path = fonts
 	url = https://github.com/powerline/fonts.git
+[submodule "iterm-dracula"]
+	path = iterm-dracula
+	url = https://github.com/dracula/iterm.git
