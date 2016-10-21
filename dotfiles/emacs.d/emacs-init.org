@@ -883,6 +883,12 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 ** Completion / tagging
+*** dash-at-point
+#+BEGIN_SRC emacs-lisp
+(use-package dash-at-point
+  :ensure
+  :bind (("C-c d" . dash-at-point)))
+#+END_SRC
 *** Company
 [[https://github.com/company-mode/company-mode][Complete Anything]]
 #+BEGIN_SRC emacs-lisp
