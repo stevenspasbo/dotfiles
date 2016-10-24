@@ -106,8 +106,10 @@ Don't warn about narrowing or downcasing
        '(use-package diminish hipster-theme moe-theme zenburn-theme
           ujelly-theme tronesque-theme tangotango-theme solarized-theme
           color-theme-sanityinc-tomorrow cyberpunk-theme monokai-theme
-          farmhouse-theme material-theme afternoon-theme gotham-theme doom-themes
-          spacemacs-theme))
+          farmhouse-theme material-theme afternoon-theme gotham-theme
+          doom-themes spacemacs-theme noctilux-theme ample-zen-theme
+          reykjavik-theme suscolors-theme kooten-theme avk-emacs-themes
+          dracula-theme ample-theme color-theme-cobalt color-theme))
       (refreshed? nil))
   (dolist (p my-packages)
     (unless (package-installed-p p)
