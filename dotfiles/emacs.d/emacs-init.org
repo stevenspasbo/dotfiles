@@ -1263,9 +1263,11 @@ If string is empty, current directory is not a git repo"
 ** Shell
 #+BEGIN_SRC emacs-lisp
 (use-package sh-script
-  :mode (("\(bash\|zsh\)rc$" . sh-mode)
-         ("\(bash_\|z\)profile$" . sh-mode)
-         ("\(history\|aliases\)$" . sh-mode))
+  :mode (;;("rc\\'" . shell-script-mode)
+         ("\(bash\|zsh\)rc\\'" . shell-script-mode)
+         ("\(bash_\|z\)profile\\'" . sh-mode)
+         ("\(history\|aliases\)\\'" . sh-mode)
+         ("zsh-theme\\'"))
   :config
   (setq sh-indentation 2
         sh-basic-offset 2))
