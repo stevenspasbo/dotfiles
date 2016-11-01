@@ -29,7 +29,8 @@ places
 /emacs.d/cider-history
 dotfiles/emacs.d/cider-history
 el-get
-dotfiles/emacs.d/helm-adaptive-history
+
+**/helm-adaptive-history
 
 # Tags
 GPATH
