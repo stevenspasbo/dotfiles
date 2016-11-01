@@ -31,10 +31,7 @@ set nocompatible " Uses vim settings instead of vi settings
 filetype on
 filetype plugin on
 set number " Enables line numbers
-set mouse=a " Enable mouse
-set ignorecase " Ignores case while searching
-set smartcase " Unless search contains uppercase
-set background=dark " For dark terminals
+"set mouse=a " Enable mouse
 set ruler " Show position
 set showmode
 
@@ -44,6 +41,9 @@ set showmode
 " 1 tab == 2 spaces
 set tabstop=2
 set shiftwidth=2
+
+set ignorecase " Ignores case while searching
+set smartcase " Unless search contains uppercase
 
 filetype indent on " Smart indents
 set expandtab " Use spaces instead of tabs
@@ -61,6 +61,7 @@ set updatecount=100 " Update swapfile after 100 character changes
 """""""""""""""""""""""""""""""""""""""""""
 " Color settings
 """""""""""""""""""""""""""""""""""""""""""
+set background=dark " For dark terminals
 syntax enable " Syntax highlighting
 colorscheme molokai
 set encoding=utf8
