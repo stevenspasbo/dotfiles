@@ -112,6 +112,5 @@ alias -g gp=' | grep -i'
 alias -g l=' | less'
 
 # Finally
-
-[[ -s $HOME/.aliases ]] && . $HOME/.aliases
 [[ -s $HOME/.exports ]] && . $HOME/.exports
+[[ -s $HOME/.aliases ]] && . $HOME/.aliases
