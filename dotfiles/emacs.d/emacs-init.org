@@ -89,40 +89,42 @@ Don't warn about narrowing or downcasing
 
 * Enable packages
 #+BEGIN_SRC emacs-lisp
-(package-initialize)
-(require 'package)
-(setq package-archives
-      '(("marmalade"    . "http://marmalade-repo.org/packages/")
-        ("gnu"          . "https://elpa.gnu.org/packages/")
-        ("org"          . "http://orgmode.org/elpa/")
-        ("melpa"        . "https://melpa.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")))
+  (package-initialize)
+  (require 'package)
+  (setq package-archives
+        '(("marmalade"    . "http://marmalade-repo.org/packages/")
+          ("gnu"          . "https://elpa.gnu.org/packages/")
+          ("org"          . "http://orgmode.org/elpa/")
+          ("melpa"        . "https://melpa.org/packages/")
+          ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
-(setq package-enable-at-startup nil)
-(let ((elapsed (float-time (time-subtract (current-time)
-                                          emacs-start-time))))
-  (message "Loaded packages in %.3fs" elapsed))
-(let ((my-packages
-       '(use-package diminish hipster-theme moe-theme zenburn-theme
-          ujelly-theme tronesque-theme tangotango-theme solarized-theme
-          color-theme-sanityinc-tomorrow cyberpunk-theme monokai-theme
-          farmhouse-theme material-theme afternoon-theme gotham-theme
-          doom-themes spacemacs-theme noctilux-theme ample-zen-theme
-          reykjavik-theme suscolors-theme kooten-theme avk-emacs-themes
-          dracula-theme ample-theme color-theme-cobalt color-theme))
-      (refreshed? nil))
-  (dolist (p my-packages)
-    (unless (package-installed-p p)
-      (when (null refreshed?)
-        (package-refresh-contents)
-        (setq refreshed? t))
-      (package-install p))))
+  (setq package-enable-at-startup nil)
+  (let ((elapsed (float-time (time-subtract (current-time)
+                                            emacs-start-time))))
+    (message "Loaded packages in %.3fs" elapsed))
+  (let ((my-packages
+         '(use-package diminish moe-theme zenburn-theme
+            ujelly-theme tronesque-theme tangotango-theme solarized-theme
+            color-theme-sanityinc-tomorrow cyberpunk-theme monokai-theme
+            farmhouse-theme material-theme afternoon-theme gotham-theme
+            doom-themes spacemacs-theme noctilux-theme ample-zen-theme
+            reykjavik-theme suscolors-theme kooten-theme avk-emacs-themes
+            dracula-theme ample-theme color-theme-cobalt color-theme
+            planet-theme omtose-phellack-theme))
+        (refreshed? nil))
+    (dolist (p my-packages)
+      (unless (package-installed-p p)
+        (when (null refreshed?)
+          (package-refresh-contents)
+          (setq refreshed? t))
+        (package-install p))))
+  ;; hipster-theme seems to have been removed
 
-(defun toggle-use-package-debug ()
-  (interactive)
-  (if use-package-debug
-      (setq use-package-debug nil)
-    (setq use-package-debug t)))
+  (defun toggle-use-package-debug ()
+    (interactive)
+    (if use-package-debug
+        (setq use-package-debug nil)
+      (setq use-package-debug t)))
 #+END_SRC
 
 * Functions
@@ -276,6 +278,14 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 * Configure packages
+** System
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+    :ensure
+    :commands (exec-path-from-shell-initialize exec-path-from-shell-getenv))
+;;        (if *is-a-mac*
+;;      (add-hook 'after-init-hook 'exec-path-from-shell-initialize))
+#+END_SRC
 ** Usability
 *** which-key
 #+BEGIN_SRC emacs-lisp
@@ -299,64 +309,74 @@ If string is empty, current directory is not a git repo"
   (which-key-mode 1))
 #+END_SRC
 
+*** crux
+#+BEGIN_SRC emacs-lisp
+(use-package crux
+  :ensure
+  :config
+  (crux-reopen-as-root-mode))
+#+END_SRC
 ** ERC
 #+BEGIN_SRC emacs-lisp
-(use-package erc-hl-nicks
-  :ensure
-  :after erc
-  :commands erc-hl-nicks-mode
-  :config
-  (erc-hl-nicks-mode 1))
+  (use-package erc
+    :commands (erc)
+    :init
+    (exec-path-from-shell-initialize)
+    :defer
+    :config
+    '((".*\\.freenode.net" ; freenode.net
+       "#emacs" "#racket" "#scheme"
+       "#haskell" "#haskell-beginners" "#lisp"
+       "#stackoverflow" "#programming" "#php"
+       "#startups" "#drupal-support" "#drupal"
+       "#clojure" "#scala"))
+    (load-my-secrets)
+    (setq erc-join-buffer 'bury
+          erc-prompt  (lambda () (concat (buffer-name) "> "))
+          erc-prompt-for-password nil
+          erc-server "weber.freenode.net"
+          erc-port 6667
+          erc-nick "_sjs"
+          erc-user-full-name user-full-name
+          erc-password spasbo/erc-pwd
+          erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))
 
-(use-package erc-join
-  :after erc
-  :config
-  (erc-autojoin-mode 1)
-  (setq erc-autojoin-timing 'ident
-        erc-autojoin-channels-alist
-        '((".*\\.freenode.net" ; freenode.net
-           "#emacs" "#racket" "#scheme"
-           "#haskell" "#haskell-beginners" "#lisp"
-           "#programming" "#php"
-           "#startups" "#drupal-support" "#drupal"
-           "#clojure"))))
+    (erc-update-modules))
 
-(use-package erc-track
-  :after erc
-  :config
-  (erc-track-mode 1)
-  (setq erc-track-exclude-types
-        '("JOIN" "NICK" "PART" "QUIT" "MODE"
-          "324" "329" "332" "333" "353" "477")))
+  (use-package erc-hl-nicks
+    :ensure
+    :after erc
+    :commands erc-hl-nicks-mode
+    :config
+    (erc-hl-nicks-mode 1))
 
-(use-package erc
-  :commands (erc)
-  :defer
-  :config
-  '((".*\\.freenode.net" ; freenode.net
-     "#emacs" "#racket" "#scheme"
-     "#haskell" "#haskell-beginners" "#lisp"
-     "#stackoverflow" "#programming" "#php"
-     "#startups" "#drupal-support" "#drupal"
-     "#clojure" "#scala"))
-  (load-my-secrets)
-  (setq erc-join-buffer 'bury
-        erc-prompt  (lambda () (concat (buffer-name) "> "))
-        erc-prompt-for-password nil
-        erc-server "weber.freenode.net"
-        erc-port 6667
-        erc-nick "_sjs"
-        erc-user-full-name user-full-name
-        erc-password spasbo/erc-pwd
-        erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))
+  (use-package erc-join
+    :after erc
+    :config
+    (erc-autojoin-mode 1)
+    (setq erc-autojoin-timing 'ident
+          erc-autojoin-channels-alist
+          '((".*\\.freenode.net" ; freenode.net
+             "#emacs" "#racket" "#scheme"
+             "#haskell" "#haskell-beginners" "#lisp"
+             "#programming" "#php"
+             "#startups" "#drupal-support" "#drupal"
+             "#clojure"))))
 
-  (erc-update-modules))
+  (use-package erc-track
+    :after erc
+    :config
+    (erc-track-mode 1)
+    (setq erc-track-exclude-types
+          '("JOIN" "NICK" "PART" "QUIT" "MODE"
+            "324" "329" "332" "333" "353" "477")))
 
-(defun start-irc ()
-  "Connect to IRC."
-  (interactive)
-  (when (y-or-n-p "Do you want to start IRC? ")
-    (erc :server erc-server :port erc-port :nick erc-nick :password erc-password :full-name user-full-name)))
+
+  (defun start-irc ()
+    "Connect to IRC."
+    (interactive)
+    (when (y-or-n-p "Do you want to start IRC? ")
+      (erc :server erc-server :port erc-port :nick erc-nick :password erc-password :full-name user-full-name)))
 #+END_SRC
 
 ** eshell
@@ -675,11 +695,12 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 *** helm-fuzzier
 #+BEGIN_SRC emacs-lisp
-(use-package helm-fuzzier
-  :ensure
-  :after helm
-  :config
-  (helm-fuzzier-mode))
+;; (use-package helm-fuzzier
+;;   :ensure
+;;   :disabled t
+;;   ;; :after helm
+;;   :config
+;;   (helm-fuzzier-mode nil))
 #+END_SRC
 
 *** helm-descbinds
@@ -913,11 +934,11 @@ If string is empty, current directory is not a git repo"
 
 *** company-flx
 #+BEGIN_SRC emacs-lisp
-(use-package company-flx
-  :ensure
-  :after company
-  :config
-  (company-flx-mode +1))
+;; (use-package company-flx
+;;   :ensure
+;;   :after company
+;;   :config
+;;   (company-flx-mode +1))
 #+END_SRC
 
 *** yasnippet
@@ -967,16 +988,6 @@ If string is empty, current directory is not a git repo"
               ("C-c g r" . ggtags-find-reference)
               ("C-c g f" . ggtags-find-file)
               ("M-," . pop-tag-mark)))
-#+END_SRC
-
-** System
-#+BEGIN_SRC emacs-lisp
-(use-package exec-path-from-shell
-  :ensure
-  :commands (exec-path-from-shell-initialize exec-path-from-shell-getenv))
-
-(if *is-a-mac*
-    (add-hook 'after-init-hook 'exec-path-from-shell-initialize))
 #+END_SRC
 
 ** Benchmarking and metrics
@@ -1240,7 +1251,6 @@ If string is empty, current directory is not a git repo"
   (progn
     (setq ibuffer-default-sorting-mode 'major-mode)))
 #+END_SRC
-
 ** Calendar
 #+BEGIN_SRC emacs-lisp
 (add-hook 'calendar-today-visible-hook 'calendar-mark-today)
@@ -1264,22 +1274,22 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 ** Shell
 #+BEGIN_SRC emacs-lisp
-(use-package sh-script
-  :mode (;;("rc\\'" . shell-script-mode)
-         ("\(bash\|zsh\)rc\\'" . shell-script-mode)
-         ("\(bash_\|z\)profile\\'" . sh-mode)
-         ("\(history\|aliases\)\\'" . sh-mode)
-         ("zsh-theme\\'"))
-  :config
-  (setq sh-indentation 2
-        sh-basic-offset 2))
+;; (use-package sh-script
+;;   :mode (;;("rc\\'" . shell-script-mode)
+;;          ("\(bash\|zsh\)rc\\'" . shell-script-mode)
+;;          ("\(bash_\|z\)profile\\'" . sh-mode)
+;;          ("\(history\|aliases\)\\'" . sh-mode)
+;;          ("zsh-theme\\'" . sh-mode))
+;;   :config
+;;   (setq sh-indentation 2
+;;         sh-basic-offset 2))
 #+END_SRC
 
 ** Java
 #+BEGIN_SRC emacs-lisp
-(use-package jdee
-  :ensure
-  :mode (("\\.java$" . jdee-mode)))
+;; (use-package jdee
+;;   :ensure
+;;   :mode (("\\.java\\'" . jdee-mode)))
 #+END_SRC
 
 ** Web
@@ -1437,11 +1447,11 @@ If string is empty, current directory is not a git repo"
 
 *** Scheme / Racket
 #+BEGIN_SRC emacs-lisp
-;** Lang - Scheme
+(use-package geiser :ensure :defer)
 (use-package scheme :ensure :defer)
 (use-package scheme-complete :ensure :defer)
 (use-package racket-mode :ensure :defer)
-(use-package geiser :ensure :defer)
+(use-package quack :ensure :defer)
 #+END_SRC
 
 *** Clojure
@@ -1464,6 +1474,10 @@ If string is empty, current directory is not a git repo"
 ;;   :after flycheck
 ;;   :config
 ;;   (flycheck-clojure-setup))
+
+(use-package clojure-snippets
+  :ensure
+  :after clojure-mode)
 
 (use-package clojure-cheatsheet
   :ensure
@@ -1518,13 +1532,10 @@ If string is empty, current directory is not a git repo"
 
 ** Python
 #+BEGIN_SRC emacs-lisp
-(use-package python :ensure :defer)
-
 (use-package elpy
   :ensure
-  :after python
+  :commands (elpy-enable)
   :config
-  (elpy-enable)
   (setq elpy-rpc-backend "jedi")
   (when (executable-find "ipython")
     (elpy-use-ipython)
@@ -1538,6 +1549,12 @@ If string is empty, current directory is not a git repo"
   :after elpy
   :config
   (add-hook 'elpy-mode-hook #'py-autopep8-enable-on-save))
+
+(use-package python
+  :ensure
+  :defer
+  :config
+  (elpy-enable))
 
 #+END_SRC
 
@@ -1742,12 +1759,18 @@ If string is empty, current directory is not a git repo"
   (diminish 'helm-mode)
 
   (if (display-graphic-p)
+      ;; If emacs GUI
       (progn
-        (load-theme 'spacemacs-dark t)
+        ;; (load-theme 'spacemacs-dark t)
+        (load-theme 'dracula t)
         (set-frame-font "Source Code Pro for Powerline-15")
         (spaceline-emacs-theme)
         (spaceline-helm-mode))
-    (load-theme 'hipster t)))
+    ;; If terminal
+    (progn
+      (load-theme 'suscolors t)
+      ;;(load-theme 'solarized-dark t)
+)))
 #+END_SRC
 
 ** prog-mode
