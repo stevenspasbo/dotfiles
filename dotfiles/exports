@@ -30,7 +30,6 @@ export HISTFORMAT='%F %T '
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 export CLICOLOR=1
-export LSCOLORS=ExFxCxDxBxegedabagacad
 
 #-------------------------------------------------------------
 # Colorful man pages
@@ -43,3 +42,12 @@ export LESS_TERMCAP_se=$'\E[0m'           # end standout-mode
 export LESS_TERMCAP_so=$'\E[38;5;246m'    # begin standout-mode - info box
 export LESS_TERMCAP_ue=$'\E[0m'           # end underline
 export LESS_TERMCAP_us=$'\E[04;38;5;146m' # begin underline
+#-------------------------------------------------------------
+# ssh
+#-------------------------------------------------------------
+export SSH_KEY_PATH="~/.ssh/rsa_id"
+
+if brew --prefix coreutils > /dev/null 2>&1; then
+  export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH
+  export MANPATH=$(brew --prefix coreutils)/libexec/gnuman:$MANPATH
+fi
