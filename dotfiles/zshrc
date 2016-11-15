@@ -5,28 +5,6 @@
 #
 # Next to load is ~/.zlogin
 
-# Set some opts
-setopt auto_pushd
-setopt cdable_vars
-setopt chase_links # chase symlinks
-setopt glob_dots # emacs zsh [tab] [tab] -> .zshrc .zprofile .z[a-z]+
-setopt auto_list # Automatically expand menu
-setopt pushd_to_home
-
-#   zmv [OPTIONS] oldpattern newpattern
-# where oldpattern contains parenthesis surrounding patterns which will
-# be replaced in turn by $1, $2, ... in newpattern.  For example,
-#   zmv '(*).lis' '$1.txt'
-autoload zmv
-
-# Suffix's
-# alias -s rb=ruby
-# alias -s py=python
-# alias -s php=php
-# alias -s pl=perl
-autoload -U zsh-mime-setup
-zsh-mime-setup
-
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 export SHELL=zsh
@@ -53,61 +31,111 @@ source $ZSH/oh-my-zsh.sh
 
 # Override oh-my-zsh
 
-# Enable approximate completions
+echo "Setting opts"
+# Set some opts
+setopt auto_pushd
+setopt cdable_vars
+setopt chase_links # chase symlinks
+setopt glob_dots # emacs zsh [tab] [tab] -> .zshrc .zprofile .z[a-z]+
+setopt AUTO_LIST # Automatically expand menu
+setopt PUSHD_TO_HOME
+setopt PUSHD_SILENT
+setopt PUSHD_IGNORE_DUPS # Remove duplicate entries
+setopt PUSHD_MINUS # This reverts the +/- operators.
+setopt completealiases
+
+#   zmv [OPTIONS] oldpattern newpattern
+# where oldpattern contains parenthesis surrounding patterns which will
+# be replaced in turn by $1, $2, ... in newpattern.  For example,
+#   zmv '(*).lis' '$1.txt'
+autoload zmv
+
+# Set file types
+autoload -U zsh-mime-setup
+zsh-mime-setup
+
+
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+
+echo "Setting up completion"
+zstyle ':chpwd:*' recent-dirs-file "$HOME/.dirs"
+
 zstyle ':completion:*' completer _complete _ignored _approximate
+# Speeds up path completions
+zstyle ':completion:*' accept-exact '*(N)'
+zstyle ':completion:*' separate-sections 'yes'
+zstyle ':completion:*' list-dirs-first true
+zstyle ':completion:*' file-sort name
+
+# Pretty messages during pagination
+zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more, or the character to insert%s'
+zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
+# show a screenful of options + prompt
+COMPLETION_PROMPT="%{$fg_bold[white]%}%M"
+COMPLETION_PROMPT+="%{$fg_bold[blue]%}["
+COMPLETION_PROMPT+="%{$fg[yellow]%}%P"
+COMPLETION_PROMPT+="%{$fg_bold[blue]%}]"
+COMPLETION_PROMPT+="%{$fg[white]%}> :%{$reset_color%}"
+zstyle ':completion:*' list-prompt $COMPLETION_PROMPT
+
+# Enable approximate completions
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3)) numeric)'
 
 # Always use menu selection for `cd -`
 zstyle ':completion:*:*:cd:*:directory-stack' force-list always
 zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 
-# Pretty messages during pagination
-zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more, or the character to insert%s'
-zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
-
-# Verbose completion results
-zstyle ':completion:*' verbose true
-
 # Enable menus
 zstyle ':completion:*' menu select
-
 # Group items by group
 zstyle ':completion:*' group-name ''
-
-# No results; ex:  commandthatdoesntexist[tab]
-zstyle ':completion:*:warnings' format '%F{red%}%BNo results'
-
+# Verbose completion results
+zstyle ':completion:*' extra-verbose true
 # Results; Sets formatting of group titles
-zstyle ':completion:*' format '%F{yellow}%B---- %d%b'
-
+zstyle ':completion:*:descriptions' format '%F{yellow}%B---- %d%b'
+# No results; ex:  commandthatdoesntexist[tab]
+zstyle ':completion:*:warnings' format '%F{red%}%BNo results in: %ds%b%f'
 # Autocorrect
-zstyle ':completion:*:corrections' format '%U%F{green}Suggested %d%f%u'
+zstyle ':completion:*:corrections' format '%U%F{green}%d%f%u'
 
-# # Not sure...
-# zstyle ':completion:*:descriptions' format $'%{\e[0;31m%}completing %B%d%b%{\e[0m%}'
-# Nicer format for completion messages (stolen; still not sure what it does)
-zstyle ':completion:*:descriptions' format '%U%B%d%b%u'
-# # Not sure...
+# # Messages/warnings format
 # zstyle ':completion:*:messages' format '%B%U---- %d%u%b'
+# # Describe options in full
+# zstyle ':completion:*:options' description 'yes'
+# zstyle ':completion:*:options' auto-description '%d'
 
-# zstyle ':completion:*:commands' list-colors '=*=1;32 # For reference
-# zstyle ':completion:*:*:*:default' menu yes select # Select item from menu
+echo "Setting up ps / kill stuff"
+zstyle ':completion:*:processes' menu yes select
+zstyle ':completion:*:processes' force-list always
+zstyle ':completion:*:processes'             command 'ps -axw'
+zstyle ':completion:*:processes-names'       command 'ps -awxho command'
+zstyle ':completion:*:*:*:*:processes' list-colors '=(#b) #([0-9]#) ([\.0-9a-z-]#)*=01;34=0=01'
+zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,args -w -w"
 
 # kill command completion
 zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:kill:*'   force-list always
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 
-zstyle ':completion:*:*:*:*:processes' list-colors '=(#b) #([0-9]#) ([\.0-9a-z-]#)*=01;34=0=01'
-zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,args -w -w"
+# make "rm [tab]" look like ls -l
+zstyle ':completion:*:*:rm:*' file-list 'yes'
+# Don't suggest files already in the command
+zstyle ':completion:*:rm:*' ignore-line yes
+
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+# zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 zstyle ':completion:*' rehash true
 
 # Ignore missing commands
 zstyle ':completion:*:functions' ignored-patterns '_*'
 
-# Aliases
+# CDPATH
+cdpath=(~)
+[[ -d /Work ]] && cdpath+=(/Work)
 
+# Aliases
 alias -g gp=' | grep -i'
 alias -g l=' | less'
 
