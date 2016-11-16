@@ -38,3 +38,6 @@ GPATH
 GRTAGS
 GTAGS
 TAGS
+
+# weechat
+weechat.log
