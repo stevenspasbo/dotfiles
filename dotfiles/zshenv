@@ -1,0 +1,60 @@
+#
+#
+# This file will be sourced by everything, so set up path and stuff here.
+#
+
+case "$(uname -s)" in
+  Darwin)
+    export IS_MAC=true
+    ;;
+  Linux)
+    export IS_LINUX=true
+    ;;
+  *)
+    ;;
+esac
+
+# Set up tmp files
+if [[ ! -d "$TMPDIR" ]]; then
+  export TMPDIR="/tmp/$LOGNAME"
+  mkdir -p -m 700 "$TMPDIR"
+fi
+
+TMPPREFIX="${TMPDIR%/}/zsh"
+
+# Ensure path arrays do not contain duplicates.
+typeset -gU cdpath fpath mailpath path manpath PATH MANPATH
+
+# Set the list of directories that Zsh searches for programs.
+path=(
+  /usr/local/{bin,sbin}
+  $path
+)
+
+# General path
+[ -d "$HOME/.bin" ] && export PATH="$PATH:$HOME/.bin"
+
+# RVM / Ruby
+[ -s "$HOME/.rvm/scripts/rvm" ] && . "$HOME/.rvm/scripts/rvm"
+
+# NVM / Node
+if [ -d "$HOME/.nvm" ]; then
+  export NVM_DIR="$HOME/.nvm"
+  source "$NVM_DIR/nvm.sh"
+fi
+
+# Go
+[ -d "$HOME/.gvm" ] && source "$HOME/.gvm/scripts/gvm"
+
+if [ -d "$HOME/perl5" ]; then
+  PATH="$HOME/perl5/bin${PATH:+:${PATH}}"; export PATH;
+  PERL5LIB="$HOME/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+  PERL_LOCAL_LIB_ROOT="$HOME/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+  PERL_MB_OPT="--install_base \"$HOME/perl5\""; export PERL_MB_OPT;
+  PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"; export PERL_MM_OPT;
+fi
+
+if brew --prefix coreutils > /dev/null 2>&1; then
+  export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH
+  export MANPATH=$(brew --prefix coreutils)/libexec/gnuman:$MANPATH
+fi
