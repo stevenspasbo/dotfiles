@@ -32,6 +32,11 @@ el-get
 helm-adaptive-history
 irony/
 emacs-init.el
+custom.el
+emms
+semantic.cache
+semanticdb
+history
 
 # Tags
 GPATH
