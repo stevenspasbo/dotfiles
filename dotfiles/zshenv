@@ -34,6 +34,13 @@ path=(
 # General path
 [ -d "$HOME/.bin" ] && export PATH="$PATH:$HOME/.bin"
 
+# cdpath
+cdpath=(~)
+[ -d /Work ] && cdpath+=(/Work)
+
+# fpath
+[ -d "$HOME/.zsh-custom/functions" ] && fpath=("$HOME/.zsh-custom/functions" $fpath)
+
 # RVM / Ruby
 [ -s "$HOME/.rvm/scripts/rvm" ] && . "$HOME/.rvm/scripts/rvm"
 
