@@ -1,6 +1,9 @@
 #
+# zshenv is sourced on all invocations of the shell.
 #
-# This file will be sourced by everything, so set up path and stuff here.
+# It should contain commands to set the command search path, plus other
+# important environment variables.
+#
 #
 
 case "$(uname -s)" in
