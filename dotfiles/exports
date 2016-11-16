@@ -1,22 +1,17 @@
 #! /usr/bin/env sh
 
-case "$(uname -s)" in
-  Darwin)
-    export IS_MAC=true
-    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-    ;;
-  Linux)
-    export IS_LINUX=true
-    ;;
-  *)
-    ;;
-esac
-
 export EDITOR=emacs
 export GIT_EDITOR='emacs -nw'
 
+if $IS_MAC; then
+  export BROWSER='open'
+fi
+
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
+
+# Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
+export PYTHONIOENCODING='UTF-8';
 
 #-------------------------------------------------------------
 # History stuff
@@ -47,7 +42,9 @@ export LESS_TERMCAP_us=$'\E[04;38;5;146m' # begin underline
 #-------------------------------------------------------------
 export SSH_KEY_PATH="~/.ssh/rsa_id"
 
-if brew --prefix coreutils > /dev/null 2>&1; then
-  export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH
-  export MANPATH=$(brew --prefix coreutils)/libexec/gnuman:$MANPATH
+#-------------------------------------------------------------
+# homebrew
+#-------------------------------------------------------------
+if command -v brew > /dev/null; then
+  export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 fi
