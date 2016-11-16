@@ -93,60 +93,6 @@ alias delete='curl -s -XDELETE'
 
 alias sniff="sudo ngrep -d 'en0' -t '^(GET|POST) ' 'tcp and port 80'"
 alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
-
-#-------------------------------------------------------------
-# Functions
-#-------------------------------------------------------------
-# Extract
-# https://github.com/xvoland/Extract
-function extract {
- if [ -z "$1" ]; then
-    # display usage if no parameters given
-    echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
- else
-    if [ -f "$1" ] ; then
-        NAME=${1%.*}
-        #mkdir $NAME && cd $NAME
-        case "$1" in
-          *.tar.bz2)   tar xvjf ./"$1"    ;;
-          *.tar.gz)    tar xvzf ./"$1"    ;;
-          *.tar.xz)    tar xvJf ./"$1"    ;;
-          *.lzma)      unlzma ./"$1"      ;;
-          *.bz2)       bunzip2 ./"$1"     ;;
-          *.rar)       unrar x -ad ./"$1" ;;
-          *.gz)        gunzip ./"$1"      ;;
-          *.tar)       tar xvf ./"$1"     ;;
-          *.tbz2)      tar xvjf ./"$1"    ;;
-          *.tgz)       tar xvzf ./"$1"    ;;
-          *.zip)       unzip ./"$1"       ;;
-          *.Z)         uncompress ./"$1"  ;;
-          *.7z)        7z x ./"$1"        ;;
-          *.xz)        unxz ./"$1"        ;;
-          *.exe)       cabextract ./"$1"  ;;
-          *)           echo "extract: '$1' - unknown archive method" ;;
-        esac
-    else
-        echo "'$1' - file does not exist"
-    fi
-fi
-}
-
-function sha1-string () {
-    echo -n "Password: "
-    read -s password
-    echo -n $password | openssl sha1
-}
-
-function setjdk() {
-  if [ $# -ne 0 ]; then
-    removeFromPath '/System/Library/Frameworks/JavaVM.framework/Home/bin'
-    if [ -n "${JAVA_HOME+x}" ]; then
-      removeFromPath $JAVA_HOME
-    fi
-    export JAVA_HOME=`/usr/libexec/java_home -v $@`
-    export PATH=$JAVA_HOME/bin:$PATH
-  fi
-}
 function removeFromPath() {
   export PATH=$(echo $PATH | sed -E -e "s;:$1;;" -e "s;$1:?;;")
 }
@@ -166,23 +112,3 @@ function cleanpath() {
     unset old_PATH x
   fi
 }
-cleanpath
-
-#-------------------------------------------------------------
-# Work
-#-------------------------------------------------------------
-
-ssh-suv() {
-    scp-profile $1
-    echo "ssh to $1"
-    ssh $1 -A
-}
-
-scp-profile() {
-    echo "Sending .bash_profile to ~/ on $1"
-    scp $AUTO/wats/BashScript/.bash_profile root@$1:~/.bash_profile
-    echo "Sending my.wats.properties"
-    scp ~/.my.wats.properties root@$1:/data/workdaydevqa/suv/suvwats/my.wats.properties
-    echo "Done, logging in"
-}
-
