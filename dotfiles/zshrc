@@ -41,7 +41,7 @@ setopt PUSHD_SILENT
 setopt PUSHD_IGNORE_DUPS # Remove duplicate entries
 setopt PUSHD_MINUS # This reverts the +/- operators.
 setopt COMPLETE_ALIASES
-setopt MENU_COMPLETE
+unsetopt MENU_COMPLETE
 
 #   zmv [OPTIONS] oldpattern newpattern
 # where oldpattern contains parenthesis surrounding patterns which will
