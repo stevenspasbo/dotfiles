@@ -291,6 +291,7 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
   :ensure
+  :diminish which-key-mode
   :defer 5
   :config
   (setq which-key-side-window-max-height 0.35)
@@ -593,6 +594,7 @@ If string is empty, current directory is not a git repo"
 
 ;;; Enable Modes (helm-mode is loading nearly everything).
 (use-package helm-mode
+  :diminish helm-mode
   :config (helm-mode 1))
 
 (use-package helm-adaptive
@@ -757,8 +759,6 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure
-  :bind (:map flycheck-mode-map
-              ("C-c ! h" . helm-flycheck))
   :config
   (global-flycheck-mode)
   ;; Set flycheck faces
@@ -780,7 +780,11 @@ If string is empty, current directory is not a git repo"
 
 *** helm-flycheck
 #+BEGIN_SRC emacs-lisp
-(use-package helm-flycheck :ensure :commands (helm-flycheck))
+(use-package helm-flycheck
+  :ensure
+  :bind (:map flycheck-mode-map
+         ("C-c ! h" . helm-flycheck))
+  :after flycheck)
 #+END_SRC
 
 ** Version control
@@ -1106,6 +1110,7 @@ If string is empty, current directory is not a git repo"
 *** Flyspell
 #+BEGIN_SRC emacs-lisp
 (use-package flyspell
+  :diminish flyspell-mode
   :init
   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
   (add-hook 'text-mode-hook #'turn-on-flyspell)
@@ -1560,19 +1565,33 @@ If string is empty, current directory is not a git repo"
 
 ** C
 #+BEGIN_SRC emacs-lisp
-
-(use-package company-c-headers
+(use-package irony
   :ensure
-  :after company
+  :after cc-mode
+  :init
+  (add-hook 'c-mode-hook #'irony-mode)
   :config
-  (add-to-list 'company-backends 'company-c-headers))
+  (defun irony-enable-completions ()
+    (define-key irony-mode-map [remap completion-at-point]
+      'irony-completion-at-point-async)
+    (define-key irony-mode-map [remap complete-symbol]
+      'irony-completion-at-point-async))
+  (add-hook 'irony-mode-hook 'irony-enable-completions)
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
 (use-package company-irony
   :ensure
-  :after company
+  :after irony
   :config
   (add-to-list 'company-backends 'company-irony)
-  (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
+  (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+  (delete 'company-backends 'company-clang))
+
+(use-package company-c-headers
+  :ensure
+  :after irony
+  :config
+  (add-to-list 'company-backends 'company-c-headers))
 
 (use-package flycheck-irony
   :ensure
@@ -1585,26 +1604,6 @@ If string is empty, current directory is not a git repo"
   :after irony
   :config
   (add-hook 'irony-mode-hook #'irony-eldoc))
-
-(use-package irony
-  :ensure
-  :defer
-  :config
-  (define-key irony-mode-map [remap completion-at-point]
-    'irony-completion-at-point-async)
-  (define-key irony-mode-map [remap complete-symbol]
-    'irony-completion-at-point-async)
-  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-  )
-
-(use-package cc-mode
-  :defer
-  :config
-  (add-hook 'c-mode-hook #'irony-mode)
-  (add-hook 'c-mode-hook
-            (lambda ()
-              (set
-               (make-local-variable 'company-backends) '(company-c-headers company-irony company-clang company-cmake company-keywords company-dabbrev)))))
 
 #+END_SRC
 
@@ -1756,7 +1755,6 @@ If string is empty, current directory is not a git repo"
     (helm-mode 1))
 
   (diminish 'visual-line-mode)
-  (diminish 'helm-mode)
 
   (if (display-graphic-p)
       ;; If emacs GUI
