@@ -46,5 +46,5 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 # homebrew
 #-------------------------------------------------------------
 if command -v brew > /dev/null; then
-  export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+  export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
 fi
