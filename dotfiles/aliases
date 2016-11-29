@@ -60,7 +60,7 @@ alias branches="git branch -a | grep -i "
 #-------------------------------------------------------------
 # System stuff
 #-------------------------------------------------------------
-alias reload='clear && source $RC_FILE'
+alias reload='clear && exec $SHELL'
 alias hist='history | grep -i $*'
 alias cls='clear'
 alias cal='cal | grep --before-context 6 --after-context 6 --color -e " $(date +%e)" -e "^$(date +%e)"'
