@@ -28,47 +28,51 @@ done
 
 source $ZSH/oh-my-zsh.sh
 
-# Override oh-my-zsh
-
-# Set some opts
-setopt auto_pushd
-setopt cdable_vars
-setopt chase_links # chase symlinks
-setopt glob_dots # emacs zsh [tab] [tab] -> .zshrc .zprofile .z[a-z]+
+# Check `zshoptions` man page for more values
+setopt AUTO_PUSHD
+setopt CDABLE_VARS
+setopt CHASE_LINKS # chase symlinks, opposite of CHASE_DOTS
+setopt GLOB_DOTS # emacs zsh [tab] [tab] -> .zshrc .zprofile .z[a-z]+
 setopt AUTO_LIST # Automatically expand menu
 setopt PUSHD_TO_HOME
 setopt PUSHD_SILENT
 setopt PUSHD_IGNORE_DUPS # Remove duplicate entries
 setopt PUSHD_MINUS # This reverts the +/- operators.
 setopt COMPLETE_ALIASES
-unsetopt MENU_COMPLETE
+setopt NO_MENU_COMPLETE
+setopt IGNOREEOF # Don't kill session with ctrl+D
 
-#   zmv [OPTIONS] oldpattern newpattern
-# where oldpattern contains parenthesis surrounding patterns which will
-# be replaced in turn by $1, $2, ... in newpattern.  For example,
-#   zmv '(*).lis' '$1.txt'
-autoload zmv
-
-# Set file types
-autoload -U zsh-mime-setup
-zsh-mime-setup
-
-
-autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-add-zsh-hook chpwd chpwd_recent_dirs
-
-zstyle ':chpwd:*' recent-dirs-file "$HOME/.dirs"
-
+# Load all custom zsh configurations, ignoring temp files.
 if [[ -d ~/.zsh-custom/config ]]; then
-  for f in $(ls ~/.zsh-custom/config/*.zsh); do
+  for f in $(ls ~/.zsh-custom/config/[^.#]*.zsh); do
     source $f
   done
 fi
 
-# Aliases
-alias -g gp=' | grep -i'
-alias -g l=' | less'
+
+autoload zmv # Move files using glob, Ex: zmv '(*).lis' '$1.txt'
+autoload run-help # Open man pages with `command <esc-h>`
+
+
+zmodload -a zsh/stat stat
+zmodload -a zsh/zpty zpty
+zmodload -a zsh/zprof zprof
+zmodload -ap zsh/mapfile mapfile
+
+
+autoload -U zsh-mime-setup # Set file suffixes.
+zsh-mime-setup
+if command -v vlc > /dev/null; then
+  alias -s mp4=vlc
+  alias -s py=emacs
+fi
+
+# Global aliases
+alias -g G=' | grep -i'
+alias -g L=' | less'
 
 # Finally
 [[ -s $HOME/.exports ]] && . $HOME/.exports
 [[ -s $HOME/.aliases ]] && . $HOME/.aliases
+
+autoload -U tetriscurses # Slacker
