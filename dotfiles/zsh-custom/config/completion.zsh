@@ -1,3 +1,9 @@
+
+# cdr
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+zstyle ':chpwd:*' recent-dirs-max -1 # Never forget
+
 zstyle ':completion:*' completer _complete _ignored _approximate
 # Speeds up path completions
 zstyle ':completion:*' accept-exact '*(N)'
@@ -15,6 +21,9 @@ COMPLETION_PROMPT+="%{$fg[yellow]%}%P"
 COMPLETION_PROMPT+="%{$fg_bold[blue]%}]"
 COMPLETION_PROMPT+="%{$fg[white]%}> :%{$reset_color%}"
 zstyle ':completion:*' list-prompt $COMPLETION_PROMPT
+
+# Color aliases
+zstyle ':completion:*:aliases' list-colors "=*=$color[blue]"
 
 # Enable approximate completions
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3)) numeric)'
@@ -50,15 +59,15 @@ zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,args -w 
 # kill command completion
 zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:kill:*'   force-list always
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+zstyle ':completion:*:*:kill:*:processes' list-colors "=(#b) #([0-9]#) #([^ ]#)*=$color[cyan]=$color[yellow]=$color[green]"
 
 # make "rm [tab]" look like ls -l
 zstyle ':completion:*:*:rm:*' file-list 'yes'
-# Don't suggest files already in the command
-zstyle ':completion:*:rm:*' ignore-line yes
 
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-# zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+# Ignore files already in active line
+zstyle ':completion::*:(git|less|rm|vim|most)' ignore-line true
+
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 zstyle ':completion:*' rehash true
 
