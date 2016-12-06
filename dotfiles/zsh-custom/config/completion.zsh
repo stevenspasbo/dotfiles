@@ -4,6 +4,11 @@ autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
 zstyle ':chpwd:*' recent-dirs-max -1 # Never forget
 
+# vcs_info
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:*' disable bzr cdv cvs darcs fossil mtn p4 svk tla
+
 zstyle ':completion:*' completer _complete _ignored _approximate
 # Speeds up path completions
 zstyle ':completion:*' accept-exact '*(N)'
