@@ -72,5 +72,5 @@ PROMPT_SU='%(!.%{%k%F{blue}%K{black}%}%{%F{yellow}%} ⚡ %{%k%F{black}%}.%{%k
 SYM_SINGLE_SMALL_ARROW='❯'
 
 PROMPT='%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
-%{$fg_bold[white]%} λ '
+%{$fg_bold[white]%} λ %b%f'
 # RPROMPT='%{$fg[green]%}[%*]%{$reset_color%}'
