@@ -24,7 +24,7 @@
 	excludesfile = ~/.gitignore
 	fileMode = false
 	whitespace = trailing-space,space-before-tab
-        pager = "diff-highlight | diff-so-fancy | less --tabs=1,5 -R"
+    pager = "diff-highlight | diff-so-fancy | less --tabs=1,5 -R"
 
 [diff]
        mnemonicprefix = true
