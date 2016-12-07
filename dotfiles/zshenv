@@ -1,4 +1,6 @@
 #
+# Author: Steven Spasbo
+#
 # zshenv is sourced on all invocations of the shell.
 #
 # It should contain commands to set the command search path, plus other
@@ -56,6 +58,7 @@ fi
 # Go
 [ -d "$HOME/.gvm" ] && source "$HOME/.gvm/scripts/gvm"
 
+# Perl
 if [ -d "$HOME/perl5" ]; then
   PATH="$HOME/perl5/bin${PATH:+:${PATH}}"; export PATH;
   PERL5LIB="$HOME/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
@@ -64,7 +67,13 @@ if [ -d "$HOME/perl5" ]; then
   PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"; export PERL_MM_OPT;
 fi
 
+# GNU coreutils
 if brew --prefix coreutils > /dev/null 2>&1; then
   export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH
   export MANPATH=$(brew --prefix coreutils)/libexec/gnuman:$MANPATH
+fi
+
+# Rust
+if [ -d "$HOME/.cargo" ]; then
+  export PATH="$PATH:$HOME/.cargo/bin"
 fi
