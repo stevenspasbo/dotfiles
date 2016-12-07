@@ -20,16 +20,17 @@
 	co = checkout
 
 [core]
-	editor = emacs
 	excludesfile = ~/.gitignore
 	fileMode = false
 	whitespace = trailing-space,space-before-tab
     pager = "diff-highlight | diff-so-fancy | less --tabs=1,5 -R"
+	editor = emacs -nw
 
-[diff]
-       mnemonicprefix = true
 [color]
        ui = always
+
+[color "branch"]
+ 	remote = yellow
 
 [color "diff"]
        meta = yellow bold
@@ -38,9 +39,6 @@
        old = red bold
        new = green bold
        whitespace = red reverse
-
-[color "branch"]
- 	remote = yellow
 
 [color "diff-highlight"]
 	oldNormal = red bold
@@ -53,6 +51,8 @@
 	changed = red bold
 	untracked = magenta bold
 
+[diff]
+       mnemonicprefix = true
 [fetch]
   prune = true
 
