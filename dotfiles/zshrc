@@ -1,16 +1,20 @@
-
 #
 # Author: Steven Spasbo
 #
 # Next to load is ~/.zlogin
 
+zmodload zsh/complist
+zmodload zsh/terminfo
+
 # Path to your oh-my-zsh installation.
-export ZSH=$HOME/.oh-my-zsh
-export SHELL=zsh
-export ZSH_CUSTOM=$HOME/.zsh-custom
+export ZSH="$HOME/.oh-my-zsh"
+export ZSH_CUSTOM="$HOME/.zsh-custom"
 
+autoload -U compinit && compinit
+autoload -U colors && colors
+autoload -U vcs_info && vcs_info
 
-ZSH_THEME="spasbo-wip"
+ZSH_THEME="spasbo"
 
 DISABLE_AUTO_UPDATE="true"
 ENABLE_CORRECTION="true"
@@ -18,40 +22,50 @@ COMPLETION_WAITING_DOTS="true"
 
 plugins=(colored-man common-aliases)
 [[ -s $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
+# [[ -s $ZSH_CUSTOM/plugins/zsh-completions ]] && plugins+=(zsh-completions)
+
 # Check for executables
 for p (git tmux vagrant grunt composer); do
   if type $p > /dev/null; then
     plugins+=($p)
   fi
 done
+source "$ZSH/oh-my-zsh.sh"
 
-source $ZSH/oh-my-zsh.sh
 
 # Check `zshoptions` man page for more values
+setopt ALWAYS_TO_END
+setopt AUTO_CD
+setopt AUTO_LIST        # Automatically expand menu
+setopt AUTO_MENU        # show completion menu on succesive tab press
 setopt AUTO_PUSHD
 setopt CDABLE_VARS
 setopt CHASE_LINKS # chase symlinks, opposite of CHASE_DOTS
+setopt COMPLETE_ALIASES
+setopt COMPLETE_IN_WORD
+setopt EXTENDED_GLOB
 setopt GLOB_DOTS # emacs zsh [tab] [tab] -> .zshrc .zprofile .z[a-z]+
-setopt AUTO_LIST # Automatically expand menu
+setopt IGNOREEOF # Don't kill session with ctrl+D
+setopt LIST_PACKED
+unsetopt MENU_COMPLETE  # do not autoselect the first completion entry
+setopt NO_MENU_COMPLETE
+setopt PROMPT_SUBST
 setopt PUSHD_TO_HOME
 setopt PUSHD_SILENT
 setopt PUSHD_IGNORE_DUPS # Remove duplicate entries
 setopt PUSHD_MINUS # This reverts the +/- operators.
-setopt COMPLETE_ALIASES
-setopt NO_MENU_COMPLETE
-setopt IGNOREEOF # Don't kill session with ctrl+D
+setopt INTERACTIVE_COMMENTS # Recognize comments
+unsetopt FLOWCONTROL
 
 # Load all custom zsh configurations, ignoring temp files.
-if [[ -d ~/.zsh-custom/config ]]; then
-  for f in $(ls ~/.zsh-custom/config/[^.#]*.zsh); do
+if [[ -d "$ZSH_CUSTOM/config" ]]; then
+  for f in $(ls $ZSH_CUSTOM/config/[^.#]*.zsh); do
     source $f
   done
 fi
 
 
 autoload zmv # Move files using glob, Ex: zmv '(*).lis' '$1.txt'
-autoload run-help # Open man pages with `command <esc-h>`
-
 
 zmodload -a zsh/stat stat
 zmodload -a zsh/zpty zpty
