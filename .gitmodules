@@ -40,3 +40,6 @@
 [submodule "iterm-dracula"]
 	path = iterm-dracula
 	url = https://github.com/dracula/iterm.git
+[submodule "dotfiles/zsh-custom/plugins/zsh-completions"]
+	path = dotfiles/zsh-custom/plugins/zsh-completions
+	url = https://github.com/zsh-users/zsh-completions.git
