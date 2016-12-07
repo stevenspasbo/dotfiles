@@ -1,7 +1,16 @@
 [include]
-        path = ~/Dropbox/.github
+	path = ~/Dropbox/.github
+
+[advice]
+	statusHints = false
+	detachedHead = false
+	pushNonFastForward = false
+	commitBeforeMerge = false
+	resolveConflict = false
+
 [apply]
 	whitespace = nowarn
+
 [alias]
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 	diff = diff --ignore-space-at-eol -b -w --ignore-blank-lines
@@ -38,10 +47,14 @@
 [color "branch"]
  	remote = yellow
 
-[advice]
-	statusHints = false
 [color "diff-highlight"]
 	oldNormal = red bold
 	oldHighlight = red bold 52
 	newNormal = green bold
 	newHighlight = green bold 22
+
+[fetch]
+  prune = true
+
+[rebasse]
+  autosquash = true
