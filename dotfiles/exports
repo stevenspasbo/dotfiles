@@ -1,7 +1,10 @@
 #! /usr/bin/env sh
 
+
+#-------------------------------------------------------------
+# System stuff
+#-------------------------------------------------------------
 export EDITOR=emacs
-export GIT_EDITOR='emacs -nw'
 
 if $IS_MAC; then
   export BROWSER='open'
@@ -12,6 +15,8 @@ export LANG=en_US.UTF-8
 
 # Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
 export PYTHONIOENCODING='UTF-8';
+
+TZ="America/Los_Angeles"
 
 #-------------------------------------------------------------
 # History stuff
