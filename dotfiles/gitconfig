@@ -39,11 +39,6 @@
        new = green bold
        whitespace = red reverse
 
-[color "status"]
-	added = green
-	changed = red
-	untracked = magenta
-
 [color "branch"]
  	remote = yellow
 
@@ -52,6 +47,11 @@
 	oldHighlight = red bold 52
 	newNormal = green bold
 	newHighlight = green bold 22
+
+[color "status"]
+	added = green bold
+	changed = red bold
+	untracked = magenta bold
 
 [fetch]
   prune = true
