@@ -38,7 +38,7 @@
 	path = fonts
 	url = https://github.com/powerline/fonts.git
 [submodule "iterm-dracula"]
-	path = iterm-dracula
+	path = iterm2/iterm-dracula
 	url = https://github.com/dracula/iterm.git
 [submodule "dotfiles/zsh-custom/plugins/zsh-completions"]
 	path = dotfiles/zsh-custom/plugins/zsh-completions
