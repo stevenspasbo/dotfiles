@@ -31,10 +31,7 @@ TMPPREFIX="${TMPDIR%/}/zsh"
 typeset -gU cdpath fpath mailpath path manpath PATH MANPATH
 
 # Set the list of directories that Zsh searches for programs.
-path=(
-  /usr/local/{bin,sbin}
-  $path
-)
+path=(/usr/local/{bin,sbin} $path)
 
 # General path
 [ -d "$HOME/.bin" ] && export PATH="$PATH:$HOME/.bin"
