@@ -20,18 +20,22 @@ DISABLE_AUTO_UPDATE="true"
 ENABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
 
-plugins=(colored-man common-aliases)
+plugins=(common-aliases)
 [[ -s $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
-# [[ -s $ZSH_CUSTOM/plugins/zsh-completions ]] && plugins+=(zsh-completions)
 
 # Check for executables
-for p (git tmux vagrant grunt composer); do
+for p (git tmux vagrant grunt composer gem meteor lein nvm cargo rust pip); do
   if type $p > /dev/null; then
     plugins+=($p)
   fi
 done
-source "$ZSH/oh-my-zsh.sh"
 
+if command -v pip3 > /dev/null; then
+  compdef pip3=pip
+fi
+
+plugins+=(themes)
+source "$ZSH/oh-my-zsh.sh"
 
 # Check `zshoptions` man page for more values
 setopt ALWAYS_TO_END
@@ -43,11 +47,11 @@ setopt CDABLE_VARS
 setopt CHASE_LINKS # chase symlinks, opposite of CHASE_DOTS
 setopt COMPLETE_ALIASES
 setopt COMPLETE_IN_WORD
+setopt CORRECT_ALL
 setopt EXTENDED_GLOB
 setopt GLOB_DOTS # emacs zsh [tab] [tab] -> .zshrc .zprofile .z[a-z]+
 setopt IGNOREEOF # Don't kill session with ctrl+D
 setopt LIST_PACKED
-unsetopt MENU_COMPLETE  # do not autoselect the first completion entry
 setopt NO_MENU_COMPLETE
 setopt PROMPT_SUBST
 setopt PUSHD_TO_HOME
@@ -56,6 +60,7 @@ setopt PUSHD_IGNORE_DUPS # Remove duplicate entries
 setopt PUSHD_MINUS # This reverts the +/- operators.
 setopt INTERACTIVE_COMMENTS # Recognize comments
 unsetopt FLOWCONTROL
+unsetopt MENU_COMPLETE  # do not autoselect the first completion entry
 
 # Load all custom zsh configurations, ignoring temp files.
 if [[ -d "$ZSH_CUSTOM/config" ]]; then
