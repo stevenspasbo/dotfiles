@@ -46,3 +46,6 @@
 [submodule "dotfiles/zsh-custom/plugins/zsh-syntax-highlighting"]
 	path = dotfiles/zsh-custom/plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
+[submodule "iterm2-snazzy"]
+	path = iterm2/iterm2-snazzy
+	url = https://github.com/sindresorhus/iterm2-snazzy.git
