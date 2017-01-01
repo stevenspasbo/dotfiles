@@ -64,3 +64,6 @@
 [submodule "dotfiles/zsh-custom/plugins/zsh-autosuggestions"]
 	path = dotfiles/zsh-custom/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
+[submodule "iterm2/iterm2-snazzy"]
+	path = iterm2/iterm2-snazzy
+	url = https://github.com/sindresorhus/iterm2-snazzy.git
