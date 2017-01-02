@@ -3,6 +3,17 @@
 #-------------------------------------------------------------
 # System stuff
 #-------------------------------------------------------------
+case "$(uname -s)" in
+  Darwin)
+    export IS_MAC=true
+    ;;
+  Linux)
+    export IS_LINUX=true
+    ;;
+  *)
+    ;;
+esac
+
 export EDITOR=emacs
 
 if $IS_MAC; then

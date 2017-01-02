@@ -8,17 +8,6 @@
 #
 #
 
-case "$(uname -s)" in
-  Darwin)
-    export IS_MAC=true
-    ;;
-  Linux)
-    export IS_LINUX=true
-    ;;
-  *)
-    ;;
-esac
-
 # Set up tmp files
 if [[ ! -d "$TMPDIR" ]]; then
   export TMPDIR="/tmp/$LOGNAME"
