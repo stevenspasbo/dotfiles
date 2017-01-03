@@ -922,18 +922,16 @@ If string is empty, current directory is not a git repo"
 (use-package company
   :ensure
   :diminish ""
-  :commands (global-company-mode)
-  :init
-  (add-hook 'after-init-hook #'global-company-mode)
   :config
   (setq company-minimum-prefix-length 2
         company-idle-delay 0.1
         company-tooltip-align-annotations t
         company-selection-wrap-around t
-        company-global-modes '(not org-mode erc-mode eshell-mode))
+        company-global-modes '(not org-mode erc-mode eshell-mode sh-mode))
 
   (set-face-background 'company-tooltip-annotation (face-background 'company-tooltip))
-  (set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection)))
+  (set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection))
+  (global-company-mode))
 #+END_SRC
 
 *** company-flx
