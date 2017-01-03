@@ -1254,6 +1254,51 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 * Major modes
+** Rust
+#+BEGIN_SRC emacs-lisp
+(use-package cargo
+  :ensure
+  :commands cargo-minor-mode
+  :config
+  (add-hook 'rust-mode-hook #'cargo-minor-mode))
+
+(use-package racer
+  :ensure
+  :after rust-mode
+  :commands racer-mode
+  :config
+  (let* ((home (getenv "HOME"))
+         (local-rust-src (concat  home "/Development/Rust/rust/src"))
+         (local-racer-exec (concat home "/.cargo/bin/racer")))
+    (setq racer-cmd local-racer-exec
+          racer-rust-src-path local-rust-src))
+  (add-hook 'rust-mode-hook #'racer-mode))
+
+(use-package rust-mode
+  :ensure
+  :defer
+  :init
+  (add-hook 'rust-mode-hook #'eldoc-mode)
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'rust-mode-hook #'cargo-minor-mode))
+
+(use-package flycheck-rust
+  :ensure
+  :after flycheck
+  :config
+  (flycheck-rust-setup))
+
+(use-package toml-mode
+  :ensure
+  :defer)
+#+END_SRC
+** Markdown
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure
+  :mode (("\\.\\(md\\|markdown\\)\\'" . markdown-mode))
+  :defer)
+#+END_SRC
 ** yaml
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode :ensure :defer)
