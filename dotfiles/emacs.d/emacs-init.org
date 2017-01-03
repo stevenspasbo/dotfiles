@@ -1499,12 +1499,6 @@ If string is empty, current directory is not a git repo"
 
 (use-package clojure-mode-extra-font-locking :after clojure-mode)
 
-;; (use-package flycheck-clojure
-;;   :ensure
-;;   :after flycheck
-;;   :config
-;;   (flycheck-clojure-setup))
-
 (use-package clojure-snippets
   :ensure
   :after clojure-mode)
