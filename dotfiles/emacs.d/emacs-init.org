@@ -844,12 +844,10 @@ If string is empty, current directory is not a git repo"
 *** autorevert
 #+BEGIN_SRC emacs-lisp
 (use-package autorevert
-  :init
-  (add-hook 'after-init-hook 'global-auto-revert-mode)
-  :commands (global-auto-revert-mode)
   :diminish global-auto-revert-mode
   :config
-  (setq auto-revert-verbose nil))
+  (setq auto-revert-verbose nil)
+  (global-auto-revert-mode))
 #+END_SRC
 
 *** saveplace
