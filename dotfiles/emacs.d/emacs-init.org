@@ -1166,14 +1166,6 @@ If string is empty, current directory is not a git repo"
 (add-hook 'prog-mode-hook 'rainbow-mode)
 #+END_SRC
 
-*** Markdown
-#+BEGIN_SRC emacs-lisp
-(use-package markdown-mode
-  :ensure
-  :mode (("\\.\\(md\\|markdown\\)\\'" . markdown-mode))
-  :defer)
-#+END_SRC
-
 *** Whitespace
 #+BEGIN_SRC emacs-lisp
 ;; (use-package whitespace
