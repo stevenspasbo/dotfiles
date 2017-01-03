@@ -26,11 +26,15 @@ plugins=(common-aliases themes)
 [[ -s $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
 
 # Check for executables
-for p (git tmux vagrant grunt composer gem meteor lein nvm cargo rust pip); do
+for p (git tmux vagrant grunt composer gem meteor lein nvm cargo rust pip pyenv); do
   if type $p > /dev/null; then
     plugins+=($p)
   fi
 done
+
+if $IS_MAC; then
+  plugins+=(osx)
+fi
 
 source "$ZSH/oh-my-zsh.sh"
 
