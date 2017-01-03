@@ -6,8 +6,11 @@
 ;; (setq debug-on-error t
 ;;       debug-on-quit t)
 
+(package-initialize)
+
 ;; Speed up loading
 (setq gc-cons-threshold 100000000)
+
 (add-hook 'after-init-hook (lambda () (setq gc-cons-threshold 800000)))
 
 ;; Load the two packages we need
