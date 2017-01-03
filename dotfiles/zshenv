@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 #
 # Author: Steven Spasbo
 #
@@ -62,4 +64,9 @@ fi
 # Rust
 if [ -d "$HOME/.cargo" ]; then
   export PATH="$PATH:$HOME/.cargo/bin"
+fi
+
+# Python
+if command -v pyenv > /dev/null; then
+  eval "$(pyenv init -)"
 fi
