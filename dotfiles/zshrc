@@ -22,7 +22,7 @@ DISABLE_AUTO_UPDATE="true"
 ENABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
 
-plugins=(common-aliases)
+plugins=(common-aliases themes)
 [[ -s $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
 
 # Check for executables
@@ -32,12 +32,7 @@ for p (git tmux vagrant grunt composer gem meteor lein nvm cargo rust pip); do
   fi
 done
 
-plugins+=(themes)
 source "$ZSH/oh-my-zsh.sh"
-
-if command -v pip3 > /dev/null; then
-  compdef pip3=pip
-fi
 
 # Check `zshoptions` man page for more values
 setopt ALWAYS_TO_END
@@ -71,15 +66,13 @@ if [[ -d "$ZSH_CUSTOM/config" ]]; then
   done
 fi
 
-
-autoload zmv # Move files using glob, Ex: zmv '(*).lis' '$1.txt'
-
 zmodload -a zsh/stat stat
 zmodload -a zsh/zpty zpty
 zmodload -a zsh/zprof zprof
 zmodload -ap zsh/mapfile mapfile
 
-
+autoload -U tetriscurses # Slacker
+autoload zmv # Move files using glob, Ex: zmv '(*).lis' '$1.txt'
 autoload -U zsh-mime-setup # Set file suffixes.
 zsh-mime-setup
 if command -v vlc > /dev/null; then
@@ -94,5 +87,3 @@ alias -g L=' | less'
 # Finally
 [[ -s $HOME/.exports ]] && . $HOME/.exports
 [[ -s $HOME/.aliases ]] && . $HOME/.aliases
-
-autoload -U tetriscurses # Slacker

@@ -5,6 +5,11 @@
 
 zmodload -i zsh/complist
 
+# If we have pip3 installed, make sure it uses pip's completions.
+if command -v pip3 > /dev/null; then
+  compdef pip3=pip
+fi
+
 # cdr
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
