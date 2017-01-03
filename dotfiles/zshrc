@@ -39,9 +39,6 @@ if command -v pip3 > /dev/null; then
   compdef pip3=pip
 fi
 
-plugins+=(themes)
-source "$ZSH/oh-my-zsh.sh"
-
 # Check `zshoptions` man page for more values
 setopt ALWAYS_TO_END
 setopt AUTO_CD
