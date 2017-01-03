@@ -1040,16 +1040,9 @@ If string is empty, current directory is not a git repo"
   ;; butt, chamfer, contour, curve, rounded, roundstub, wave, zigzag,
   ;; utf-8
   (setq powerline-default-separator 'wave
-        spaceline-highlight-face-func 'spaceline-highlight-face-default))
-#+END_SRC
-
-*** nyan-mode
-#+BEGIN_SRC emacs-lisp
-(use-package nyan-mode
-  :ensure
-  :if nil
-  :config
-  (add-hook 'after-init-hook 'nyan-mode))
+        spaceline-highlight-face-func 'spaceline-highlight-face-default
+        spaceline-workspace-numbers-unicode t
+        spaceline-window-numbers-unicode t))
 #+END_SRC
 
 *** rainbow-delimiters
