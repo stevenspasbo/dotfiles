@@ -1,4 +1,7 @@
+#!/usr/bin/env zsh
+
 # Completion stuff
+# For good examples, check out http://zshwiki.org/home/examples/compquickstart
 
 zmodload -i zsh/complist
 
