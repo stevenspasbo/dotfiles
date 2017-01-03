@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 #
 # Author: Steven Spasbo
 #
@@ -29,6 +31,9 @@ for p (git tmux vagrant grunt composer gem meteor lein nvm cargo rust pip); do
     plugins+=($p)
   fi
 done
+
+plugins+=(themes)
+source "$ZSH/oh-my-zsh.sh"
 
 if command -v pip3 > /dev/null; then
   compdef pip3=pip
