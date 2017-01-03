@@ -1277,15 +1277,14 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 ** Shell
 #+BEGIN_SRC emacs-lisp
-;; (use-package sh-script
-;;   :mode (;;("rc\\'" . shell-script-mode)
-;;          ("\(bash\|zsh\)rc\\'" . shell-script-mode)
-;;          ("\(bash_\|z\)profile\\'" . sh-mode)
-;;          ("\(history\|aliases\)\\'" . sh-mode)
-;;          ("zsh-theme\\'" . sh-mode))
-;;   :config
-;;   (setq sh-indentation 2
-;;         sh-basic-offset 2))
+(use-package sh-script
+  :mode (;;("\(bash\|zsh\)rc\\'" . sh-mode)
+         ("\\(bash_\\|z\\)\\(profile\\|login\\)\\'" . sh-mode)
+         ("\\(bash\\|zsh\\)\\(rc\\|env\\|\-theme\\)\\'" . sh-mode)
+         ("\\(history\\|aliases\\)\\'" . sh-mode))
+  :config
+  (setq sh-indentation 2
+        sh-basic-offset 2))
 #+END_SRC
 
 ** Java
