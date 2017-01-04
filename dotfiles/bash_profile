@@ -4,6 +4,6 @@
 [ -s $HOME/.aliases ] && . $HOME/.aliases
 
 # Enable completions
-if $IS_MAC && [ -f $(brew --prefix)/etc/bash_completion ]; then
+if [ "$IS_MAC" = true ] && [ -f $(brew --prefix)/etc/bash_completion ]; then
   . $(brew --prefix)/etc/bash_completion
 fi

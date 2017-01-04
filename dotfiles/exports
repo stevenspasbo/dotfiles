@@ -16,7 +16,7 @@ esac
 
 export EDITOR=emacs
 
-if $IS_MAC; then
+if [ "$IS_MAC" = true ]; then
   export BROWSER='open'
 fi
 
@@ -54,6 +54,6 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 #-------------------------------------------------------------
 # homebrew
 #-------------------------------------------------------------
-if $IS_MAC && command -v brew > /dev/null; then
+if [ "$IS_MAC" = true ] && command -v brew > /dev/null; then
   export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
 fi

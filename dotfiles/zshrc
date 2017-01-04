@@ -32,7 +32,7 @@ for p (git tmux vagrant grunt composer gem meteor lein nvm cargo rust pip pyenv)
   fi
 done
 
-if $IS_MAC; then
+if [ "$IS_MAC" = true ]; then
   plugins+=(osx)
 fi
 
