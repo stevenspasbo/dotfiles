@@ -1,11 +1,22 @@
 #!/usr/bin/env bash
 
-[ -s $HOME/.exports ] && . $HOME/.exports
-[ -s $HOME/.aliases ] && . $HOME/.aliases
+[ -s "$HOME/.exports" ] && . "$HOME/.exports"
+[ -s "$HOME/.aliases" ] && . "$HOME/.aliases"
+
+if [ ! -S ~/.ssh/ssh_auth_sock ]; then
+  eval `ssh-agent`
+  ln -sf "$SSH_AUTH_SOCK" ~/.ssh/ssh_auth_sock
+fi
+export SSH_AUTH_SOCK=~/.ssh/ssh_auth_sock
+ssh-add -l > /dev/null || ssh-add
 
 # Enable completions
 if [ "$IS_MAC" = true ] && [ -f $(brew --prefix)/etc/bash_completion ]; then
   . $(brew --prefix)/etc/bash_completion
+fi
+
+if [ -s /etc/bash_completion.d/git ]; then
+  . /etc/bash_completion.d/git
 fi
 
 source "$HOME/.bashrc"
