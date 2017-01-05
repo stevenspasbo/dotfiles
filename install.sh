@@ -1,4 +1,30 @@
 
+case "$OSTYPE" in
+  darwin*)  echo "OSX" ;;
+  linux*)   echo "LINUX" ;;
+  *)        echo "unknown: $OSTYPE" ;;
+esac
+
+# Detect the platform (similar to $OSTYPE)
+OS="`uname`"
+case $OS in
+  'Linux')
+    IS_LINUX=true
+    PACKAGE_MANAGER='sudo apt-get'
+    ;;
+  'Darwin')
+    IS_MAC=true
+
+    if ! command -v brew 2>&1 /dev/null; then
+      /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
+
+    PACKAGE_MANAGER='brew'
+
+    ;;
+  *) ;;
+esac
+
 
 ################################################################
 # NVM
