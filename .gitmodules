@@ -55,3 +55,6 @@
 [submodule "dotfiles/zsh-custom/plugins/zsh-history-substring-search"]
 	path = dotfiles/zsh-custom/plugins/zsh-history-substring-search
 	url = https://github.com/zsh-users/zsh-history-substring-search.git
+[submodule "dotfiles/zsh-custom/plugins/zsh-autopair"]
+	path = dotfiles/zsh-custom/plugins/zsh-autopair
+	url = https://github.com/hlissner/zsh-autopair.git
