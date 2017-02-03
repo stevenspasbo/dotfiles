@@ -23,7 +23,9 @@ ENABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
 
 plugins=(common-aliases themes)
-[[ -s $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
+plugins+=(history-substring-search)
+[[ -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
+[[ -d $ZSH_CUSTOM/plugins/zsh-autopair ]] && plugins+=(zsh-autopair)
 
 # Check for executables
 for p (git tmux vagrant grunt composer gem meteor lein nvm cargo rust pip pyenv); do
@@ -54,6 +56,7 @@ setopt GLOB_DOTS # emacs zsh [tab] [tab] -> .zshrc .zprofile .z[a-z]+
 setopt IGNOREEOF # Don't kill session with ctrl+D
 setopt LIST_PACKED
 setopt NO_MENU_COMPLETE
+setopt NO_BEEP
 setopt PROMPT_SUBST
 setopt PUSHD_TO_HOME
 setopt PUSHD_SILENT
@@ -91,3 +94,5 @@ alias -g L=' | less'
 # Finally
 [[ -s $HOME/.exports ]] && . $HOME/.exports
 [[ -s $HOME/.aliases ]] && . $HOME/.aliases
+
+unsetopt xtrace
