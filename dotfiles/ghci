@@ -1,0 +1,2 @@
+-- Set the prompt.
+:set prompt "λ "
