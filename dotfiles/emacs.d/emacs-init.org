@@ -128,17 +128,6 @@ Don't warn about narrowing or downcasing
 #+END_SRC
 
 * Functions
-** Load secrets
-#+BEGIN_SRC emacs-lisp
-(defun load-my-secrets ()
-  "Checks whether my secrets file has been loaded."
-  (interactive)
-  (let ((my-secrets-file (expand-file-name "~/Dropbox/secrets.el.gpg")))
-    (if (and (file-exists-p my-secrets-file) (not (boundp 'secrets-were-loaded)))
-        (load-file my-secrets-file))))
-
-#+END_SRC
-
 ** Insert look of disapproval
 #+BEGIN_SRC emacs-lisp
 (defun lod ()
@@ -319,31 +308,6 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 ** ERC
 #+BEGIN_SRC emacs-lisp
-  (use-package erc
-    :commands (erc)
-    :init
-    (exec-path-from-shell-initialize)
-    :defer
-    :config
-    '((".*\\.freenode.net" ; freenode.net
-       "#emacs" "#racket" "#scheme"
-       "#haskell" "#haskell-beginners" "#lisp"
-       "#stackoverflow" "#programming" "#php"
-       "#startups" "#drupal-support" "#drupal"
-       "#clojure" "#scala"))
-    (load-my-secrets)
-    (setq erc-join-buffer 'bury
-          erc-prompt  (lambda () (concat (buffer-name) "> "))
-          erc-prompt-for-password nil
-          erc-server "weber.freenode.net"
-          erc-port 6667
-          erc-nick "_sjs"
-          erc-user-full-name user-full-name
-          erc-password spasbo/erc-pwd
-          erc-hide-list '("JOIN" "PART" "QUIT" "NICK"))
-
-    (erc-update-modules))
-
   (use-package erc-hl-nicks
     :ensure
     :after erc
@@ -371,13 +335,6 @@ If string is empty, current directory is not a git repo"
     (setq erc-track-exclude-types
           '("JOIN" "NICK" "PART" "QUIT" "MODE"
             "324" "329" "332" "333" "353" "477")))
-
-
-  (defun start-irc ()
-    "Connect to IRC."
-    (interactive)
-    (when (y-or-n-p "Do you want to start IRC? ")
-      (erc :server erc-server :port erc-port :nick erc-nick :password erc-password :full-name user-full-name)))
 #+END_SRC
 
 ** eshell
