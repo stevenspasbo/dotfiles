@@ -10,13 +10,4 @@ fi
 export SSH_AUTH_SOCK=~/.ssh/ssh_auth_sock
 ssh-add -l > /dev/null || ssh-add
 
-# Enable completions
-if [ "$IS_MAC" = true ] && [ -f $(brew --prefix)/etc/bash_completion ]; then
-  . $(brew --prefix)/etc/bash_completion
-fi
-
-if [ -s /etc/bash_completion.d/git ]; then
-  . /etc/bash_completion.d/git
-fi
-
 source "$HOME/.bashrc"

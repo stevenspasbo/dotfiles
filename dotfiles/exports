@@ -6,6 +6,17 @@
 case "$(uname -s)" in
   Darwin)
     export IS_MAC=true
+    export BROWSER='open'
+
+    if command -v brew > /dev/null; then
+      export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
+
+      if [[ $SHELL == *"bash"* ]]; then
+        BREW_PREFIX=$(brew --prefix)
+        source "$BREW_PREFIX/etc/bash_completion"
+        source "$BREW_PREFIX/etc/bash_completion.d/git"
+      fi
+    fi
     ;;
   Linux)
     export IS_LINUX=true
@@ -15,10 +26,6 @@ case "$(uname -s)" in
 esac
 
 export EDITOR=emacs
-
-if [ "$IS_MAC" = true ]; then
-  export BROWSER='open'
-fi
 
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
@@ -46,14 +53,11 @@ export CLICOLOR=1
 #-------------------------------------------------------------
 export PAGER=less
 
+# export LESS='-MR'
+# export LESSOPEN='| ~/.lessfilter %s'
+
 #-------------------------------------------------------------
 # ssh
 #-------------------------------------------------------------
 export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-#-------------------------------------------------------------
-# homebrew
-#-------------------------------------------------------------
-if [ "$IS_MAC" = true ] && command -v brew > /dev/null; then
-  export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
-fi
+export DO_TOKEN=e0107615e7e0a6077218eba2e80f9372a7905fd38c6becad392bdcef5d0b7478
