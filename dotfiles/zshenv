@@ -41,6 +41,21 @@ cdpath=(~)
 if [ -d "$HOME/.nvm" ]; then
   export NVM_DIR="$HOME/.nvm"
   source "$NVM_DIR/nvm.sh"
+  nvm-update() {
+    CURRENT_DIR=$(pwd)
+    cd "$NVM_DIR"
+    git fetch --tags > /dev/null
+    TAG=$(git  describe --tags --abbrev=0)
+    HEAD_SHORT_REV=$(git rev-parse --short HEAD)
+    git checkout $TAG > /dev/null 2>&1
+
+    if [[ $(git rev-parse --short HEAD) == $HEAD_SHORT_REV ]]; then
+      echo "NVM already on most reccent tag."
+    else
+      echo "Checked out $TAG"
+    fi
+    cd "$CURRENT_DIR"
+  }
 fi
 
 # Go
