@@ -5,10 +5,11 @@
 #
 # zshenv is sourced on all invocations of the shell.
 #
-# It should contain commands to set the command search path, plus other
+# It should contain commands to set the PATH and other
 # important environment variables.
-#
-#
+
+# Need this so PATH doesn't break on OSX Sierra.
+setopt NO_GLOBAL_RCS
 
 # Set up tmp files
 if [[ ! -d "$TMPDIR" ]]; then
