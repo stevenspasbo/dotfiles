@@ -35,57 +35,79 @@ cdpath=(~)
 # fpath
 [ -d "$HOME/.zsh-custom/functions" ] && fpath=("$HOME/.zsh-custom/functions" $fpath)
 
-# RVM / Ruby
-[ -s "$HOME/.rvm/scripts/rvm" ] && . "$HOME/.rvm/scripts/rvm"
+# HELPDIR
+[ -d /usr/local/share/zsh/help ] && export HELPDIR=/usr/local/share/zsh/help
+
+# Ruby / rvm
+function ruby-loader() {
+  [ -s "$HOME/.rvm/scripts/rvm" ] && . "$HOME/.rvm/scripts/rvm"
+}
 
 # NVM / Node
-if [ -d "$HOME/.nvm" ]; then
-  export NVM_DIR="$HOME/.nvm"
-  source "$NVM_DIR/nvm.sh"
-  nvm-update() {
-    CURRENT_DIR=$(pwd)
-    cd "$NVM_DIR"
-    git fetch --tags > /dev/null
-    TAG=$(git  describe --tags --abbrev=0)
-    HEAD_SHORT_REV=$(git rev-parse --short HEAD)
-    git checkout $TAG > /dev/null 2>&1
+function node-loader() {
+  if [ -d "$HOME/.nvm" ]; then
+    export NVM_DIR="$HOME/.nvm"
+    source "$NVM_DIR/nvm.sh"
+    nvm-update() {
+      CURRENT_DIR=$(pwd)
+      cd "$NVM_DIR"
+      git fetch --tags > /dev/null
+      TAG=$(git  describe --tags --abbrev=0)
+      HEAD_SHORT_REV=$(git rev-parse --short HEAD)
+      git checkout $TAG > /dev/null 2>&1
 
-    if [[ $(git rev-parse --short HEAD) == $HEAD_SHORT_REV ]]; then
-      echo "NVM already on most reccent tag."
-    else
-      echo "Checked out $TAG"
-    fi
-    cd "$CURRENT_DIR"
-  }
-fi
+      if [[ $(git rev-parse --short HEAD) == $HEAD_SHORT_REV ]]; then
+        echo "NVM already on most reccent tag."
+      else
+        echo "Checked out $TAG"
+      fi
+      cd "$CURRENT_DIR"
+    }
+  fi
+}
 
-# Go
-[ -d "$HOME/.gvm" ] && source "$HOME/.gvm/scripts/gvm"
+#  Go
+function go-loader() {
+  [ -d "$HOME/.gvm" ] && source "$HOME/.gvm/scripts/gvm"
+}
 
 # Perl
-if [ -d "$HOME/perl5" ]; then
-  PATH="$HOME/perl5/bin${PATH:+:${PATH}}"; export PATH;
-  PERL5LIB="$HOME/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-  PERL_LOCAL_LIB_ROOT="$HOME/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-  PERL_MB_OPT="--install_base \"$HOME/perl5\""; export PERL_MB_OPT;
-  PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"; export PERL_MM_OPT;
-fi
-
-# GNU coreutils
-export CORE_UTILS=$(brew --prefix coreutils) > /dev/null 2>&1
-if [ -n $CORE_UTILS ]; then
-  export PATH="$CORE_UTILS/libexec/gnubin:$PATH"
-  export MANPATH="$CORE_UTILS/libexec/gnuman:$MANPATH"
-fi
+function perl-loader() {
+  if [ -d "$HOME/perl5" ]; then
+    PATH="$HOME/perl5/bin${PATH:+:${PATH}}"; export PATH;
+    PERL5LIB="$HOME/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+    PERL_LOCAL_LIB_ROOT="$HOME/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+    PERL_MB_OPT="--install_base \"$HOME/perl5\""; export PERL_MB_OPT;
+    PERL_MM_OPT="INSTALL_BASE=$HOME/perl5"; export PERL_MM_OPT;
+  fi
+}
 
 # Rust
-if [ -d "$HOME/.cargo" ]; then
-  export PATH="$PATH:$HOME/.cargo/bin"
-fi
+function rust-loader() {
+  if [ -d "$HOME/.cargo" ]; then
+    export PATH="$PATH:$HOME/.cargo/bin"
+  fi
+}
 
-# Python
-if [ -d "$HOME/.pyenv" ]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init -)"
-fi
+# Python / pyenv
+function python-loader() {
+  # Python
+  if [ -d "$HOME/.pyenv" ]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+  fi
+}
+
+# Significantly increases load time by scheduling pyenv/nvm/rvm
+# for a few seconds in the future.
+zmodload zsh/sched
+
+sched +5 python-loader
+sched +7 node-loader
+sched +10 ruby-loader
+sched +10 rust-loader
+sched +12 go-loader
+sched +15 perl-loader
+
+[[ -s "$HOME/.paths" ]] && source "$HOME/.paths"

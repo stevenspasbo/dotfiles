@@ -94,5 +94,3 @@ alias -g L=' | less'
 # Finally
 [[ -s $HOME/.exports ]] && . $HOME/.exports
 [[ -s $HOME/.aliases ]] && . $HOME/.aliases
-
-unsetopt xtrace

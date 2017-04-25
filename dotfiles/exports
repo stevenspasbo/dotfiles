@@ -16,6 +16,14 @@ case "$(uname -s)" in
         source "$BREW_PREFIX/etc/bash_completion"
         source "$BREW_PREFIX/etc/bash_completion.d/git"
       fi
+
+      # GNU coreutils
+      export CORE_UTILS=$(brew --prefix coreutils) > /dev/null 2>&1
+      if [ -n $CORE_UTILS ]; then
+        export PATH="$CORE_UTILS/libexec/gnubin:$PATH"
+        export MANPATH="$CORE_UTILS/libexec/gnuman:$MANPATH"
+      fi
+
     fi
     ;;
   Linux)
