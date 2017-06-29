@@ -732,7 +732,9 @@ If string is empty, current directory is not a git repo"
                       :foreground nil
                       :background nil
                       :underline "#268bd2")
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  (if (executable-find "eslint")
+      (setq flycheck-javascript-eslint-executable "eslint")))
 #+END_SRC
 
 *** helm-flycheck
@@ -1471,7 +1473,7 @@ If string is empty, current directory is not a git repo"
               ("C-c b" . eval-buffer)))
 
 (defun emacs-lisp-stuff ()
-  (set (make-local-variable 'company-backends) '(company-elisp)))
+  (set (make-local-variable 'company-backends) '(company-elisp company-capf company-dabbrev-code company-dabbrev)))
 
 (add-hook 'emacs-lisp-mode-hook #'emacs-lisp-stuff)
 (add-hook 'lisp-interaction-mode-hook #'emacs-lisp-stuff)
@@ -1528,31 +1530,11 @@ If string is empty, current directory is not a git repo"
   :bind (:map clojure-mode-map
               ("C-c C-h" . clojure-cheatsheet)))
 
-;; (defun cider-start-http-server ()
-;;   (interactive)
-;;   (cider-load-current-buffer)
-;;   (let ((ns (cider-current-ns)))
-;;     (cider-repl-set-ns ns)
-;;     (cider-interactive-eval (format "(println '(def server (%s/start))) (println 'server)" ns))
-;;     (cider-interactive-eval (format "(def server (%s/start)) (println server)" ns))))
-
-;; (defun cider-refresh ()
-;;   (interactive)
-;;   (cider-interactive-eval (format "(user/reset)")))
-
-;; (defun cider-user-ns ()
-;;   (interactive)
-;;   (cider-repl-set-ns "user"))
-
 (use-package cider
   :ensure
   :after clojure-mode
   :bind (:map clojure-mode-map
-              ("C-c C-c" . cider-jack-in)
-              ;; ("C-c C-v" . cider-start-http-server)
-              ;; ("C-M-r" . cider-refresh)
-              ;; ("C-c u" . cider-user-ns)
-              )
+              ("C-c C-c" . cider-jack-in))
   :config
   ;; (add-hook 'cider-mode-hook #'cider-turn-on-eldoc-mode)
   (add-hook 'cider-mode-hook #'paredit-mode)
@@ -1568,9 +1550,23 @@ If string is empty, current directory is not a git repo"
         cider-repl-wrap-history t
         ;; Hide *nrepl-connection* and *nrepl-server* buffers.
         nrepl-hide-special-buffers t
-
         nrepl-hide-special-buffers t
-        nrepl-log-messages t))
+        nrepl-log-messages t)
+  (defun cider-start-http-server ()
+    (interactive)
+    (cider-load-current-buffer)
+    (let ((ns (cider-current-ns)))
+      (cider-repl-set-ns ns)
+      (cider-interactive-eval (format "(println '(def server (%s/start))) (println 'server)" ns))
+      (cider-interactive-eval (format "(def server (%s/start)) (println server)" ns))))
+
+  (defun cider-refresh ()
+    (interactive)
+    (cider-interactive-eval (format "(user/reset)")))
+
+  (defun cider-user-ns ()
+    (interactive)
+    (cider-repl-set-ns "user")))
 #+END_SRC
 
 ** Python
@@ -1797,10 +1793,10 @@ If string is empty, current directory is not a git repo"
   (if (display-graphic-p)
       ;; If emacs GUI
       (progn
-        ;; (load-theme 'spacemacs-dark t)
         (load-theme 'dracula t)
         (set-frame-font "Source Code Pro for Powerline-15")
         (spaceline-emacs-theme)
+        (diminish 'flycheck-mode) ;; only if spaceline-emacs-theme is enabled
         (spaceline-helm-mode))
     ;; If terminal
     (progn
