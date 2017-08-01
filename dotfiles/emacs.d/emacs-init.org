@@ -756,9 +756,9 @@ If string is empty, current directory is not a git repo"
 (use-package saveplace
   :commands (save-place-mode)
   :config
-  (if (version< emacs-version "25.0")
-      (setq-default save-place t)
-    (save-place-mode 1)))
+  (unless (version< emacs-version "25")
+    (save-place-mode 1))
+  (setq-default save-place t))
 #+END_SRC
 *** recentf
 #+BEGIN_SRC emacs-lisp
@@ -1746,10 +1746,8 @@ If string is empty, current directory is not a git repo"
   (setq show-trailing-whitespace t)
   (show-paren-mode 1)
   (rainbow-delimiters-mode)
-  (local-set-key (kbd "RET") 'newline-and-indent)
-
+  (local-set-key (kbd "RET") 'newline-and-indent))
 #+END_SRC
-
 ** Hooks
 #+BEGIN_SRC emacs-lisp
 (add-hook 'before-save-hook #'delete-trailing-whitespace) ; Remove whitespace on save
