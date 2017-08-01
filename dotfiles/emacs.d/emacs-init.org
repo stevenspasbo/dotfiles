@@ -754,6 +754,7 @@ If string is empty, current directory is not a git repo"
 *** saveplace
 #+BEGIN_SRC emacs-lisp
 (use-package saveplace
+  :commands (save-place-mode)
   :config
   (if (version< emacs-version "25.0")
       (setq-default save-place t)
