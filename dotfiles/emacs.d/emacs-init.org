@@ -1261,7 +1261,7 @@ If string is empty, current directory is not a git repo"
 
 (use-package flycheck-rust
   :ensure
-  :after flycheck
+  :after rust-mode
   :config
   (flycheck-rust-setup))
 
