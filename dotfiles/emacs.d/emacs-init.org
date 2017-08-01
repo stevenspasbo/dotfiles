@@ -1126,13 +1126,11 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
   :ensure
-  :defer 5
+  :bind (("C-z" . undo-tree-undo)
+         ("C-S-z" . undo-tree-redo))
   :diminish ""
   :config
-  (defalias 'redo 'undo-tree-redo)
-  (global-undo-tree-mode)
-  :bind (("C-z" . undo)
-         ("C-S-z" . redo)))
+  (global-undo-tree-mode))
 #+END_SRC
 
 *** rainbow-mode
