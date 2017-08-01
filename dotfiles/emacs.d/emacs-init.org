@@ -284,10 +284,10 @@ If string is empty, current directory is not a git repo"
   :after erc
   :commands (erc-track-mode)
   :config
-  (erc-track-mode 1)
   (setq erc-track-exclude-types
         '("JOIN" "NICK" "PART" "QUIT" "MODE"
-          "324" "329" "332" "333" "353" "477")))
+          "324" "329" "332" "333" "353" "477"))
+  (erc-track-mode 1))
 #+END_SRC
 
 ** eshell
