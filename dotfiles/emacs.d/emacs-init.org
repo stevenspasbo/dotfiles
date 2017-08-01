@@ -1138,9 +1138,9 @@ If string is empty, current directory is not a git repo"
 (use-package rainbow-mode
   :ensure
   :diminish rainbow-mode
-  :commands rainbow-mode)
-
-(add-hook 'prog-mode-hook 'rainbow-mode)
+  :commands rainbow-mode
+  :config
+  (rainbow-mode 1))
 #+END_SRC
 
 *** Whitespace
