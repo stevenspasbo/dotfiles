@@ -292,23 +292,56 @@ If string is empty, current directory is not a git repo"
 
 ** eshell
 #+BEGIN_SRC emacs-lisp
-;; (use-package company-shell
-;;   :ensure
-;;   :after company
-;;   :config
-;;   (add-to-list 'company-backends #'company-shell))
+(use-package eshell
+  :bind (("C-c s" . eshell))
+  :config
+  (defun eshell/clear ()
+    "Clears the shell buffer ala Unix's clear."
+    ;; the shell prompts are read-only, so clear that for the duration
+    (let ((inhibit-read-only t))
+      ;; simply delete the region
+      (erase-buffer))))
 
 (use-package esh-opt
   :after eshell)
 
+(use-package em-prompt
+  :after eshell
+  :config)
+
 (use-package eshell-prompt-extras
   :ensure
-  :after esh-opt
+  :after em-prompt
   :config
   (setq eshell-highlight-prompt nil
         eshell-prompt-function 'epe-theme-lambda))
 
-(use-package em-dirs :after eshell)
+(use-package em-dirs
+  :after eshell
+  :config
+  (defun get-abbriv-directory ()
+    "Gets the current directory, replaces home with ~"
+    (interactive)
+    (abbreviate-file-name (eshell/pwd))))
+
+(use-package em-cmpl
+  :after eshell
+  :bind (([remap eshell-pcomplete] . helm-esh-pcomplete))
+  :config
+  (setq eshell-cmpl-ignore-case t))
+
+(use-package em-hist
+  :after eshell
+  :config
+  (setq eshell-save-history-on-exit t
+        eshell-hist-ignoredups t
+        eshell-history-size nil))
+
+(use-package em-glob
+  :after eshell
+  :config
+  (setq eshell-glob-case-insensitive t
+        eshell-glob-include-dot-files t))
 
 ;; (use-package em-prompt
 ;;   :after eshell
@@ -329,24 +362,6 @@ If string is empty, current directory is not a git repo"
 ;;              (propertize "\nλ " 'face `(:foreground "#7BC783")))))
 ;;         eshell-prompt-regexp "^. "))
 
-(use-package em-cmpl
-  :after eshell
-  :config
-  (setq eshell-cmpl-ignore-case t ))
-
-
-(use-package em-hist
-  :after eshell
-  :config
-  (setq eshell-save-history-on-exit t
-        eshell-hist-ignoredups t
-        eshell-history-size nil))
-
-(use-package em-glob
-  :after eshell
-  :config
-  (setq eshell-glob-case-insensitive t
-        eshell-glob-include-dot-files t))
 #+END_SRC
 
 ** Org
@@ -535,6 +550,9 @@ If string is empty, current directory is not a git repo"
 
 (use-package helm-files
   :bind ("C-x C-f" . helm-find-files))
+
+(use-package helm-eshell
+  :commands helm-esh-pcomplete)
 
 (global-set-key (kbd "M-x") 'undefined)
 (global-set-key (kbd "M-x") 'helm-M-x)
