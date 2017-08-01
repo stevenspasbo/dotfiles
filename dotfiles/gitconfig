@@ -18,6 +18,10 @@
 	lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
 	s = status -s
 	co = checkout
+	quick-stats = ! /usr/local/bin/git-quick-stats
+	aliases = !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /' | sort
+	recent = for-each-ref --count=10 --sort=-committerdate refs/heads/ --format="%(refname:short)"
+	graph = log --graph --all --decorate --stat --date=iso
 
 [core]
 	excludesfile = ~/.gitignore
@@ -53,6 +57,7 @@
 
 [diff]
        mnemonicprefix = true
+	indentHeuristic = true
 [fetch]
   prune = true
 
