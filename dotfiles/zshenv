@@ -110,4 +110,8 @@ sched +10 rust-loader
 sched +12 go-loader
 sched +15 perl-loader
 
+if [[ -d "$HOME/.local/bin" ]]; then
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+
 [[ -s "$HOME/.paths" ]] && source "$HOME/.paths"

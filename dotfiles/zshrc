@@ -22,13 +22,13 @@ DISABLE_AUTO_UPDATE="true"
 ENABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
 
-plugins=(common-aliases themes)
-plugins+=(history-substring-search)
+plugins+=(themes)
+plugins+=(history-substring-search zsh-completions)
 [[ -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
 [[ -d $ZSH_CUSTOM/plugins/zsh-autopair ]] && plugins+=(zsh-autopair)
 
 # Check for executables
-for p (git tmux vagrant grunt composer gem meteor lein nvm cargo rust pip pyenv); do
+for p (git tmux vagrant grunt composer gem nvm pip pyenv); do
   if type $p > /dev/null; then
     plugins+=($p)
   fi
