@@ -614,10 +614,6 @@ If string is empty, current directory is not a git repo"
         helm-grep-default-recurse-command
         "ggrep -a -d recurse %e -n%cH -e %p %f"))
 
-(defun pl/helm-alive-p ()
-  "Prevents conflicts between helm and golden-ratio-mode"
-  (if (boundp 'helm-alive-p)
-      (symbol-value 'helm-alive-p)))
 #+END_SRC
 *** helm-fuzzier
 #+BEGIN_SRC emacs-lisp
@@ -974,13 +970,18 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package golden-ratio
   :ensure
-  :defer
-  :diminish ""
+  :commands golden-ratio-mode
+  :diminish "φ"
   :config
+  (defun pl/helm-alive-p ()
+    "Prevents conflicts between helm and golden-ratio-mode"
+    (if (boundp 'helm-alive-p)
+        (symbol-value 'helm-alive-p)))
+
   (add-to-list 'golden-ratio-inhibit-functions #'pl/helm-alive-p)
   (add-to-list 'golden-ratio-exclude-buffer-names " *NeoTree*")
-  (add-to-list 'golden-ratio-exclude-modes "calendar-mode"))
-;; (add-to-list 'completion-styles 'initials t)
+  (add-to-list 'golden-ratio-exclude-modes "calendar-mode")
+  (golden-ratio-mode 1))
 #+END_SRC
 
 *** highlight-line-mode
