@@ -33,7 +33,7 @@ case "$(uname -s)" in
     ;;
 esac
 
-export EDITOR="emacs"
+export EDITOR="emacs -nw"
 export GIT_EDITOR="vim"
 
 export LC_ALL=en_US.UTF-8
