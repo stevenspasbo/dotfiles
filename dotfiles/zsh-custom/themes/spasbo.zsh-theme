@@ -1,3 +1,11 @@
+
+NEWLINE='
+'
+
+exists() {
+  command -v $1 > /dev/null 2>&1
+}
+
 PROMPT_EXIT_CODE_ERROR='✘'
 PROMPT_EXIT_CODE_OK='✔'
 SINGLE_SMALL_RIGHT_ARROW='❯'
@@ -20,9 +28,26 @@ ZSH_THEME_GIT_COMMITS_AHEAD_PREFIX=' '
 ZSH_THEME_GIT_COMMITS_DIVERGED='⇕'
 ZSH_THEME_GIT_COMMITS_AHEAD_SUFFIX='↑' # ⇡
 
+ROOT_USER_COLOR='red'
+NORMAL_USER_COLOR='blue'
+
+user() {
+  if [[ $LOGNAME == $USER ]] || [[ $UID == 0 ]] || [[ -n $SSH_CONNECTION ]]; then
+    local user_color
+    if [[ $USER == 'root' ]]; then
+      user_color=$ROOT_USER_COLOR
+    else
+      user_color=$NORMAL_USER_COLOR
+    fi
+
+  fi
+
+}
+
 function _git_prompt_info() {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git show-ref --head -s --abbrev |head -n1 2> /dev/null)"
-  echo "${ref/refs\/heads\// } $(git_prompt_status)$(git_commits_ahead)$(git_commits_behind)"
+  echo "${ref/refs\/heads\//$GIT_SYMBOL } $(parse_git_dirty)$(git_commits_ahead)$(git_commits_behind)"
+#  echo "${ref/refs\/heads\// } $(git_prompt_status)$(git_commits_ahead)$(git_commits_behind)"
 }
 
 function _git_info() {
@@ -37,18 +62,66 @@ function _git_info() {
         BG_COLOR=red
         FG_COLOR=white
     fi
-    echo "%{%K{$BG_COLOR}%}%{%F{$FG_COLOR}%} $(_git_prompt_info) %{%F{$BG_COLOR}%K{blue}%}"
+    echo "%{%K{$BG_COLOR}%}%{%F{$FG_COLOR}%}%{%b%} $(_git_prompt_info) %{%F{$BG_COLOR}%K{blue}%}"
   else
     echo "%{%K{blue}%}"
   fi
 }
 
-PROMPT_HOST='%{%b%F{gray}%K{black}%} %(?.%{%F{green}%}✔.%{%F{red}%}✘)%{%F{yellow}%} %{%F{blue}%} %n%{%F{magenta}%}@%{%F{cyan}%}%m %{%F{black}%}'
+exit_status() {
+  local exit_status_code=$?
+  # local foreground="white"
+  local exit_sym
+  local reset="%{%b%f%}"
+  if (( exit_status_code )); then
+    foreground="red"
+    exit_sym=$PROMPT_EXIT_CODE_ERROR
+  else
+    foreground="green"
+    exit_sym=$PROMPT_EXIT_CODE_OK
+  fi
+  echo "%{$reset%}%{%F{$foreground}%} $exit_sym%{$reset%}"
+}
+
+# PROMPT_HOST='%{%b%F{gray}%K{black}%} %(?.%{%F{green}%}✔.%{%F{red}%}✘) %n%{%F{magenta}%}@%{%F{cyan}%}%m %{%F{black}%}'
+PROMPT_HOST='%{%b%f%}%{%F{blue}%} %n%{%F{magenta}%}@%{%F{cyan}%}%m %{%F{black}%}'
 PROMPT_DIR='%{%F{white}%} %~%  '
 PROMPT_SU='%(!.%{%k%F{blue}%K{black}%}%{%F{yellow}%} ⚡ %{%k%F{black}%}.%{%k%F{blue}%})%{%f%k%b%}'
 
-SYM_SINGLE_SMALL_ARROW='❯'
+# PROMPT='$(exit_status)%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
 
-PROMPT='%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
-%{$fg_bold[white]%} λ %b%f'
+PROMPT='$(exit_status)%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
+%{$fg_bold[white]%} $SYMBOL_LAMBDA %b%f'
 # RPROMPT='%{$fg[green]%}[%*]%{$reset_color%}'
+
+
+####### STOLEN # https://github.com/zakariaGatter/gatter_oh-my-zsh_theme/blob/master/gatter.zsh-theme
+# https://github.com/zakariaGatter/Powergate
+
+# if [ "$(whoami)" = "root" ];then
+#   _user="%{$fg_bold[red]%}#%{$reset_color%}"
+# else
+#   _user="%{$fg_bold[white]%}$%{$reset_color%}"
+# fi
+
+# local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
+# local left_status="%(?:%{$fg[green]%}[:%{$fg[red]%}[)"
+# local right_status="%(?:%{$fg[green]%}]:%{$fg[red]%}])"
+
+# PROMPT='
+# ${left_status}%{$fg_bold[yellow]%} %D %T %{$reset_color%}${right_status} ${left_status}$(git_prompt_info)%{$reset_color%}${right_status}
+# ${left_status}%{$fg_bold[cyan]%}%c%{$reset_color%}${right_status}${_user}${ret_status}%{$reset_color%}'
+# RPROMPT=$'%b%{$reset_color%}%{$fg_bold[white]%}${${KEYMAP/vicmd/--NORMAL--}/(main|viins)/--INSERT--}%{$reset_color%}'
+
+# ZSH_THEME_GIT_PROMPT_PREFIX="$fg_bold[blue]Git: %{$fg[green]%}"
+# ZSH_THEME_GIT_PROMPT_SUFFIX="$reset_color "
+# ZSH_THEME_GIT_PROMPT_CLEAN="$reset_color ⚑"
+# ZSH_THEME_GIT_PROMPT_DIRTY="$fg[red] ✘"
+# ZSH_THEME_GIT_PROMPT_ADDED="$fg[red] ✚"
+# ZSH_THEME_GIT_PROMPT_MODIFIED="$fg[cyan] ✹"
+# ZSH_THEME_GIT_PROMPT_DELETED="$fg[purple] ✖"
+# ZSH_THEME_GIT_PROMPT_RENAMED="$fg[yellow] ➜"
+# ZSH_THEME_GIT_PROMPT_UNMERGED="$fg[white] ═"
+# ZSH_THEME_GIT_PROMPT_UNTRACKED="$fg[white] ✭"
+# ZSH_THEME_GIT_PROMPT_AHEAD="$fg[yellow] ⬆"
+# ZSH_THEME_GIT_PROMPT_BEHIND="$fg[yellow] ⬇"
