@@ -68,7 +68,7 @@ function _git_info() {
         BG_COLOR=red
         FG_COLOR=white
     fi
-    echo "%{%K{$BG_COLOR}%}%{%F{$FG_COLOR}%}%{%b%} $(_git_prompt_info) %{%F{$BG_COLOR}%K{blue}%}"
+    echo "%{%K{$BG_COLOR}%}%{%F{$FG_COLOR}%} $(_git_prompt_info) %{%F{$BG_COLOR}%K{blue}%}"
   else
     echo "%{%K{blue}%}"
   fi
