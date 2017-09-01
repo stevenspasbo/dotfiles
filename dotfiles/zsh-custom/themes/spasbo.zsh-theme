@@ -8,25 +8,31 @@ exists() {
 
 PROMPT_EXIT_CODE_ERROR='✘'
 PROMPT_EXIT_CODE_OK='✔'
+exit_status() {
+  echo " %(?:%{$fg_bold[green]%}$PROMPT_EXIT_CODE_OK:%{$fg_bold[red]%}$PROMPT_EXIT_CODE_ERROR)"
+}
+
 SINGLE_SMALL_RIGHT_ARROW='❯'
 SYMBOL_LAMBDA="λ"
 RIGHT_SEPARATOR=""
 
+# ZSH_THEME_GIT_PROMPT_PREFIX="$fg_bold[blue]Git: %{$fg[green]%}"
+# ZSH_THEME_GIT_PROMPT_SUFFIX="$reset_color "
+
 GIT_SYMBOL=""
-ZSH_THEME_GIT_PROMPT_UNTRACKED="?"
+ZSH_THEME_GIT_PROMPT_UNTRACKED="?" # '✭'
 ZSH_THEME_GIT_PROMPT_ADDED='✚'
 ZSH_THEME_GIT_PROMPT_MODIFIED='✹'
 ZSH_THEME_GIT_PROMPT_RENAMED='↺' # '➜ '
-ZSH_THEME_GIT_PROMPT_DELETED='✘'
+ZSH_THEME_GIT_PROMPT_DELETED='✘' # '✖'
 
-# ZSH_THEME_GIT_PROMPT_DIRTY=
 ZSH_THEME_GIT_PROMPT_DIRTY='✘' # '●'
-ZSH_THEME_GIT_PROMPT_CLEAN='✔'
-ZSH_THEME_GIT_COMMITS_BEHIND_SUFFIX='↓' # ⇣
+ZSH_THEME_GIT_PROMPT_CLEAN='✔' # '⚑'
+ZSH_THEME_GIT_COMMITS_BEHIND_SUFFIX='↓' # '⇣' '⬇'
 # Gives a little breathing room between status and commit diffs.
 ZSH_THEME_GIT_COMMITS_AHEAD_PREFIX=' '
 ZSH_THEME_GIT_COMMITS_DIVERGED='⇕'
-ZSH_THEME_GIT_COMMITS_AHEAD_SUFFIX='↑' # ⇡
+ZSH_THEME_GIT_COMMITS_AHEAD_SUFFIX='↑' # '⇡' '⬆'
 
 ROOT_USER_COLOR='red'
 NORMAL_USER_COLOR='blue'
@@ -68,21 +74,6 @@ function _git_info() {
   fi
 }
 
-exit_status() {
-  local exit_status_code=$?
-  # local foreground="white"
-  local exit_sym
-  local reset="%{%b%f%}"
-  if (( exit_status_code )); then
-    foreground="red"
-    exit_sym=$PROMPT_EXIT_CODE_ERROR
-  else
-    foreground="green"
-    exit_sym=$PROMPT_EXIT_CODE_OK
-  fi
-  echo "%{$reset%}%{%F{$foreground}%} $exit_sym%{$reset%}"
-}
-
 # PROMPT_HOST='%{%b%F{gray}%K{black}%} %(?.%{%F{green}%}✔.%{%F{red}%}✘) %n%{%F{magenta}%}@%{%F{cyan}%}%m %{%F{black}%}'
 PROMPT_HOST='%{%b%f%}%{%F{blue}%} %n%{%F{magenta}%}@%{%F{cyan}%}%m %{%F{black}%}'
 PROMPT_DIR='%{%F{white}%} %~%  '
@@ -92,19 +83,10 @@ PROMPT_SU='%(!.%{%k%F{blue}%K{black}%}%{%F{yellow}%} ⚡ %{%k%F{black}%}.%{%k
 
 PROMPT='$(exit_status)%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
 %{$fg_bold[white]%} $SYMBOL_LAMBDA %b%f'
-# RPROMPT='%{$fg[green]%}[%*]%{$reset_color%}'
-
 
 ####### STOLEN # https://github.com/zakariaGatter/gatter_oh-my-zsh_theme/blob/master/gatter.zsh-theme
 # https://github.com/zakariaGatter/Powergate
 
-# if [ "$(whoami)" = "root" ];then
-#   _user="%{$fg_bold[red]%}#%{$reset_color%}"
-# else
-#   _user="%{$fg_bold[white]%}$%{$reset_color%}"
-# fi
-
-# local ret_status="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
 # local left_status="%(?:%{$fg[green]%}[:%{$fg[red]%}[)"
 # local right_status="%(?:%{$fg[green]%}]:%{$fg[red]%}])"
 
@@ -112,16 +94,3 @@ PROMPT='$(exit_status)%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
 # ${left_status}%{$fg_bold[yellow]%} %D %T %{$reset_color%}${right_status} ${left_status}$(git_prompt_info)%{$reset_color%}${right_status}
 # ${left_status}%{$fg_bold[cyan]%}%c%{$reset_color%}${right_status}${_user}${ret_status}%{$reset_color%}'
 # RPROMPT=$'%b%{$reset_color%}%{$fg_bold[white]%}${${KEYMAP/vicmd/--NORMAL--}/(main|viins)/--INSERT--}%{$reset_color%}'
-
-# ZSH_THEME_GIT_PROMPT_PREFIX="$fg_bold[blue]Git: %{$fg[green]%}"
-# ZSH_THEME_GIT_PROMPT_SUFFIX="$reset_color "
-# ZSH_THEME_GIT_PROMPT_CLEAN="$reset_color ⚑"
-# ZSH_THEME_GIT_PROMPT_DIRTY="$fg[red] ✘"
-# ZSH_THEME_GIT_PROMPT_ADDED="$fg[red] ✚"
-# ZSH_THEME_GIT_PROMPT_MODIFIED="$fg[cyan] ✹"
-# ZSH_THEME_GIT_PROMPT_DELETED="$fg[purple] ✖"
-# ZSH_THEME_GIT_PROMPT_RENAMED="$fg[yellow] ➜"
-# ZSH_THEME_GIT_PROMPT_UNMERGED="$fg[white] ═"
-# ZSH_THEME_GIT_PROMPT_UNTRACKED="$fg[white] ✭"
-# ZSH_THEME_GIT_PROMPT_AHEAD="$fg[yellow] ⬆"
-# ZSH_THEME_GIT_PROMPT_BEHIND="$fg[yellow] ⬇"
