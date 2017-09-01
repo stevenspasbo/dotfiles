@@ -8,7 +8,7 @@ exists() {
 
 PROMPT_EXIT_CODE_ERROR='✘'
 PROMPT_EXIT_CODE_OK='✔'
-exit_status() {
+_exit_status() {
   echo " %(?:%{$fg_bold[green]%}$PROMPT_EXIT_CODE_OK:%{$fg_bold[red]%}$PROMPT_EXIT_CODE_ERROR)"
 }
 
@@ -79,9 +79,9 @@ PROMPT_HOST='%{%b%f%}%{%F{blue}%} %n%{%F{magenta}%}@%{%F{cyan}%}%m %{%F{black}%}
 PROMPT_DIR='%{%F{white}%} %~%  '
 PROMPT_SU='%(!.%{%k%F{blue}%K{black}%}%{%F{yellow}%} ⚡ %{%k%F{black}%}.%{%k%F{blue}%})%{%f%k%b%}'
 
-# PROMPT='$(exit_status)%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
+# PROMPT='$(_exit_status)%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
 
-PROMPT='$(exit_status)%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
+PROMPT='$(_exit_status)%{%f%b%k%}$PROMPT_HOST$(_git_info)$PROMPT_DIR$PROMPT_SU
 %{$fg_bold[white]%} $SYMBOL_LAMBDA %b%f'
 
 ####### STOLEN # https://github.com/zakariaGatter/gatter_oh-my-zsh_theme/blob/master/gatter.zsh-theme
