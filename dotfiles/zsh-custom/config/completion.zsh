@@ -5,10 +5,10 @@
 
 zmodload -i zsh/complist
 
-# If we have pip3 installed, make sure it uses pip's completions.
-if command -v pip3 > /dev/null; then
-  compdef pip3=pip
-fi
+# # If we have pip3 installed, make sure it uses pip's completions.
+# if command -v pip3 > /dev/null; then
+#   compdef pip3=pip
+# fi
 
 # cdr
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
@@ -56,16 +56,20 @@ zstyle ':completion:*' separate-sections 'yes'
 zstyle ':completion:*' list-dirs-first true
 zstyle ':completion:*' file-sort name
 
-# Pretty messages during pagination
-zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more, or the character to insert%s'
-zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
-# show a screenful of options + prompt
-COMPLETION_PROMPT="%{$fg_bold[white]%}%M"
-COMPLETION_PROMPT+="%{$fg_bold[blue]%}["
-COMPLETION_PROMPT+="%{$fg[yellow]%}%P"
-COMPLETION_PROMPT+="%{$fg_bold[blue]%}]"
-COMPLETION_PROMPT+="%{$fg[white]%}> :%{$reset_color%}"
-zstyle ':completion:*' list-prompt $COMPLETION_PROMPT
+# # Pretty messages during pagination
+# zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
+# # show a screenful of options + prompt
+# zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more, or the character to insert%s'
+# COMPLETION_PROMPT="%{$fg_bold[white]%}%M"
+# COMPLETION_PROMPT+="%{$fg_bold[blue]%}["
+# COMPLETION_PROMPT+="%{$fg[yellow]%}%P"
+# COMPLETION_PROMPT+="%{$fg_bold[blue]%}]"
+# COMPLETION_PROMPT+="%{$fg[white]%}> :%{$reset_color%}"
+# zstyle ':completion:*' list-prompt $COMPLETION_PROMPT
+
+#recently added, testing
+zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+
 
 # Color aliases
 #zstyle ':completion:*:aliases' list-colors "=*=$color[blue]"
@@ -85,8 +89,20 @@ zstyle ':completion:*:original' list-colors "=*=$color[red];$color[bold]"
 
 zstyle ':completion:*:manuals.(^1*)' insert-sections true
 
+
+
+# zstyle ':completion:*:manuals' separate-sections true
+# zstyle ':completion:*:manuals.(^1*)' insert-sections true
+
+
+
 # Enable approximate completions
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3)) numeric)'
+
+# zstyle -e ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX + $#SUFFIX) / 3 )) )'
+# zstyle ':completion::approximate*:*' prefix-needed false
+
+
 
 # Always use menu selection for `cd -`
 zstyle ':completion:*:*:cd:*:directory-stack' force-list always
@@ -120,3 +136,6 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:
 
 # Ignore missing commands
 zstyle ':completion:*:functions' ignored-patterns '_*'
+
+zstyle ':completion:*:*:emacs:*:*files' ignored-patterns \
+  '*?.(aux|dvi|ps|pdf|bbl|toc|lot|lof|o|cm|class?)'

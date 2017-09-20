@@ -45,15 +45,14 @@ user() {
     else
       user_color=$NORMAL_USER_COLOR
     fi
-
   fi
-
+  # _user="%{$fg_bold[user_color]%}$USER%{$reset_color%}"
+  # echo -n $_user
 }
 
 function _git_prompt_info() {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git show-ref --head -s --abbrev |head -n1 2> /dev/null)"
   echo "${ref/refs\/heads\//$GIT_SYMBOL } $(parse_git_dirty)$(git_commits_ahead)$(git_commits_behind)"
-#  echo "${ref/refs\/heads\// } $(git_prompt_status)$(git_commits_ahead)$(git_commits_behind)"
 }
 
 function _git_info() {
