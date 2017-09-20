@@ -58,3 +58,6 @@
 [submodule "dotfiles/zsh-custom/plugins/zsh-autopair"]
 	path = dotfiles/zsh-custom/plugins/zsh-autopair
 	url = https://github.com/hlissner/zsh-autopair.git
+[submodule "dotfiles/zsh-custom/themes/powerlevel9k"]
+	path = dotfiles/zsh-custom/themes/powerlevel9k
+	url = https://github.com/bhilburn/powerlevel9k.git
