@@ -5,7 +5,7 @@ Installation is pretty straight forward.
 ** Make sure required packages are installed
 Don't run this unless you trust me.
 #+BEGIN_SRC sh
-bash <(curl -s https://raw.githubusercontent.com/stevemspasbo/dotfiles/master/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/stevenspasbo/dotfiles/master/install.sh)
 #+END_SRC
 
 ** Check out the repository

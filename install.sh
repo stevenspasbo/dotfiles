@@ -15,7 +15,7 @@ case $OS in
   'Darwin')
     IS_MAC=true
 
-    if ! command -v brew 2>&1 /dev/null; then
+    if ! command -v brew > /dev/null; then
       /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 
@@ -25,15 +25,8 @@ case $OS in
   *) ;;
 esac
 
-
-################################################################
-# NVM
-################################################################
-# Install node
-
-[ ! -d $HOME/.nvm ] && git clone https://github.com/creationix/nvm.git ~/.nvm && sh ~/.nvm/install.sh
-. $NVM_DIR/nvm.sh && nvm install stable
-npm install -g grunt-cli
-
-# gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-# \curl -sSL https://get.rvm.io | bash -s stable
+if command > git; then
+  if [[ ! -d "$HOME/dotfiles" ]]; then
+    git clone --recursive https://github.com/stevenspasbo/dotfiles.git "$HOME/dotfiles"
+  fi
+fi
