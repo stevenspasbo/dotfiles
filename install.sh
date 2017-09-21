@@ -5,6 +5,15 @@ case "$OSTYPE" in
   *)        echo "unknown: $OSTYPE" ;;
 esac
 
+DOTFILES_DIR="$HOME/dotfiles"
+
+if command > git; then
+  if [[ ! -d "$DOTFILES_DIR" ]]; then
+    echo "Checking out dotfiles repository..."
+    git clone --recursive https://github.com/stevenspasbo/dotfiles.git "$DOTFILES_DIR" > /dev/null
+  fi
+fi
+
 # Detect the platform (similar to $OSTYPE)
 OS="`uname`"
 case $OS in
@@ -21,12 +30,9 @@ case $OS in
 
     PACKAGE_MANAGER='brew'
 
+    cd "$DOTFILES_DIR"
+    brew bundle
+
     ;;
   *) ;;
 esac
-
-if command > git; then
-  if [[ ! -d "$HOME/dotfiles" ]]; then
-    git clone --recursive https://github.com/stevenspasbo/dotfiles.git "$HOME/dotfiles"
-  fi
-fi
