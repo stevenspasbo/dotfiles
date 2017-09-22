@@ -71,5 +71,5 @@ export PAGER=less
 export SSH_KEY_PATH="~/.ssh/rsa_id"
 export DO_TOKEN=e0107615e7e0a6077218eba2e80f9372a7905fd38c6becad392bdcef5d0b7478
 
-[[ -d "$HOME/.bin" ]] && export PATH="$HOME/.bin/$PATH"
-[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin/$PATH"
+[[ -d "$HOME/.bin" ]] && export PATH="$HOME/.bin:$PATH"
+[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
