@@ -4,6 +4,44 @@
 #+PROPERTY: header-args :tangle ~/.emacs.d/emacs-init.el :comments org
 
 * Startup
+** Package stuff
+#+BEGIN_SRC emacs-lisp
+(setq package-archives
+      '(("marmalade"    . "http://marmalade-repo.org/packages/")
+        ("gnu"          . "https://elpa.gnu.org/packages/")
+        ("org"          . "http://orgmode.org/elpa/")
+        ("melpa"        . "https://melpa.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")))
+
+(setq package-enable-at-startup nil
+      package--init-file-ensured t)
+
+(eval-and-compile
+  (setq use-package-verbose (not (bound-and-true-p byte-compile-current-file))))
+
+(mapc #'(lambda (add) (add-to-list 'load-path add))
+      (eval-when-compile
+        (package-initialize)
+        (unless (package-installed-p 'use-package)
+          (package-refresh-contents)
+          (package-install 'use-package))
+        ;; (setq use-package-always-ensure t) ;; Might want to disable this.
+        (let ((package-user-dir-real (file-truename package-user-dir)))
+          (nreverse (apply #'nconc
+                           (mapcar #'(lambda (path)
+                                       (if (string-prefix-p package-user-dir-real path)
+                                           (list path)
+                                         nil))
+                                   load-path))))))
+
+(eval-when-compile
+  (require 'use-package))
+(require 'bind-key)
+(require 'diminish)
+
+(use-package use-package :commands use-package-autoload-keymap)
+
+#+END_SRC
 ** Constants and aliases
 #+BEGIN_SRC emacs-lisp
 (defconst emacs-start-time (current-time))
@@ -86,37 +124,6 @@ Don't warn about narrowing or downcasing
 
 * Enable packages
 #+BEGIN_SRC emacs-lisp
-  (package-initialize)
-  (require 'package)
-  (setq package-archives
-        '(("marmalade"    . "http://marmalade-repo.org/packages/")
-          ("gnu"          . "https://elpa.gnu.org/packages/")
-          ("org"          . "http://orgmode.org/elpa/")
-          ("melpa"        . "https://melpa.org/packages/")
-          ("melpa-stable" . "https://stable.melpa.org/packages/")))
-
-  (setq package-enable-at-startup nil)
-  (let ((elapsed (float-time (time-subtract (current-time)
-                                            emacs-start-time))))
-    (message "Loaded packages in %.3fs" elapsed))
-  (let ((my-packages
-         '(use-package diminish moe-theme zenburn-theme
-            ujelly-theme tronesque-theme tangotango-theme solarized-theme
-            color-theme-sanityinc-tomorrow cyberpunk-theme monokai-theme
-            farmhouse-theme material-theme afternoon-theme gotham-theme
-            doom-themes spacemacs-theme noctilux-theme ample-zen-theme
-            reykjavik-theme suscolors-theme kooten-theme avk-emacs-themes
-            dracula-theme ample-theme color-theme-cobalt color-theme
-            planet-theme omtose-phellack-theme))
-        (refreshed? nil))
-    (dolist (p my-packages)
-      (unless (package-installed-p p)
-        (when (null refreshed?)
-          (package-refresh-contents)
-          (setq refreshed? t))
-        (package-install p))))
-  ;; hipster-theme seems to have been removed
-
   (defun toggle-use-package-debug ()
     (interactive)
     (if use-package-debug
@@ -505,29 +512,56 @@ If string is empty, current directory is not a git repo"
 ** Helm
 *** Helm core
 #+BEGIN_SRC emacs-lisp
+
 (use-package helm
   :ensure
+  :bind (("C-c h" . helm-command-prefix)
+         ("M-x" . helm-M-x)
+         ("C-M-z" . helm-resume)
+         ("C-x r b" . helm-filtered-bookmarks)
+         ([remap switch-to-buffer] . helm-mini)
+         :map helm-map
+         ;; rebind tab to do persistent action
+         ("<tab>" . helm-execute-persistent-action)
+         ;; make TAB works in terminal
+         ("C-i"   . helm-execute-persistent-action)
+         ("C-z"   . helm-select-action)
+         ("C-p"   . helm-previous-line)
+         ("C-n"   . helm-next-line)
+         ("C-M-n" . helm-next-source)
+         ("C-M-p" . helm-previous-source)
+         ("M-N"   . helm-next-source)
+         ("M-P"   . helm-previous-source))
   :init
-  (require 'helm-config))
+  (use-package helm-config)
+  (use-package helm-mode
+    :diminish helm-mode)
+  (global-unset-key (kbd "C-x c"))
+  (global-set-key (kbd "M-x") 'undefined)
+  :config
+  (helm-mode 1)
+  (add-to-list 'helm-completing-read-handlers-alist '(org-set-tags-command))
+  (add-to-list 'helm-completing-read-handlers-alist '(org-set-tags))
+  (add-to-list 'helm-completing-read-handlers-alist '(org-match-sparse-tree))
+  (setq helm-split-window-in-side-p t
+        helm-mode-fuzzy-match t
+        helm-completion-in-region-fuzzy-match t))
 
-(global-set-key (kbd "C-c h") #'helm-command-prefix)
-(global-unset-key (kbd "C-x c"))
-
-;;; Enable Modes (helm-mode is loading nearly everything).
-(use-package helm-mode
-  :diminish helm-mode
-  :config (helm-mode 1))
+;; (define-key global-map [remap find-tag] 'helm-etags-select)
 
 (use-package helm-adaptive
   :config (helm-adaptive-mode 1))
 
-(use-package helm-ring
-  :bind ("M-y" . helm-show-kill-ring)
-  :config (helm-push-mark-mode 1))
-
 (use-package helm-utils
   ;; Popup buffer-name or filename in grep/moccur/imenu-all etc...
   :config (helm-popup-tip-mode 1))
+
+(use-package helm-sys
+  :config (helm-top-poll-mode 1))
+
+(use-package helm-ring
+  :bind ("M-y" . helm-show-kill-ring)
+  :config (helm-push-mark-mode 1))
 
 (use-package helm-ag
   :ensure
@@ -535,12 +569,6 @@ If string is empty, current directory is not a git repo"
   :config
   (setq helm-ag-base-command "ag --nocolor --nogroup --ignore-case"
         helm-ag-insert-at-point 'symbol))
-
-(use-package helm-grep
-  :bind (("C-c h g" . helm-do-grep-ag)))
-
-(use-package helm-sys
-  :config (helm-top-poll-mode 1))
 
 (use-package helm-semantic
   :bind (("C-c i" . helm-semantic-or-imenu)))
@@ -554,32 +582,16 @@ If string is empty, current directory is not a git repo"
 (use-package helm-eshell
   :commands helm-esh-pcomplete)
 
-(global-set-key (kbd "M-x") 'undefined)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-M-z") 'helm-resume)
-(global-set-key (kbd "C-x r b") 'helm-filtered-bookmarks)
+;; helm-bookmark
+(setq helm-bookmark-show-location t)
 
-(define-key global-map [remap switch-to-buffer] 'helm-mini)
-(define-key global-map [remap find-tag] 'helm-etags-select)
+(use-package helm-elisp
+  :config
+  (setq helm-lisp-fuzzy-completion t))
 
-(add-to-list 'helm-completing-read-handlers-alist '(org-set-tags-command))
-(add-to-list 'helm-completing-read-handlers-alist '(org-set-tags))
-(add-to-list 'helm-completing-read-handlers-alist '(org-match-sparse-tree))
-
-(setq helm-split-window-in-side-p t
-
-      helm-bookmark-show-location t
-
-      helm-M-x-fuzzy-match t
-      helm-buffers-fuzzy-matching t
-      helm-semantic-fuzzy-match t
-      helm-apropos-fuzzy-match t
-      helm-imenu-fuzzy-match t
-      helm-lisp-fuzzy-completion t
-      helm-completion-in-region-fuzzy-match t
-      helm-recentf-fuzzy-match t ; For helm-mini
-
-      helm-ff-file-name-history-use-recentf t
+;; helm-buffers
+(setq helm-buffers-fuzzy-matching t)
+(setq helm-ff-file-name-history-use-recentf t
       helm-ff-skip-boring-files t
       helm-ff-search-library-in-sexp t
 
@@ -592,20 +604,6 @@ If string is empty, current directory is not a git repo"
 
 (when (executable-find "curl")
   (setq helm-net-prefer-curl t))
-
-;; rebind tab to do persistent action
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-;; make TAB works in terminal
-(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
-;; list actions using C-z
-(define-key helm-map (kbd "C-z")  'helm-select-action)
-
-(define-key helm-map (kbd "C-p")   'helm-previous-line)
-(define-key helm-map (kbd "C-n")   'helm-next-line)
-(define-key helm-map (kbd "C-M-n") 'helm-next-source)
-(define-key helm-map (kbd "C-M-p") 'helm-previous-source)
-(define-key helm-map (kbd "M-N")   'helm-next-source)
-(define-key helm-map (kbd "M-P")   'helm-previous-source)
 
 ;; ggrep is gnu grep on OSX
 (when (executable-find "ggrep")
@@ -750,11 +748,12 @@ If string is empty, current directory is not a git repo"
 *** dired
 #+BEGIN_SRC emacs-lisp
 (use-package dired
-  :commands (dired)
+  :defer
   :config
   (setq dired-recursive-copies 'always
         dired-recursive-deletes 'always
-        dired-listing-switches "-al"))
+        dired-listing-switches "-alhFG"))
+
 #+END_SRC
 *** autorevert
 #+BEGIN_SRC emacs-lisp
@@ -922,15 +921,17 @@ If string is empty, current directory is not a git repo"
           ivy-done
           kill-line
           save-buffers))
+  (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
-(add-hook 'after-init-hook 'keyfreq-mode)
 
-(use-package esup :ensure :commands (esup))
-
-(defun esup-emacs-init ()
-  "By default esup will only show how long it takes to load files from init.el"
-  (interactive)
-  (esup (file-truename "~/.emacs.d/emacs-init.el")))
+(use-package esup
+  :ensure
+  :commands (esup esup-emacs-init)
+  :config
+  (defun esup-emacs-init ()
+    "By default esup will only show how long it takes to load files from init.el"
+    (interactive)
+    (esup (file-truename "~/.emacs.d/emacs-init.el"))))
 
 #+END_SRC
 
@@ -1179,56 +1180,48 @@ If string is empty, current directory is not a git repo"
          ("C-M-s" . isearch-forward)
          ("C-M-r" . isearch-backward)))
 #+END_SRC
-*** imenu
-#+BEGIN_SRC emacs-lisp
-(use-package imenu)
-#+END_SRC
 *** linum
 #+BEGIN_SRC emacs-lisp
-(defun fix-linum-size ()
-  (interactive)
+(use-package linum
+  :commands linum-mode
+  :init
+  (add-hook 'prog-mode-hook 'linum-mode)
+  :config
+  (setq linum-format "%4d  ")
   (set-face-attribute 'linum nil :height 110))
-
-(use-package linum :defer)
-
-(add-hook 'linum-mode-hook 'fix-linum-size)
-(add-hook 'prog-mode-hook 'linum-mode)
 
 #+END_SRC
 *** smooth scrolling
 #+BEGIN_SRC emacs-lisp
 (use-package smooth-scrolling
   :ensure
-  :defer
   :config
-  (progn
-    (setq smooth-scroll-margin 2)))
-(add-hook 'after-init-hook 'smooth-scrolling-mode)
+  (setq smooth-scroll-margin 5
+        scroll-conservatively 101
+        scroll-margin 5)
+  (smooth-scrolling-mode 1))
 #+END_SRC
 
 *** ibuffer
 #+BEGIN_SRC emacs-lisp
 (use-package ibuffer
-  :bind
-  (("C-x C-b" . ibuffer))
+  :bind (("C-x C-b" . ibuffer))
   :config
-  (progn
-    (setq ibuffer-default-sorting-mode 'major-mode)))
+  (setq ibuffer-default-sorting-mode 'major-mode))
 #+END_SRC
 ** Calendar
 #+BEGIN_SRC emacs-lisp
-(add-hook 'calendar-today-visible-hook 'calendar-mark-today)
 (use-package calendar
   :defer
   :config
-  (progn
-    (let ((org-diary-file "~/Dropbox/org-files/diary"))
-      (if (file-exists-p org-diary-file)
-          (setq diary-file org-diary-file)))
+  (let ((org-diary-file "~/Dropbox/org-files/diary"))
+    (if (file-exists-p org-diary-file)
+        (setq diary-file org-diary-file)))
 
-    (setq calendar-latitude 37.813
-          calendar-longitude -122.256
-          calendar-location-name "Oakland, CA")))
+  (setq calendar-latitude 37.813
+        calendar-longitude -122.256
+        calendar-location-name "Oakland, CA")
+  (add-hook 'calendar-today-visible-hook 'calendar-mark-today))
 #+END_SRC
 
 * Major modes

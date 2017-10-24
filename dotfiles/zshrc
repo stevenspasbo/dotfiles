@@ -66,6 +66,8 @@ setopt INTERACTIVE_COMMENTS # Recognize comments
 unsetopt FLOWCONTROL
 unsetopt MENU_COMPLETE  # do not autoselect the first completion entry
 
+nocorrect which
+
 # Load all custom zsh configurations, ignoring temp files.
 if [[ -d "$ZSH_CUSTOM/config" ]]; then
   for f in $(ls $ZSH_CUSTOM/config/[^.#]*.zsh); do
@@ -87,6 +89,12 @@ if command -v vlc > /dev/null; then
   alias -s py=emacs
 fi
 
+if [[ -n $HELPDIR ]]; then
+  unalias run-help 2> /dev/null
+  autoload run-help
+  alias help=run-help
+fi
+
 # Global aliases
 alias -g G=' | grep -i'
 alias -g L=' | less'
@@ -94,3 +102,16 @@ alias -g L=' | less'
 # Finally
 [[ -s $HOME/.exports ]] && . $HOME/.exports
 [[ -s $HOME/.aliases ]] && . $HOME/.aliases
+
+[[ -f "/var/www/community/selenium-server-standalone-3.4.0.jar" ]] && export SELENIUM_JAR="/var/www/community/selenium-server-standalone-3.4.0.jar"
+[[ -f "/Work/drupal8/selenium-server-standalone-3.4.0.jar" ]] && export SELENIUM_JAR="/Work/drupal8/selenium-server-standalone-3.4.0.jar"
+[[ -f "/var/www/community/chromedriver" ]] && export CHROMEDRIVER="/var/www/community/chromedriver"
+[[ -f "/Work/drupal8/chromedriver" ]] && export CHROMEDRIVER="/Work/drupal8/chromedriver"
+
+if [ -n $SELENIUM_JAR ]; then
+  alias seleniumhub="java -jar $SELENIUM_JAR -role hub"
+  alias seleniumnode="java -Dwebdriver.chrome.driver=chromedriver -jar $SELENIUM_JAR -role node -hub \"http://192.168.100.101:4444/grid/register\""
+  alias selenium="cd java -jar $SELENIUM_JAR -Dwebdriver.firefox.profile=default"
+fi
+export PATH=/Users/steven.spasbo/bin:${PATH}
+eval `manage zsh`
