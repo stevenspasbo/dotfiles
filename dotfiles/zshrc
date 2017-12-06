@@ -86,7 +86,6 @@ autoload -U zsh-mime-setup # Set file suffixes.
 zsh-mime-setup
 if command -v vlc > /dev/null; then
   alias -s mp4=vlc
-  alias -s py=emacs
 fi
 
 if [[ -n $HELPDIR ]]; then
@@ -102,16 +101,3 @@ alias -g L=' | less'
 # Finally
 [[ -s $HOME/.exports ]] && . $HOME/.exports
 [[ -s $HOME/.aliases ]] && . $HOME/.aliases
-
-[[ -f "/var/www/community/selenium-server-standalone-3.4.0.jar" ]] && export SELENIUM_JAR="/var/www/community/selenium-server-standalone-3.4.0.jar"
-[[ -f "/Work/drupal8/selenium-server-standalone-3.4.0.jar" ]] && export SELENIUM_JAR="/Work/drupal8/selenium-server-standalone-3.4.0.jar"
-[[ -f "/var/www/community/chromedriver" ]] && export CHROMEDRIVER="/var/www/community/chromedriver"
-[[ -f "/Work/drupal8/chromedriver" ]] && export CHROMEDRIVER="/Work/drupal8/chromedriver"
-
-if [ -n $SELENIUM_JAR ]; then
-  alias seleniumhub="java -jar $SELENIUM_JAR -role hub"
-  alias seleniumnode="java -Dwebdriver.chrome.driver=chromedriver -jar $SELENIUM_JAR -role node -hub \"http://192.168.100.101:4444/grid/register\""
-  alias selenium="cd java -jar $SELENIUM_JAR -Dwebdriver.firefox.profile=default"
-fi
-export PATH=/Users/steven.spasbo/bin:${PATH}
-eval `manage zsh`
