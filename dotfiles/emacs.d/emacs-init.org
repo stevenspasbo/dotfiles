@@ -1116,8 +1116,8 @@ If string is empty, current directory is not a git repo"
 (use-package paredit
   :ensure
   :diminish "()"
+  :hook (emacs-lisp-mode . paredit-mode)
   :config
-  (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
   ;; making paredit work with delete-selection-mode
   (put 'paredit-forward-delete 'delete-selection 'supersede)
   (put 'paredit-backward-delete 'delete-selection 'supersede)
@@ -1183,13 +1183,10 @@ If string is empty, current directory is not a git repo"
 *** linum
 #+BEGIN_SRC emacs-lisp
 (use-package linum
-  :commands linum-mode
-  :init
-  (add-hook 'prog-mode-hook 'linum-mode)
+  :hook (prog-mode . linum-mode)
   :config
   (setq linum-format "%4d  ")
   (set-face-attribute 'linum nil :height 110))
-
 #+END_SRC
 *** smooth scrolling
 #+BEGIN_SRC emacs-lisp
@@ -1408,9 +1405,7 @@ If string is empty, current directory is not a git repo"
 *** emacs-lisp
 #+BEGIN_SRC emacs-lisp
 (use-package eldoc
-  :init
-  (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
-  :commands eldoc-mode
+  :hook (emacs-lisp-mode . eldoc-mode)
   :diminish eldoc-mode)
 
 (use-package lisp-mode
