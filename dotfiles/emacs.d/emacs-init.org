@@ -1545,10 +1545,14 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package irony
   :ensure
-  :after cc-mode
-  :init
-  (add-hook 'c-mode-hook #'irony-mode)
+  :commands enable-irony-for-specific-modes
+  :hook ((c-mode . enable-irony-for-specific-modes)
+         (c++-mode . enable-irony-for-specific-modes))
   :config
+  (defun enable-irony-for-specific-modes ()
+    ;; avoid enabling irony-mode in modes that inherits c-mode, e.g: php-mode
+    (when (member major-mode irony-supported-major-modes)
+      (irony-mode 1)))
   (defun irony-enable-completions ()
     (define-key irony-mode-map [remap completion-at-point]
       'irony-completion-at-point-async)
