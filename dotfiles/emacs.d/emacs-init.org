@@ -1222,6 +1222,23 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 * Major modes
+** Solidity
+#+BEGIN_SRC emacs-lisp
+(use-package solidity-mode
+  :ensure
+  :config
+  (let ((solc (executable-find "solc")))
+    (when (bound-and-true-p solc)
+      (setq solidity-solc-path solc))))
+
+(use-package solidity-flycheck
+  :defer
+  :after (flycheck solidity-mode)
+  :config
+  (if (bound-and-true-p solidity-solc-path)
+      (setq solidity-flycheck-solc-checker-active t)))
+
+#+END_SRC
 ** Rust
 #+BEGIN_SRC emacs-lisp
 (use-package cargo
