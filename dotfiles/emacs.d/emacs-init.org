@@ -22,10 +22,14 @@
 (mapc #'(lambda (add) (add-to-list 'load-path add))
       (eval-when-compile
         (package-initialize)
-        (unless (package-installed-p 'use-package)
-          (package-refresh-contents)
-          (package-install 'use-package))
-        ;; (setq use-package-always-ensure t) ;; Might want to disable this.
+        (let ((required-packages '(use-package diminish))
+              (refreshed? nil))
+          (dolist (p required-packages)
+            (unless (package-installed-p p)
+              (when (null refreshed?)
+                (package-refresh-contents)
+                (setq refreshed? t))
+              (package-install p))))
         (let ((package-user-dir-real (file-truename package-user-dir)))
           (nreverse (apply #'nconc
                            (mapcar #'(lambda (path)
@@ -39,7 +43,6 @@
 (require 'bind-key)
 (require 'diminish)
 
-(use-package use-package :commands use-package-autoload-keymap)
 
 #+END_SRC
 ** Constants and aliases
