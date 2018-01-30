@@ -58,11 +58,6 @@ task :default do
   puts "Run 'rake -T' to see the list of available tasks"
 end
 
-desc "Updates all the vim plugins"
-task :update_submodules do
-  sh "git submodule update --init --recursive"
-end
-
 desc "Installs all dotfiles"
 task :install_dotfiles do
   files.each do |file|
@@ -72,56 +67,5 @@ task :install_dotfiles do
     backup home_file if (File.exists?(home_file) && !File.symlink?(home_file))
     File.delete home_file if File.symlink? home_file
     File.symlink("#{File.basename(Dir.pwd)}/#{file}", home_file)
-  end
-end
-
-desc "Installs RVM"
-task :install_rvm do
-  unless app_installed? RVM
-    print "Install RVM? (y/n) "
-    ans = $stdin.gets.downcase.chomp
-    if (ans == "y" || ans == "yes")
-      sh "curl -sSL https://get.rvm.io | bash"
-    end
-  else
-    puts "RVM already installed"
-  end
-end
-
-desc "Installs Homebrew"
-task :install_homebrew do
-  unless is_mac?
-    puts "Mac only"
-    break
-  end
-  unless app_installed? HOMEBREW
-    print "Install Homebrew? (y/n) "
-    ans = $stdin.gets.downcase.chomp
-    if (ans == "y" || ans == "yes")
-      sh 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
-    end
-  else
-    puts "Homebrew already installed"
-  end
-end
-
-desc "Installs everything"
-task :install_all => [ :install_homebrew, :install_fonts, :install_rvm, :install_dotfiles ] do
-  puts "Installing everything..."
-end
-
-desc "Installs fonts"
-task :install_fonts do
-  if (is_mac?)
-    Dir["#{REPO_FONT_DIR}/*"].each do |font|
-      unless (File.exists? "#{USER_FONT_DIR}/#{File.basename(font)}")
-        FileUtils.cp(font, USER_FONT_DIR)
-      else
-        puts "#{File.basename(font)} already exists in Users library"
-      end
-    end
-    puts "Fonts now installed."
-  else
-    puts "Sorry, mac only feature right now."
   end
 end
