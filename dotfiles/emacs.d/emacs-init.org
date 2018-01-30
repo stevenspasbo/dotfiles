@@ -399,7 +399,9 @@ If string is empty, current directory is not a git repo"
 
 *** org
 #+BEGIN_SRC emacs-lisp
-(use-package org-indent :after org :diminish "")
+(use-package org-indent
+  :hook (org-mode . org-indent-mode)
+  :diminish "")
 
 (use-package ob-tangle
   :commands (org-babel-tangle tangle-and-byte-compile-init)
