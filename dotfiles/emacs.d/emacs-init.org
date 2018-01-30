@@ -435,16 +435,14 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
   :ensure t
-  :after org
+  :hook (org-mode . org-bullets-mode)
   :config
-  (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "►" "◇"))
-  (org-bullets-mode 1))
+  (setq org-bullets-bullet-list '("◉" "○" "✸" "✿")))
+
 #+END_SRC
 
 *** org-capture
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-c o") (lambda () (interactive) (find-file "~/Dropbox/org-files/planner.org")))
-
 (use-package org-capture
   :bind ("C-c c" . org-capture)
   :config
@@ -452,32 +450,13 @@ If string is empty, current directory is not a git repo"
     (setq org-capture-templates '()
           org-capture-bookmark nil)
 
-    ;; Logbook
-    (add-to-list 'org-capture-templates
-                 '("l" "Logbook entry" entry (file+datetree org-default-notes-file)
-                   "* %U - %^{Activity}  :LOG:"))
-
-    ;; Prefixes
-    ;; Creates Personal and Work prefixes so we can access to more keys
-    (add-to-list 'org-capture-templates '("p" "Prefix for personal tasks"))
-    (add-to-list 'org-capture-templates '("w" "Prefix for work tasks"))
-
-    ;; Headlines
-    ;; planner.org has two main headlines, Work and Personal,
-    ;; this creates a template for adding in new headlines to them
-    (add-to-list 'org-capture-templates
-                 '("ph" "Personal headline" entry (file+headline org-default-notes-file "Personal")
-                   "* %?"))
-    (add-to-list 'org-capture-templates
-                 '("wh" "Work headline" entry (file+headline org-default-notes-file "Work")
-                   "* %?"))
-
     ;; Personal templates
+    ;; (add-to-list 'org-capture-templates '("p" "Prefix for personal tasks"))
     (add-to-list 'org-capture-templates
-                 '("pt" "Personal task" entry (file+olp org-default-notes-file "Personal" "TODOs")
-                   "* TODO %^{Task} %^g\nSCHEDULED: %U"))
-
+                 '("p" "Personal task" entry (file+olp org-default-notes-file "Personal" "TODOs")
+                   "* TODO %^{Task} %^g\nSCHEDULED: %U") :kill-buffer)
     ;; Work templates
+    (add-to-list 'org-capture-templates '("w" "Prefix for work tasks"))
     (add-to-list 'org-capture-templates
                  '("wm" "Meeting notes" entry (file+headline org-default-notes-file "Meetings")
                    "* %^{Meeting name} on %U\n%?"
@@ -487,18 +466,12 @@ If string is empty, current directory is not a git repo"
                    "* TODO %^{Task} %^g\nSCHEDULED: %U"))
     (add-to-list 'org-capture-templates
                  '("wn" "Work note" entry (file+olp org-default-notes-file "Work" "Notes")
-                   "* %^{Notes title}\n%?"))
-
-    ;; Misc templates
-    (add-to-list 'org-capture-templates
-                 '("pp" "Programming TODO" entry (file+headline org-default-notes-file "Programming")
-                   "* TODO %^{Programming task} %^g\nSCHEDULED: %U"))))
+                   "* %^{Notes title}\n%?"))))
 #+END_SRC
 
 ** Helm
 *** Helm core
 #+BEGIN_SRC emacs-lisp
-
 (use-package helm
   :ensure
   :bind (("C-c h" . helm-command-prefix)
@@ -546,8 +519,7 @@ If string is empty, current directory is not a git repo"
   :config (helm-top-poll-mode 1))
 
 (use-package helm-ring
-  :bind ("M-y" . helm-show-kill-ring)
-  :config (helm-push-mark-mode 1))
+  :bind ("M-y" . helm-show-kill-ring))
 
 (use-package helm-ag
   :ensure
