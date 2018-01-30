@@ -125,15 +125,6 @@ Don't warn about narrowing or downcasing
 (global-set-key [triple-wheel-down] 'ignore)
 #+END_SRC
 
-* Enable packages
-#+BEGIN_SRC emacs-lisp
-  (defun toggle-use-package-debug ()
-    (interactive)
-    (if use-package-debug
-        (setq use-package-debug nil)
-      (setq use-package-debug t)))
-#+END_SRC
-
 * Functions
 ** Insert look of disapproval
 #+BEGIN_SRC emacs-lisp
