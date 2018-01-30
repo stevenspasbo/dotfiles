@@ -376,15 +376,13 @@ If string is empty, current directory is not a git repo"
   :diminish "")
 
 (use-package ob-tangle
-  :commands (org-babel-tangle tangle-and-byte-compile-init)
+  :hook (after-save . tangle-and-byte-compile-init)
   :config
   (defun tangle-and-byte-compile-init ()
     (when (equal (buffer-file-name)
                  (file-truename (concat user-emacs-directory "emacs-init.org")))
       (let ((prog-mode-hook nil))
         (org-babel-tangle)))))
-
-(add-hook 'after-save-hook 'tangle-and-byte-compile-init)
 
 (use-package org
   :hook (org-mode . visual-line-mode)
