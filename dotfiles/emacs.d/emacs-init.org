@@ -736,37 +736,6 @@ If string is empty, current directory is not a git repo"
         recentf-max-menu-items 20
         recentf-keep '(keep-default-and-visible-recentf-p)))
 #+END_SRC
-** Project navigation
-*** projectile
-#+BEGIN_SRC emacs-lisp
-(use-package projectile
-  :ensure
-  :config
-  (projectile-global-mode 1)
-  (setq projectile-completion-system "helm"
-        projectile-switch-project-action 'projectile-commander)
-  (add-to-list 'projectile-globally-ignored-files "GTAGS")
-  (add-to-list 'projectile-globally-ignored-files "GPATH")
-  (add-to-list 'projectile-globally-ignored-files "GRTAGS")
-  (add-to-list 'projectile-globally-ignored-files ".DS_Store"))
-
-#+END_SRC
-*** helm-projectile
-#+BEGIN_SRC emacs-lisp
-(use-package helm-projectile
-  :ensure t
-  :after projectile
-  :bind (("C-x f" . helm-projectile-find-file)
-         :map projectile-command-map
-         ("b" . helm-projectile-switch-to-buffer)
-         ("d" . helm-projectile-find-dir)
-         ("f" . helm-projectile-find-file)
-         ("p" . helm-projectile-switch-project)
-         ("s s" . helm-projectile-ag))
-  :config
-  (helm-projectile-on))
-#+END_SRC
-
 ** Completion / tagging
 *** dash-at-point
 #+BEGIN_SRC emacs-lisp
