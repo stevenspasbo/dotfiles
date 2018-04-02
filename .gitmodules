@@ -47,3 +47,6 @@
 [submodule "iterm2/iterm2-snazzy"]
 	path = iterm2/iterm2-snazzy
 	url = https://github.com/sindresorhus/iterm2-snazzy.git
+[submodule "dotfiles/zsh-custom/plugins/zsh-interactive-cd"]
+	path = dotfiles/zsh-custom/plugins/zsh-interactive-cd
+	url = https://github.com/changyuheng/zsh-interactive-cd.git
