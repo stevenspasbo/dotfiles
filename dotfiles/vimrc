@@ -85,5 +85,5 @@ set laststatus=2
 """""""""""""""""""""""""""""""""""""""""""
 " Mappings
 """""""""""""""""""""""""""""""""""""""""""
+set backspace=indent,eol,start
 
-map <c-x> VdO
