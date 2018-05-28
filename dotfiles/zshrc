@@ -43,13 +43,12 @@ source "$ZSH/oh-my-zsh.sh"
 # Check `zshoptions` man page for more values
 setopt ALWAYS_TO_END
 setopt AUTO_CD
-setopt AUTO_LIST        # Automatically expand menu
-setopt AUTO_MENU        # show completion menu on succesive tab press
+setopt AUTO_LIST # Automatically expand menu
+setopt AUTO_MENU # show completion menu on succesive tab press
 setopt AUTO_PUSHD
 setopt CDABLE_VARS
 setopt CHASE_LINKS # chase symlinks, opposite of CHASE_DOTS
 setopt COMPLETE_ALIASES
-setopt COMPLETE_IN_WORD
 setopt CORRECT_ALL
 setopt EXTENDED_GLOB
 setopt GLOB_DOTS # emacs zsh [tab] [tab] -> .zshrc .zprofile .z[a-z]+
@@ -60,11 +59,12 @@ setopt NO_BEEP
 setopt PROMPT_SUBST
 setopt PUSHD_TO_HOME
 setopt PUSHD_SILENT
-setopt PUSHD_IGNORE_DUPS # Remove duplicate entries
-setopt PUSHD_MINUS # This reverts the +/- operators.
+setopt PUSHD_MINUS # This inverts the +/- operators.
 setopt INTERACTIVE_COMMENTS # Recognize comments
 unsetopt FLOWCONTROL
-unsetopt MENU_COMPLETE  # do not autoselect the first completion entry
+unsetopt MENU_COMPLETE # do not autoselect the first completion entry
+
+unsetopt EXTENDED_HISTORY # Don't save timestamp info with history
 
 nocorrect which
 
