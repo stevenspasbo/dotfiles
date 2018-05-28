@@ -28,7 +28,7 @@ plugins+=(history-substring-search zsh-completions)
 [[ -d $ZSH_CUSTOM/plugins/zsh-autopair ]] && plugins+=(zsh-autopair)
 
 # Check for executables
-for p (git tmux vagrant grunt composer gem nvm pip pyenv); do
+for p (git tmux vagrant grunt composer gem nvm pip pyenv aws docker docker-compose); do
   if type $p > /dev/null; then
     plugins+=($p)
   fi
