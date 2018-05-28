@@ -98,8 +98,6 @@ fi
 alias -g G=' | grep -i'
 alias -g L=' | less'
 
-# Finally
-[[ -s $HOME/.exports ]] && . $HOME/.exports
 [[ -s $HOME/.aliases ]] && . $HOME/.aliases
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
