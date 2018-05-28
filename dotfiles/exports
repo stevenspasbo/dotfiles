@@ -11,12 +11,6 @@ case "$(uname -s)" in
     if command -v brew > /dev/null; then
       export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
 
-      if [[ $SHELL == *"bash"* ]]; then
-        BREW_PREFIX=$(brew --prefix)
-        source "$BREW_PREFIX/etc/bash_completion"
-        source "$BREW_PREFIX/etc/bash_completion.d/git"
-      fi
-
       # GNU coreutils
       export CORE_UTILS=$(brew --prefix coreutils) > /dev/null 2>&1
       if [ -n $CORE_UTILS ]; then
@@ -26,15 +20,13 @@ case "$(uname -s)" in
 
     fi
     ;;
-  Linux)
-    export IS_LINUX=true
-    ;;
   *)
     ;;
 esac
 
 export EDITOR="emacs -nw"
-export GIT_EDITOR="vim"
+export GIT_EDITOR="emacs -nw"
+export PAGER=less
 
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
@@ -55,27 +47,10 @@ export HISTFILE=~/.history
 export HISTFORMAT='%F %T '
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
-export CLICOLOR=1
+# Environment specific stuff.
+[[ -s "$HOME/.exports.local" ]] && . "$HOME/.exports.local"
 
-#-------------------------------------------------------------
-# Less
-#-------------------------------------------------------------
-export PAGER=less
-
-# export LESS='-MR'
-# export LESSOPEN='| ~/.lessfilter %s'
-
-#-------------------------------------------------------------
-# ssh
-#-------------------------------------------------------------
-export SSH_KEY_PATH="$HOME/.ssh/rsa_id"
-
-[[ -d "$HOME/.bin" ]] && export PATH="$HOME/.bin:$PATH"
-[[ -d "$HOME/bin" ]] && export PATH="$HOME/bin:$PATH"
-
-[[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-export GIT_EDITOR="emacs -nw"
+# PATH
+[[ -d "$HOME/.local/bin" ]] && PATH="$PATH:$HOME/.local/bin"
+[[ -d "$HOME/.bin" ]] && PATH="$PATH:$HOME/.bin"
+[[ -d "$HOME/bin" ]] && PATH="$PATH:$HOME/bin"

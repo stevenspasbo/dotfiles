@@ -36,14 +36,3 @@ cdpath=(~)
 
 # HELPDIR
 [ -d "/usr/local/share/zsh/help" ] && export HELPDIR="/usr/local/share/zsh/help"
-
-# Significantly increases load time by scheduling pyenv/nvm/rvm
-# for a few seconds in the future.
-zmodload zsh/sched
-
-# These come from the exports file.
-sched +5 python-loader
-sched +7 node-loader
-sched +10 ruby-loader
-sched +10 rust-loader
-sched +12 go-loader
