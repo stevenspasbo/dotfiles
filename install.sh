@@ -13,7 +13,7 @@ cd "$HOME"
 DOTFILES_DIR="$HOME/dotfiles"
 if [[ ! -d "$DOTFILES_DIR" ]]; then
   echo "Checking out dotfiles repository..."
-  git clone --quiet --recursive https://github.com/stevenspasbo/dotfiles.git "$DOTFILES_DIR" > /dev/null
+  git clone --quiet --recursive "https://github.com/stevenspasbo/dotfiles.git" "$DOTFILES_DIR" > /dev/null
 fi
 
 mac_setup() {
@@ -44,8 +44,12 @@ esac
 # Install nvm
 if ! command -v nvm > /dev/null; then
   echo "Installing nvm... "
+
   NVM_INSTALL_DIRECTORY="$HOME/.nvm"
-  git clone --quiet https://github.com/creationix/nvm.git "$NVM_INSTALL_DIRECTORY" > /dev/null
+  if [[ ! -d $NVM_INSTALL_DIRECTORY ]]; then
+    git clone --quiet "https://github.com/creationix/nvm.git" "$NVM_INSTALL_DIRECTORY" > /dev/null
+  fi
+
   cd "$NVM_INSTALL_DIRECTORY"
   LATEST_NVM_TAG=$(git describe --abbrev=0)
   git checkout "$LATEST_NVM_TAG" > /dev/null
