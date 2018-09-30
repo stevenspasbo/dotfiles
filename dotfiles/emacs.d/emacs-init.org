@@ -50,6 +50,8 @@
 (defconst emacs-start-time (current-time))
 (defconst *is-a-mac* (eq system-type 'darwin))
 (defconst real-emacs-directory (file-truename user-emacs-directory))
+(defconst *is-window* (not (null window-system)))
+
 
 (defalias 'yes-or-no-p 'y-or-n-p) ; y/n instead of yes/no
 #+END_SRC
@@ -215,11 +217,14 @@ If string is empty, current directory is not a git repo"
   :config
   (setq which-key-side-window-max-height 0.35
         which-key-idle-secondary-delay 0.1
-        which-key-idle-delay 0.3)
+        which-key-idle-delay 0.3
+        which-key-compute-remaps t)
   (which-key-add-key-based-replacements
     ;; C-x
     "C-x" "C-x prefix"
-    "C-x a" "abbrev"
+    "C-x a" "abbrev/expant"
+    "C-x r" "rectangle/bookmark"
+    "C-x v" "version control"
     "C-x 8" "unicode"
     "C-x RET" "encoding"
     ;; C-c
@@ -847,11 +852,10 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 ** Theming
+
 *** Themes
 #+BEGIN_SRC emacs-lisp
-(use-package suscolors-theme
-  :ensure
-  :no-require)
+(use-package suscolors-theme :ensure :defer)
 ;; (use-package spacemacs-theme :ensure :defer)
 (use-package dracula-theme :ensure :defer)
 (use-package atom-one-dark-theme :ensure t :defer t)
@@ -873,8 +877,9 @@ If string is empty, current directory is not a git repo"
 *** spaceline
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline-config
+  :if *is-window*
   :ensure spaceline
-  :commands (spaceline-spacemacs-theme spaceline-emacs-theme spaceline-helm-mode)
+  :diminish flycheck-mode
   :init
   ;; Displays arrows incorrectly if not set
   (setq ns-use-srgb-colorspace nil)
@@ -885,14 +890,16 @@ If string is empty, current directory is not a git repo"
   (setq powerline-default-separator 'wave
         spaceline-highlight-face-func 'spaceline-highlight-face-default
         spaceline-workspace-numbers-unicode t
-        spaceline-window-numbers-unicode t))
+        spaceline-window-numbers-unicode t)
+  (spaceline-emacs-theme)
+  (spaceline-helm-mode))
 #+END_SRC
 
 *** rainbow-delimiters
 #+BEGIN_SRC emacs-lisp
 (use-package rainbow-delimiters
   :ensure
-  :defer)
+  :hook (prog-mode . rainbow-delimiters-mode))
 #+END_SRC
 *** golden-ratio
 #+BEGIN_SRC emacs-lisp
@@ -1092,11 +1099,12 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package anzu
   :ensure
+  :diminish
   :bind
-  (("C-c r" . anzu-replace-at-cursor-thing))
+  (([remap query-replace] . anzu-query-replace)
+   ([remap query-replace-regexp] . anzu-query-replace-regexp)
+   ("C-c r" . anzu-replace-at-cursor-thing))
   :config
-  (global-set-key [remap query-replace] 'anzu-query-replace)
-  (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
   (global-anzu-mode))
 #+END_SRC
 *** isearch
@@ -1153,6 +1161,7 @@ If string is empty, current directory is not a git repo"
 #+BEGIN_SRC emacs-lisp
 (use-package solidity-mode
   :ensure
+  :defer
   :config
   (let ((solc (executable-find "solc")))
     (when (bound-and-true-p solc)
