@@ -350,7 +350,15 @@ If string is empty, current directory is not a git repo"
 *** org-agenda
 #+BEGIN_SRC emacs-lisp
 (use-package org-agenda
-  :bind (("C-c a" . org-agenda)))
+  :bind (("C-c a" . org-agenda)
+         ("C-c t a" . pop-to-org-agenda))
+  :config
+  (defun pop-to-org-agenda (split)
+    "Visit org agenda, in the current window or a SPLIT"
+    (interactive "P")
+    (org-agenda-list)
+    (when (not split)
+      (delete-other-windows))))
 #+END_SRC
 
 *** org-src
@@ -398,7 +406,7 @@ If string is empty, current directory is not a git repo"
           org-agenda-files (list
                             (concat org-directory "/planner.org")
                             org-default-notes-file)
-          org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE"))
+          org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE" "CANCELED"))
           org-columns-default-format "%14CATEGORY(Category) %50ITEM(Item) %10TODO(Status) %30TAGS(Tags)"
           org-src-fontify-natively t
           org-ellipsis " ⤵"
@@ -439,6 +447,10 @@ If string is empty, current directory is not a git repo"
     (add-to-list 'org-capture-templates
                  '("p" "Personal task" entry (file+olp org-default-notes-file "Personal" "TODOs")
                    "* TODO %^{Task} %^g\nSCHEDULED: %U") :kill-buffer)
+    (add-to-list 'org-capture-templates
+                 '("j" "Jiu-jitsu notes"
+                   entry (file+datetree "jiujitsu.org")
+                   "* %^{Class description} %T\n%?"))
     ;; Work templates
     (add-to-list 'org-capture-templates '("w" "Prefix for work tasks"))
     (add-to-list 'org-capture-templates
@@ -446,8 +458,8 @@ If string is empty, current directory is not a git repo"
                    "* %^{Meeting name} on %U\n%?"
                    :prepend))
     (add-to-list 'org-capture-templates
-                 '("wt" "Work task" entry (file+olp org-default-notes-file "Work" "TODOs")
-                   "* TODO %^{Task} %^g\nSCHEDULED: %U"))
+                 '("wt" "Work TODO" entry (file+olp org-default-notes-file "Work" "TODOs")
+                   "* TODO %^{Task} %^g\n%?\nSCHEDULED: %U"))
     (add-to-list 'org-capture-templates
                  '("wn" "Work note" entry (file+olp org-default-notes-file "Work" "Notes")
                    "* %^{Notes title}\n%?"))))
@@ -1149,10 +1161,23 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 * Major modes
+** GO
+#+BEGIN_SRC emacs-lisp
+(use-package go-mode :ensure :defer)
+
+(use-package company-go
+  :ensure
+  :after (flycheck go-mode)
+  :config
+  (add-hook 'go-mode-hook
+            (lambda ()
+              (set (make-local-variable 'company-backends) '(company-go)))))
+#+END_SRC
 ** Solidity
 #+BEGIN_SRC emacs-lisp
 (use-package solidity-mode
   :ensure
+  :defer
   :config
   (let ((solc (executable-find "solc")))
     (when (bound-and-true-p solc)
@@ -1522,7 +1547,7 @@ If string is empty, current directory is not a git repo"
 
 (use-package irony-eldoc
   :ensure
-  :after irony
+  :hook (irony-mode . irony-eldoc)
   :config
   (add-hook 'irony-mode-hook #'irony-eldoc))
 
