@@ -1,2 +1,3 @@
-emacs-init.el
-emacs.d/history
+**/emacs-init.el
+**/emacs.d/history
+**/emacs.d/bookmarks
