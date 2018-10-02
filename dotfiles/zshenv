@@ -12,9 +12,9 @@
 setopt NO_GLOBAL_RCS
 
 # Set up tmp files
-if [[ ! -d "$TMPDIR" ]]; then
+if [[ ! -d "${TMPDIR}" ]]; then
   export TMPDIR="/tmp/$LOGNAME"
-  mkdir -p -m 700 "$TMPDIR"
+  mkdir -p -m 700 "${TMPDIR}"
 fi
 
 TMPPREFIX="${TMPDIR%/}/zsh"
@@ -28,11 +28,18 @@ path=(/usr/local/{bin,sbin} $path)
 # For bash / zsh compatability, exports will go in a separate file.
 [[ -s "$HOME/.exports" ]] && . "$HOME/.exports"
 
+# General path
+[ -d "${HOME}/.bin" ] && export PATH="${PATH}:${HOME}/.bin"
+
 # cdpath
-cdpath=(~)
+cdpath=("${HOME}")
 
 # fpath
-[ -d "$HOME/.zsh-custom/functions" ] && fpath+="$HOME/.zsh-custom/functions"
+[ -d "${HOME}/.zsh-custom/functions" ] && fpath=("${HOME}/.zsh-custom/functions" "${fpath}")
 
 # HELPDIR
-[ -d "/usr/local/share/zsh/help" ] && export HELPDIR="/usr/local/share/zsh/help"
+if [ -d "/usr/local/share/zsh/help" ]; then
+  export HELPDIR="/usr/local/share/zsh/help"
+elif [ -d "/usr/share/zsh/help" ]; then
+  export HELPDIR="/usr/share/zsh/help"
+fi

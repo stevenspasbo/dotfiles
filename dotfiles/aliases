@@ -61,8 +61,8 @@ alias emacs='emacs -nw'
 #-------------------------------------------------------------
 alias ..='cd ..'
 alias ...='cd ../..'
-alias downloads='cd ~/Downloads'
-alias desktop='cd ~/Desktop'
+alias downloads="cd ${HOME}/Downloads"
+alias desktop="cd ${HOME}/Desktop"
 
 #-------------------------------------------------------------
 # Personalized shortcuts
@@ -80,24 +80,5 @@ alias delete='curl -s -XDELETE'
 
 alias sniff="sudo ngrep -d 'en0' -t '^(GET|POST) ' 'tcp and port 80'"
 alias httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
-function removeFromPath() {
-  export PATH=$(echo $PATH | sed -E -e "s;:$1;;" -e "s;$1:?;;")
-}
-
-function cleanpath() {
-  if [ -n "$PATH" ]; then
-    old_PATH=$PATH:; PATH=
-    while [ -n "$old_PATH" ]; do
-      x=${old_PATH%%:*}       # the first remaining entry
-      case $PATH: in
-        *:"$x":*) ;;         # already there
-        *) PATH=$PATH:$x;;    # not there yet
-      esac
-      old_PATH=${old_PATH#*:}
-    done
-    PATH=${PATH#:}
-    unset old_PATH x
-  fi
-}
 
 [[ -s "$HOME/.aliases.local" ]]  && . "$HOME/.aliases.local"
