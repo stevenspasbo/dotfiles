@@ -13,7 +13,7 @@
 
 [alias]
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
-	diff = diff --ignore-space-at-eol -b -w --ignore-blank-lines
+	# diff = diff --ignore-space-at-eol -b -w --ignore-blank-lines
 	amend = commit --amend
 	lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
 	s = status -s
@@ -22,12 +22,14 @@
 	aliases = !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /' | sort
 	recent = for-each-ref --count=10 --sort=-committerdate refs/heads/ --format="%(refname:short)"
 	graph = log --graph --all --decorate --stat --date=iso
+	cleanup = "!git branch --no-color --merged | grep -v '\\*\\|production\\|dev' | xargs -n 1 git branch -d"
+
 
 [core]
 	excludesfile = ~/.gitignore
 	fileMode = false
 	whitespace = trailing-space,space-before-tab
-    pager = "diff-highlight | diff-so-fancy | less --tabs=1,5 -R"
+  # pager = "diff-highlight | diff-so-fancy | less --tabs=1,5 -R"
 	editor = emacs -nw
 
 [color]
@@ -63,3 +65,9 @@
 
 [rebasse]
   autosquash = true
+
+[credential "https://github.com"]
+	helper = osxkeychain
+
+[credential "https://bitbucket.workday.com"]
+   helper = osxkeychain
