@@ -1,0 +1,25 @@
+#compdef okta2aws
+
+local -a cmds topics flags
+cmds=(
+  'help:Show help.'
+  'configure:Configure a new IDP account.'
+  'login:Login to a SAML 2.0 IDP and convert the SAML assertion to an STS token.'
+  'exec:Exec the supplied command with env vars from STS token.'
+)
+
+flags=(
+  '--help[Show context-sensitive help]:MESSAGE:("WHAT")'
+  '--version[Show application version.]'
+  '--verbose[Enable verbose logging]'
+  '-a[The name of the configured IDP account]' '--idp-account=[The name of the configured IDP account]'
+  '--mfa=[The configured IDP provider]'
+  '-s[Skip verification of server certificate.]' '--skip-verify[Skip verification of server certificate.]'
+  '--username[The username used to login.]:Users:whoami'
+  '--role[The ARN of the role to assume.]'
+  '--aws-urn[The URN used by SAML when you login.]'
+  '--skip-prompt[Skip prompting for parameters during login.]'
+)
+
+_describe 'commands' cmds
+_arguments $flags
