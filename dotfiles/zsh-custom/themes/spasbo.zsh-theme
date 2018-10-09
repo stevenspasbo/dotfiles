@@ -52,7 +52,13 @@ user() {
 
 function _git_prompt_info() {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || ref="➦ $(git show-ref --head -s --abbrev |head -n1 2> /dev/null)"
-  echo "${ref/refs\/heads\//$GIT_SYMBOL } $(parse_git_dirty)$(git_commits_ahead)$(git_commits_behind)"
+
+  branch="${ref/refs\/heads\//$GIT_SYMBOL }"
+  if (( ${#branch} > 40 )); then
+    branch="${(r.40.)${branch}}"
+  fi
+
+  echo "$branch $(parse_git_dirty)$(git_commits_ahead)$(git_commits_behind)"
 }
 
 function _git_info() {
