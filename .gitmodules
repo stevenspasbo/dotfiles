@@ -43,3 +43,6 @@
 [submodule "dotfiles/zsh-custom/plugins/zsh-interactive-cd"]
 	path = dotfiles/zsh-custom/plugins/zsh-interactive-cd
 	url = https://github.com/changyuheng/zsh-interactive-cd.git
+[submodule "powerline"]
+	path = powerline
+	url = https://github.com/powerline/powerline.git
