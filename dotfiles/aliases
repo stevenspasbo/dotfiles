@@ -50,7 +50,7 @@ alias branches="git branch -a | grep -i "
 #-------------------------------------------------------------
 # System stuff
 #-------------------------------------------------------------
-alias reload='clear && exec $SHELL'
+alias reload='clear && exec ${SHELL} -l'
 alias hist='history | grep -i $*'
 alias cal='cal | grep --before-context 6 --after-context 6 --color -e " $(date +%e)" -e "^$(date +%e)"'
 
@@ -68,7 +68,6 @@ alias desktop="cd ${HOME}/Desktop"
 # Personalized shortcuts
 #-------------------------------------------------------------
 alias nethack='telnet nethack.alt.org'
-
 
 #-------------------------------------------------------------
 # HTTP
