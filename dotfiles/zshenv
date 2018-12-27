@@ -28,14 +28,11 @@ path=(/usr/local/{bin,sbin} $path)
 # For bash / zsh compatability, exports will go in a separate file.
 [[ -s "$HOME/.exports" ]] && . "$HOME/.exports"
 
-# General path
-[ -d "${HOME}/.bin" ] && export PATH="${PATH}:${HOME}/.bin"
-
 # cdpath
 cdpath=("${HOME}")
 
 # fpath
-[ -d "${HOME}/.zsh-custom/functions" ] && fpath=("${HOME}/.zsh-custom/functions" "${fpath}")
+[ -d "${HOME}/.zsh-custom/functions" ] && fpath=("${HOME}/.zsh-custom/functions" "${fpath[@]}")
 
 # HELPDIR
 if [ -d "/usr/local/share/zsh/help" ]; then
