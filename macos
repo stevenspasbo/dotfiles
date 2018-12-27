@@ -1,0 +1,66 @@
+#! /usr/bin/env bash
+
+if sudo grep /etc/sudoers -e '^Defaults\ timestamp_timeout[\ \=]*0$'; then
+  local SUDOERS="/etc/sudoers"
+  local SED_BACKUP_EXTENSION=".bak"
+  local SUDOERS_BACKUP="${SUDOERS}${SED_BACKUP_EXTENSION}"
+  local SED_I
+  if sed --version 2&> /dev/null; then
+    # It's GNU sed
+    SED_I="-i$SED_BACKUP_EXTENSION"
+  else
+    SED_I="-i $SED_BACKUP_EXTENSION"
+  fi
+
+  sudo sed $SED_I \
+       -E 's/(Defaults timestamp_timeout).*/\1 = 15/' \
+       "$SUDOERS"
+
+  sudo visudo -c -f "$SUDOERS"
+  local exit_code=$?
+  if [[ $exit_code == 1 ]]; then
+    echo "There was an issue with the sudoers file, reverting..."
+    sudo mv -f "$SUDOERS_BACKUP" "$SUDOERS"
+  else
+    sudo rm "$SUDOERS_BACKUP"
+  fi
+fi
+
+sudo xcodebuild -license accept &> /dev/null
+print_result $? "Agree to the terms of the Xcode licence"
+
+if ! command -v defaults > /dev/null; then
+  echo "This script requires OSX"
+  exit -1
+fi
+
+# Disable smart quotes and dashes, don't change my shit.
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+
+# Show battery percentage
+defaults write com.apple.menuextra.battery ShowPercent -string "YES"
+
+# Use dark theme
+defaults write NSGlobalDomain AppleInterfaceStyle "Dark"
+
+# Show all file extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Don't warn when changing file extensions
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+# Screen: require password immediately after sleep or screen saver begins
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# Save screenshots to the desktop
+defaults write com.apple.screencapture location -string "$HOME/Desktop"
+
+# Disable time machine prompts on new disks
+defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+
+for app in "Dashboard" "Dock" "Finder" "SystemUIServer" "Terminal" "iTunes"; do
+  killall "$app" > /dev/null 2>&1
+done
