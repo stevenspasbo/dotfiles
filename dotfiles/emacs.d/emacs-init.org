@@ -52,16 +52,15 @@
 (defconst real-emacs-directory (file-truename user-emacs-directory))
 (defconst *is-window* (not (null window-system)))
 
-
 (defalias 'yes-or-no-p 'y-or-n-p) ; y/n instead of yes/no
 #+END_SRC
 
 ** Custom-file
 Disable custom file, put any changes you want in their relevant package configurations.
 #+BEGIN_SRC emacs-lisp
-(setq custom-file "~/.emacs.d/custom.el")
-(if (file-exists-p "~/.emacs.d/custom.el")
-    (load-file "~/.emacs.d/custom.el"))
+(setq custom-file (concat real-emacs-directory "custom.el"))
+(if (file-exists-p custom-file)
+    (load-file custom-file))
 #+END_SRC
 ** Variables
 #+BEGIN_SRC emacs-lisp
@@ -91,7 +90,7 @@ Disable custom file, put any changes you want in their relevant package configur
               load-prefer-newer t)
 #+END_SRC
 
-** Text - UTF-8 all the things
+** Text - UTF-8 everywhere
 #+BEGIN_SRC emacs-lisp
 (prefer-coding-system 'utf-8)
 (setenv "LC_CTYPE" "UTF-8")
@@ -128,15 +127,6 @@ Don't warn about narrowing or downcasing
 #+END_SRC
 
 * Functions
-** Insert look of disapproval
-#+BEGIN_SRC emacs-lisp
-(defun lod ()
-  "Well. This is disappointing."
-  (interactive)
-  (insert "ಠ_ಠ"))
-(global-set-key (kbd "C-c M-d") #'lod)
-#+END_SRC
-
 ** load-directory
 #+BEGIN_SRC emacs-lisp
 (defun load-directory (directory)
@@ -1169,7 +1159,7 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 * Major modes
-** GO
+** Go
 #+BEGIN_SRC emacs-lisp
 (use-package go-mode :ensure :defer)
 
@@ -1257,13 +1247,6 @@ If string is empty, current directory is not a git repo"
   :config
   (setq sh-indentation 2
         sh-basic-offset 2))
-#+END_SRC
-
-** Java
-#+BEGIN_SRC emacs-lisp
-;; (use-package jdee
-;;   :ensure
-;;   :mode (("\\.java\\'" . jdee-mode)))
 #+END_SRC
 
 ** Web
@@ -1560,92 +1543,6 @@ If string is empty, current directory is not a git repo"
   :config
   (add-hook 'irony-mode-hook #'irony-eldoc))
 
-#+END_SRC
-
-** PHP / Drupal
-#+BEGIN_SRC emacs-lisp
-
-(use-package ac-php :ensure
-  :bind (:map php-mode-map
-              ("C-]" . ac-php-find-symbol-at-point)
-              ("C-t" . ac-php-location-stack-back)))
-
-(use-package company-php
-  :ensure
-  :after php-mode
-  :config
-  (add-to-list 'company-backends 'company-ac-php-backend))
-
-(use-package php-mode
-  :ensure
-  :defer
-  :config
-  (setq php-mode-coding-style `Drupal
-        tab-width 2
-        c-basic-offset 2
-        indent-tabs-mode nil))
-
-;; (defgroup drupal nil "Drupal IDE" :group 'programming)
-
-;; (defvar drupal-mode-hook nil)
-
-;; (define-derived-mode drupal-mode php-mode "Drupal"
-;;   "Custom major mode for Drupal."
-;;   :group 'drupal
-
-;;   (defconst drupal-mode-version "v0.0.1"
-;;     "Current version of drupal-mode")
-
-;;   (defcustom drupal-api-version 8
-;;     "Drupal API version"
-;;     :type 'string
-;;     :group 'drupal)
-
-;;   (defcustom drupal-api-url "http://api.drupal.org/api/search"
-;; 	"URL for API search."
-;; 	:type 'string
-;; 	:group 'drupal)
-;;   (defcustom drupal-ide-use-etags nil
-;; 	"Use TAGS file prepared with etags/ctags for code navigation and hook templates."
-;; 	:type 'boolean
-;; 	:group 'drupal)
-
-;;   (php-enable-drupal-coding-style)
-;;   (add-to-list 'company-backends 'company-ac-php-backend)
-;;   (ggtags-mode 1)
-;;   (setq ggtags-highlight-tag nil)
-;;   (helm-gtags-mode)
-;;   (run-hooks 'drupal-mode-hook))
-
-;;   (add-to-list 'auto-mode-alist '("/drupal.*\\.\\(php\\|inc\\)$" . drupal-mode))
-
-;;; WIP
-;; (defun drupal-module-name ()
-;;   (let ((current-file (buffer-file-name)))
-;;     )
-;;   "Something or other")
-
-;; (defun drupal-module-name-insert ()
-;;      (interactive)
-;;      (insert (drupal-module-name)))
-
-
-;;; ENDWIP
-
-
-;; (defconst my-php-style
-;;   '((c-offsets-alist . (
-;;     (arglist-close . c-lineup-close-paren))))
-
-;;   (add-to-list 'auto-mode-alist '("\\.\\(module\\|test\\|install\\|theme\\)$" . drupal-mode))
-;;   (add-to-list 'auto-mode-alist '("/drupal.*\\.\\(php\\|inc\\)$" . drupal-mode))
-;;   (add-to-list 'auto-mode-alist '("\\.info" . conf-windows-mode))
-;;   ;; More startup-setup for PHP customizations to work here
-;; )
-
-;; (setup-php)
-
-;; (add-hook 'php-mode-hook 'drupal-mode)
 #+END_SRC
 
 ** ruby
