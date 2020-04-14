@@ -1,15 +1,16 @@
 #compdef okta2aws
 
-local -a cmds topics flags
-cmds=(
+local -a _cmds
+_cmds=(
   'help:Show help.'
   'configure:Configure a new IDP account.'
   'login:Login to a SAML 2.0 IDP and convert the SAML assertion to an STS token.'
   'exec:Exec the supplied command with env vars from STS token.'
 )
 
-flags=(
-  '--help[Show context-sensitive help]:MESSAGE:("WHAT")'
+local -a _flags
+_flags=(
+  '--help[Show context-sensitive help]'
   '--version[Show application version.]'
   '--verbose[Enable verbose logging]'
   '-a[The name of the configured IDP account]' '--idp-account=[The name of the configured IDP account]'
@@ -21,5 +22,28 @@ flags=(
   '--skip-prompt[Skip prompting for parameters during login.]'
 )
 
-_describe 'commands' cmds
-_arguments $flags
+__okta2aws_help() {
+  _describe -t commands "help" _cmds
+}
+
+local curcontext="$curcontext" state line
+local -A opt_args
+
+_arguments -C \
+           ':command:->command' \
+           '*::options:->options'
+
+case $state in
+  (command)
+    _describe -t commands "cmds" _cmds
+    _arguments $_flags
+    return
+    ;;
+  (options)
+    case $line[1] in
+      (help)
+        _arguments ':feature:__okta2aws_help'
+        ;;
+    esac
+    ;;
+esac
