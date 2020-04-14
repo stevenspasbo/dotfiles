@@ -29,14 +29,10 @@ plugins+=(history-substring-search zsh-completions)
 
 # Check for executables
 for p (git tmux vagrant grunt composer gem nvm pip pyenv aws docker docker-compose go); do
-  if type $p > /dev/null; then
+  if command -v $p > /dev/null; then
     plugins+=($p)
   fi
 done
-
-if [ "$IS_MAC" = true ]; then
-  plugins+=(osx)
-fi
 
 source "$ZSH/oh-my-zsh.sh"
 
