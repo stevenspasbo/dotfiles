@@ -1423,12 +1423,6 @@ If string is empty, current directory is not a git repo"
   :ensure
   :after clojure-mode)
 
-(use-package clojure-cheatsheet
-  :ensure
-  :after clojure-mode
-  :bind (:map clojure-mode-map
-              ("C-c C-h" . clojure-cheatsheet)))
-
 (use-package cider
   :ensure
   :after clojure-mode
@@ -1473,26 +1467,17 @@ If string is empty, current directory is not a git repo"
 (use-package elpy
   :ensure
   :commands (elpy-enable)
+  :init
+  (advice-add 'python-mode :before 'elpy-enable)
   :config
-  (setq elpy-rpc-backend "jedi")
+  (setq python-indent-offset 4
+        elpy-rpc-backend "jedi")
   (when (executable-find "ipython")
-    (elpy-use-ipython)
-    (setq python-shell-interpreter-args "-i --simple-prompt"))
+    (setq python-shell-interpreter "ipython"
+          python-shell-interpreter-args "-i --simple-prompt"))
   (when (require 'flycheck nil t)
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
           elpy-modules (delq 'elpy-module-pyvenv elpy-modules))))
-
-(use-package py-autopep8
-  :ensure
-  :after elpy
-  :config
-  (add-hook 'elpy-mode-hook #'py-autopep8-enable-on-save))
-
-(use-package python
-  :ensure
-  :defer
-  :config
-  (elpy-enable))
 
 #+END_SRC
 
