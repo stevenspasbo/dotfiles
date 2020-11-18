@@ -234,39 +234,6 @@ If string is empty, current directory is not a git repo"
          ([remap move-beginning-of-line] . crux-move-beginning-of-line)
          ([remap kill-whole-line] . crux-kill-whole-line)))
 #+END_SRC
-** ERC
-#+BEGIN_SRC emacs-lisp
-(use-package erc-hl-nicks
-  :ensure
-  :after erc
-  :commands erc-hl-nicks-mode
-  :config
-  (erc-hl-nicks-mode 1))
-
-(use-package erc-join
-  :after erc
-  :commands (erc-autojoin-mode)
-  :config
-  (erc-autojoin-mode 1)
-  (setq erc-autojoin-timing 'ident
-        erc-autojoin-channels-alist
-        '((".*\\.freenode.net" ; freenode.net
-           "#emacs" "#racket" "#scheme"
-           "#haskell" "#haskell-beginners" "#lisp"
-           "#programming" "#php"
-           "#startups" "#drupal-support" "#drupal"
-           "#clojure"))))
-
-(use-package erc-track
-  :after erc
-  :commands (erc-track-mode)
-  :config
-  (setq erc-track-exclude-types
-        '("JOIN" "NICK" "PART" "QUIT" "MODE"
-          "324" "329" "332" "333" "353" "477"))
-  (erc-track-mode 1))
-#+END_SRC
-
 ** eshell
 #+BEGIN_SRC emacs-lisp
 (use-package eshell
