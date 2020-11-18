@@ -1407,15 +1407,11 @@ If string is empty, current directory is not a git repo"
   :after irony
   :config
   (add-hook 'irony-mode-hook (lambda ()
-    (set (make-local-variable 'company-backends) '(company-irony company-c-headers))))
+    (set (make-local-variable 'company-backends))))
   ;; (add-to-list 'company-backends 'company-irony)
   (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
              ;; (delete 'company-backends 'company-clang)
              )
-
-(use-package company-c-headers
-  :ensure
-  :after irony)
 
 (use-package flycheck-irony
   :ensure
