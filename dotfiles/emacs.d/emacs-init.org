@@ -1229,53 +1229,6 @@ If string is empty, current directory is not a git repo"
         js2-basic-offset 2
         js2-bounce-indent-p nil))
 
-(use-package tern
-  :ensure
-  :after js2-mode
-  :init
-  (add-hook 'js2-mode-hook 'tern-mode))
-
-(use-package company-tern
-  :ensure
-  :after js2-mode
-  :config
-  (add-to-list 'company-backends 'company-tern))
-
-#+END_SRC
-
-** Elm
-*** elm-mode
-#+BEGIN_SRC emacs-lisp
-(use-package elm-yasnippets
-  :ensure
-  :after yasnippet)
-
-(use-package elm-mode
-  :ensure
-  :defer
-  :init
-  (add-hook 'elm-mode-hook #'elm-oracle-setup-completion)
-  :config
-  (setq elm-tags-exclude-elm-stuff nil))
-#+END_SRC
-
-*** flycheck-elm
-#+BEGIN_SRC emacs-lisp
-(use-package flycheck-elm :ensure :defer)
-
-(add-hook 'flycheck-mode-hook 'flycheck-elm-setup)
-#+END_SRC
-
-** Elixer
-#+BEGIN_SRC emacs-lisp
-(use-package alchemist
-  :ensure
-  :defer
-  :config
-  (setq alchemist-mix-command "/usr/local/bin/mix")
-  (setq alchemist-iex-program-name "/usr/local/bin/iex")
-  (setq alchemist-execute-command "/usr/local/bin/elixir")
-  (setq alchemist-compile-command "/usr/local/bin/elixirc"))
 #+END_SRC
 
 ** Haskell
