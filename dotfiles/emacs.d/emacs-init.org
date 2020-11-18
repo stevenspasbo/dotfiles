@@ -287,25 +287,6 @@ If string is empty, current directory is not a git repo"
   (setq eshell-glob-case-insensitive t
         eshell-glob-include-dot-files t))
 
-;; (use-package em-prompt
-;;   :after eshell
-;;   :config
-;;   (setq eshell-prompt-function
-;;         (lambda ()
-;;           (let* ((dirz (get-abbriv-directory))
-;;                  (my/host (system-name))                  )
-;;             (concat
-;;              (propertize "[" 'face `(:foreground "#FFFFFF"))
-;;              (propertize (epe-user-name) 'face `(:foreground "#1585C6"))
-;;              (propertize "@" 'face `(:foreground "#D63883" :weight bold))
-;;              (propertize my/host 'face `(:foreground "#22A198"))
-;;              (propertize ": " 'face `(:foreground "#22A198"))
-;;              (propertize dirz 'face `(:foreground "#7BC783"))
-;;              (propertize "]" 'face `(:foreground "#FFFFFF"))
-;;              (propertize (epe-git-branch) 'face `(:foreground "#FFFFFF"))
-;;              (propertize "\nλ " 'face `(:foreground "#7BC783")))))
-;;         eshell-prompt-regexp "^. "))
-
 #+END_SRC
 
 ** Org
