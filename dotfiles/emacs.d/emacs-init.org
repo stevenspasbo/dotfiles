@@ -1432,27 +1432,6 @@ If string is empty, current directory is not a git repo"
 
 ** ruby
 #+BEGIN_SRC emacs-lisp
-(use-package inf-ruby :ensure :defer)
-
-(use-package robe
-  :ensure
-  :after ruby-mode
-  :config
-  (add-hook 'ruby-mode-hook #'robe-mode)
-  (push 'company-robe company-backends))
-
-(use-package rvm
-  :ensure
-  :after ruby-mode
-  :config
-  (add-hook 'ruby-mode-hook #'rvm-activate-corresponding-ruby))
-
-(use-package ruby-electric
-  :ensure
-  :after ruby-mode
-  :config
-  (add-hook 'ruby-mode-hook #'ruby-electric-mode))
-
 (use-package ruby-mode
   :mode (("Vagrantfile$" . ruby-mode)
          ("rake\\'" . ruby-mode)
@@ -1463,14 +1442,21 @@ If string is empty, current directory is not a git repo"
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil
         ruby-deep-indent-paren nil)
-  (defun ruby-mode-stuff ()
-    (ruby-electric-mode 1)
-    (robe-mode 1)
-    (enable-paredit-mode)
-    (rvm-activate-corresponding-ruby)
-    (unless (derived-mode-p 'prog-mode)
-      (run-hooks 'prog-mode-hook)))
-  (add-hook 'ruby-mode-hook #'ruby-mode-stuff))
+  (enable-paredit-mode))
+
+(use-package robe
+  :ensure
+  :hook (ruby-mode . robe-mode)
+  :config
+  (push 'company-robe company-backends))
+
+(use-package ruby-electric
+ :ensure
+ :hook (ruby-mode . ruby-electric-mode))
+
+(use-package inf-ruby
+  :ensure
+  :hook (ruby-mode . inf-ruby-minor-mode))
 #+END_SRC
 
 * global and mode hooks
