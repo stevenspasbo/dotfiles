@@ -48,7 +48,6 @@
 ** Constants and aliases
 #+BEGIN_SRC emacs-lisp
 (defconst *is-a-mac* (eq system-type 'darwin))
-(defconst real-emacs-directory (file-truename user-emacs-directory))
 (defconst *is-window* (not (null window-system)))
 
 (defalias 'yes-or-no-p 'y-or-n-p) ; y/n instead of yes/no
@@ -57,7 +56,7 @@
 ** Custom-file
 Disable custom file, put any changes you want in their relevant package configurations.
 #+BEGIN_SRC emacs-lisp
-(setq custom-file (concat real-emacs-directory "custom.el"))
+(setq custom-file (concat user-emacs-directory "custom.el"))
 (if (file-exists-p custom-file)
     (load-file custom-file))
 #+END_SRC
