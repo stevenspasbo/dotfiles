@@ -1363,14 +1363,19 @@ If string is empty, current directory is not a git repo"
 
 ** Python
 #+BEGIN_SRC emacs-lisp
+(use-package python
+  :defer
+  :config
+  (setq python-indent-offset 4))
+
 (use-package elpy
   :ensure
   :commands (elpy-enable)
+  :hook (python-mode . elpy-enable)
   :init
   (advice-add 'python-mode :before 'elpy-enable)
   :config
-  (setq python-indent-offset 4
-        elpy-rpc-backend "jedi")
+  (setq elpy-rpc-backend "jedi")
   (when (executable-find "ipython")
     (setq python-shell-interpreter "ipython"
           python-shell-interpreter-args "-i --simple-prompt"))
