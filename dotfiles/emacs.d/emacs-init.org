@@ -47,7 +47,6 @@
 #+END_SRC
 ** Constants and aliases
 #+BEGIN_SRC emacs-lisp
-(defconst emacs-start-time (current-time))
 (defconst *is-a-mac* (eq system-type 'darwin))
 (defconst real-emacs-directory (file-truename user-emacs-directory))
 (defconst *is-window* (not (null window-system)))
