@@ -6,12 +6,16 @@
 * Startup
 ** Package stuff
 #+BEGIN_SRC emacs-lisp
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 (setq package-archives
-      '(("marmalade"    . "http://marmalade-repo.org/packages/")
+      '(
+        ;; ("marmalade"    . "http://marmalade-repo.org/packages/")
         ("gnu"          . "https://elpa.gnu.org/packages/")
         ("org"          . "http://orgmode.org/elpa/")
         ("melpa"        . "https://melpa.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")))
+        ;; ("melpa-stable" . "https://stable.melpa.org/packages/")
+        )
+      package-check-signature nil)
 
 (setq package-enable-at-startup nil
       package--init-file-ensured t)
@@ -21,7 +25,7 @@
 
 (mapc #'(lambda (add) (add-to-list 'load-path add))
       (eval-when-compile
-        (package-initialize)
+        ;; (package-initialize)
         (let ((required-packages '(use-package diminish))
               (refreshed? nil))
           (dolist (p required-packages)
@@ -288,6 +292,42 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 ** Org
+*** org
+#+BEGIN_SRC emacs-lisp
+(use-package org-indent
+  :hook (org-mode . org-indent-mode)
+  :diminish "")
+
+(use-package ob-tangle
+  :hook (after-save . tangle-and-byte-compile-init)
+  :config
+  (defun tangle-and-byte-compile-init ()
+    (when (equal (buffer-file-name)
+                 (file-truename (concat user-emacs-directory "emacs-init.org")))
+      (let ((prog-mode-hook nil))
+        (org-babel-tangle)))))
+
+(use-package org
+  :hook (org-mode . visual-line-mode)
+  :bind (("C-c l" . org-store-link)
+         ("C-c C-n" . org-add-note))
+  :config
+  (progn
+    (let ((dropbox-org-dir (concat (getenv "HOME") "/Dropbox/org-files")))
+      (if (file-exists-p dropbox-org-dir)
+          (setq org-directory dropbox-org-dir
+                org-agenda-files dropbox-org-dir)))
+
+    (setq org-default-notes-file (concat org-directory "/notes.org")
+          org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE"))
+          org-columns-default-format "%14CATEGORY(Category) %50ITEM(Item) %10TODO(Status) %30TAGS(Tags)"
+          org-src-fontify-natively t
+          org-ellipsis " ⤵"
+          org-imenu-depth 5)
+
+    (add-to-list 'org-structure-template-alist
+                 '("se" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC" "<src lang=emacs-lisp\"?\">\n\n</src>"))))
+#+END_SRC
 *** org-agenda
 #+BEGIN_SRC emacs-lisp
 (use-package org-agenda
@@ -316,52 +356,6 @@ If string is empty, current directory is not a git repo"
       (let ((file-name (buffer-file-name)))
         ad-do-it
         (setq buffer-file-name file-name)))))
-#+END_SRC
-
-*** org
-#+BEGIN_SRC emacs-lisp
-(use-package org-indent
-  :hook (org-mode . org-indent-mode)
-  :diminish "")
-
-(use-package ob-tangle
-  :hook (after-save . tangle-and-byte-compile-init)
-  :config
-  (defun tangle-and-byte-compile-init ()
-    (when (equal (buffer-file-name)
-                 (file-truename (concat user-emacs-directory "emacs-init.org")))
-      (let ((prog-mode-hook nil))
-        (org-babel-tangle)))))
-
-(use-package org
-  :hook (org-mode . visual-line-mode)
-  :bind (("C-c b" . org-iswitchb)
-         ("C-c l" . org-store-link)
-         ("C-c C-n" . org-add-note))
-  :config
-  (progn
-    (let ((db-org (concat (getenv "HOME") "/Dropbox/org-files")))
-      (if (file-exists-p db-org) (setq org-directory db-org)))
-
-    (setq org-default-notes-file (concat org-directory "/notes.org")
-          org-agenda-files (list
-                            (concat org-directory "/planner.org")
-                            org-default-notes-file)
-          org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE" "CANCELED"))
-          org-columns-default-format "%14CATEGORY(Category) %50ITEM(Item) %10TODO(Status) %30TAGS(Tags)"
-          org-src-fontify-natively t
-          org-ellipsis " ⤵"
-          ;; org-refile-targets '((org-agenda-files . (:maxlevel . 10)))
-          ;; org-log-done t
-          ;; org-reverse-note-order t
-          ;; org-hide-emphasis-markers t
-          ;; org-pretty-entities t
-          ;; org-outline-path-complete-in-steps nil
-          ;; org-refile-use-outline-path 'file
-          org-imenu-depth 5)
-
-    (add-to-list 'org-structure-template-alist
-                 '("se" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC" "<src lang=emacs-lisp\"?\">\n\n</src>"))))
 #+END_SRC
 
 *** org-bullets
@@ -998,12 +992,19 @@ If string is empty, current directory is not a git repo"
 (use-package paredit
   :ensure
   :diminish "()"
-  :hook (emacs-lisp-mode . paredit-mode)
+  :hook ((emacs-lisp-mode
+          lisp-mode
+          eval-expression-minibuffer-setup
+          scheme-mode
+          geiser-repl-mode) . enable-paredit-mode)
   :config
   ;; making paredit work with delete-selection-mode
   (put 'paredit-forward-delete 'delete-selection 'supersede)
   (put 'paredit-backward-delete 'delete-selection 'supersede)
-  (put 'paredit-newline 'delete-selection t))
+  (put 'paredit-newline 'delete-selection t)
+  (progn
+    (with-eval-after-load "eldoc"
+      (eldoc-add-command #'paredit-backward-delete #'paredit-close-round))))
 #+END_SRC
 
 *** undo-tree
@@ -1204,7 +1205,12 @@ If string is empty, current directory is not a git repo"
          ("\\.css\\'" . web-mode)
          ("\\.sass\\'" . web-mode)
          ("\\.scss\\'" . web-mode)
-         ("\\.twig\\'" . web-mode)))
+         ("\\.twig\\'" . web-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-enable-auto-pairing t))
 #+END_SRC
 
 ** comint-mode
@@ -1305,6 +1311,10 @@ If string is empty, current directory is not a git repo"
 
 *** Clojure
 #+BEGIN_SRC emacs-lisp
+;; (use-package inf-clojure
+;;   :ensure
+;;   :defer)
+
 (use-package clojure-mode
   :ensure
   :init
@@ -1315,8 +1325,6 @@ If string is empty, current directory is not a git repo"
          ("\\.boot$" . clojure-mode)
          ("\\.cljs.*$" . clojure-mode)
          ("lein-env" . ruby-mode)))
-
-(use-package clojure-mode-extra-font-locking :after clojure-mode)
 
 (use-package clojure-snippets
   :ensure
@@ -1359,6 +1367,7 @@ If string is empty, current directory is not a git repo"
   (defun cider-user-ns ()
     (interactive)
     (cider-repl-set-ns "user")))
+
 #+END_SRC
 
 ** Python
@@ -1383,6 +1392,12 @@ If string is empty, current directory is not a git repo"
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
           elpy-modules (delq 'elpy-module-pyvenv elpy-modules))))
 
+;; (use-package py-autopep8
+;;   :ensure
+;;   :after elpy
+;;   :config
+;;   (add-hook 'elpy-mode-hook #'py-autopep8-enable-on-save))
+
 #+END_SRC
 
 ** C
@@ -1405,16 +1420,16 @@ If string is empty, current directory is not a git repo"
   (add-hook 'irony-mode-hook 'irony-enable-completions)
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
-(use-package company-irony
-  :ensure
-  :after irony
-  :config
-  (add-hook 'irony-mode-hook (lambda ()
-    (set (make-local-variable 'company-backends))))
-  ;; (add-to-list 'company-backends 'company-irony)
-  (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
-             ;; (delete 'company-backends 'company-clang)
-             )
+;; (use-package company-irony
+;;   :ensure
+;;   :after irony
+;;   :config
+;;   (add-hook 'irony-mode-hook (lambda ()
+;;     (set (make-local-variable 'company-backends))))
+;;   ;; (add-to-list 'company-backends 'company-irony)
+;;   (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+;;              ;; (delete 'company-backends 'company-clang)
+;;              )
 
 (use-package flycheck-irony
   :ensure
