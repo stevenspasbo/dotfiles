@@ -91,10 +91,6 @@ install_pyenv() {
   print_done
 }
 
-install_rvm() {
-
-}
-
 install_fonts() {
   echo -n "Checking for powerline fonts... "
   local FONT_DIR
