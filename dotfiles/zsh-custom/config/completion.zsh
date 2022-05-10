@@ -56,6 +56,12 @@ zstyle ':completion:*' separate-sections 'yes'
 zstyle ':completion:*' list-dirs-first true
 zstyle ':completion:*' file-sort name
 
+# Completions for executables
+zstyle ":completion:*:*:node:*" file-patterns "*.js *(-/)"
+zstyle ":completion:*:*:python:*" file-patterns "*.py *(-/)"
+
+
+
 # # Pretty messages during pagination
 # zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
 # # show a screenful of options + prompt
