@@ -597,15 +597,13 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 ** Version control
-*** gitconfig-mode
+*** git-modes
 #+BEGIN_SRC emacs-lisp
-(use-package gitconfig-mode
+(use-package git-modes
   :ensure
-  :mode (("gitconfig\\'" . gitconfig-mode)))
-
-(use-package gitignore-mode
-  :ensure
-  :mode (("gitignore\\'" . gitignore-mode)))
+  :defer
+  :mode (("gitconfig\\'" . gitconfig-mode)
+         ("gitignore\\'" . gitignore-mode)))
 #+END_SRC
 *** magit
 [[https://github.com/magit/magit][Github]]
