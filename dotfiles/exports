@@ -51,6 +51,8 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 [[ -s "$HOME/.exports.local" ]] && . "$HOME/.exports.local"
 
 # PATH
-[[ -d "$HOME/.local/bin" ]] && PATH="$PATH:$HOME/.local/bin"
-[[ -d "$HOME/.bin" ]] && PATH="$PATH:$HOME/.bin"
-[[ -d "$HOME/bin" ]] && PATH="$PATH:$HOME/bin"
+[[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin:$PATH"
+[[ -d "$HOME/.bin" ]] && PATH="$HOME/.bin:$PATH"
+[[ -d "$HOME/bin" ]] && PATH="$HOME/bin:$PATH"
+
+[[ -d "/opt/java/Contents/Home/bin" ]] && PATH="/opt/java/Contents/Home/bin:$PATH"
