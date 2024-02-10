@@ -56,7 +56,7 @@ link_dotfiles() {
 create_exports_dot_local() {
   echo -n "Creating local exports file... "
   if [[ ! -f "$HOME/.exports.local" ]]; then
-    echo "#! /usr/bin/env \$SHELL\n\n" > "$HOME/.exports.local"
+    echo "#! /usr/bin/env \$SHELL" > "$HOME/.exports.local"
   fi
   print_done
 }
@@ -82,17 +82,14 @@ install_nvm() {
 }
 
 install_pyenv() {
+  echo -n "Installing pyenv... "
   local PYENV_INSTALL_DIR="$HOME/.pyenv"
   if [[ ! -d "$PYENV_INSTALL_DIR" ]]; then
-    git clone https://github.com/pyenv/pyenv.git "$PYENV_INSTALL_DIR" > /dev/null
+    git clone "https://github.com/pyenv/pyenv.git" "$PYENV_INSTALL_DIR" > /dev/null
     # fgrep "export PYENV_ROOT=\"\$HOME/.pyenv\"'" .exports.local
     # fgrep "export PATH=\"\$PYENV_ROOT/bin:$PATH\"'" .exports.local
   fi
   print_done
-}
-
-install_rvm() {
-
 }
 
 install_fonts() {
@@ -147,31 +144,6 @@ install_homebrew_packages() {
   # cd "$DOTFILES_DIR"
   # brew bundle
   print_done
-}
-
-set_homebrew_zsh_as_default_shell() {
-  if [[ ! "$OSTYPE" =~ "darwin" ]]; then
-    return
-  fi
-
-  if ! command -v brew > /dev/null; then
-    return
-  fi
-
-  local BREW_PREFIX=$(brew --prefix)
-  local HOMEBREW_ZSH="${BREW_PREFIX}/bin/zsh"
-
-  if ! fgrep -q "$HOMEBREW_ZSH" /etc/shells; then
-    echo -n "Adding homebrew zsh to /etc/shells... "
-    echo "$HOMEBREW_ZSH" | sudo -t /etc/shells
-    print_done
-  fi
-
-  if [[ ! "$SHELL" == "$HOMEBREW_ZSH" ]]; then
-    echo -n "Setting user's shell to be newer zsh... "
-    chsh -s "$HOMEBREW_ZSH"
-    print_done
-  fi
 }
 
 main() {
