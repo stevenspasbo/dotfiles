@@ -3,6 +3,7 @@
 #-------------------------------------------------------------
 # System stuff
 #-------------------------------------------------------------
+
 case "$(uname -s)" in
   Darwin)
     export IS_MAC=true
@@ -16,6 +17,10 @@ case "$(uname -s)" in
       if [ -n $CORE_UTILS ]; then
         export PATH="$CORE_UTILS/libexec/gnubin:$PATH"
         export MANPATH="$CORE_UTILS/libexec/gnuman:$MANPATH"
+      fi
+
+      if command -v fzf > /dev/null; then
+        source "$(brew --prefix fzf)/shell/key-bindings.zsh"
       fi
 
     fi
