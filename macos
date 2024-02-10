@@ -1,52 +1,45 @@
-#! /usr/bin/env bash
-
-if sudo grep /etc/sudoers -e '^Defaults\ timestamp_timeout[\ \=]*0$'; then
-  local SUDOERS="/etc/sudoers"
-  local SED_BACKUP_EXTENSION=".bak"
-  local SUDOERS_BACKUP="${SUDOERS}${SED_BACKUP_EXTENSION}"
-  local SED_I
-  if sed --version 2&> /dev/null; then
-    # It's GNU sed
-    SED_I="-i$SED_BACKUP_EXTENSION"
-  else
-    SED_I="-i $SED_BACKUP_EXTENSION"
-  fi
-
-  sudo sed $SED_I \
-       -E 's/(Defaults timestamp_timeout).*/\1 = 15/' \
-       "$SUDOERS"
-
-  sudo visudo -c -f "$SUDOERS"
-  local exit_code=$?
-  if [[ $exit_code == 1 ]]; then
-    echo "There was an issue with the sudoers file, reverting..."
-    sudo mv -f "$SUDOERS_BACKUP" "$SUDOERS"
-  else
-    sudo rm "$SUDOERS_BACKUP"
-  fi
-fi
-
-sudo xcodebuild -license accept &> /dev/null
-print_result $? "Agree to the terms of the Xcode licence"
+#! /usr/bin/env sh
 
 if ! command -v defaults > /dev/null; then
   echo "This script requires OSX"
   exit -1
 fi
 
-# Disable smart quotes and dashes, don't change my shit.
+osascript -e 'tell application "System Preferences" to quit'
+
+sudo xcodebuild -license accept &> /dev/null
+
+# Disable smart quotes.
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 
+# Disable automatic capitalization.
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Disable smart dashes.
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Disable automatic period substitution.
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+
+# Disable auto-correct.
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Set swipe direction.
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 
-# Show battery percentage
+# Show battery percentage.
 defaults write com.apple.menuextra.battery ShowPercent -string "YES"
 
-# Use dark theme
+# Use dark theme.
 defaults write NSGlobalDomain AppleInterfaceStyle "Dark"
+defaults write NSGlobalDomain AppleInterfaceStyleSwitchesAutomatically -bool true
 
 # Show all file extensions
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Always show scrollbars
+defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+# Possible values: `WhenScrolling`, `Automatic` and `Always`
 
 # Don't warn when changing file extensions
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
