@@ -94,8 +94,6 @@ fi
 alias -g G=' | grep -i'
 alias -g L=' | less'
 
-[[ -s $HOME/.aliases ]] && . $HOME/.aliases
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS='--reverse --border --exact --height=50%'
 # export FZF_ALT_C_COMMAND='fd --type directory'

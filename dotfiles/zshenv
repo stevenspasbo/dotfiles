@@ -25,9 +25,6 @@ typeset -gU cdpath fpath mailpath path manpath
 # Set up the path
 path=(/usr/local/{bin,sbin} $path)
 
-# For bash / zsh compatability, exports will go in a separate file.
-[[ -s "$HOME/.exports" ]] && . "$HOME/.exports"
-
 # cdpath
 cdpath=("${HOME}")
 
