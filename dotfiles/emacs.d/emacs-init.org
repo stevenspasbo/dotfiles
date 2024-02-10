@@ -407,7 +407,6 @@ If string is empty, current directory is not a git repo"
          ("M-N"   . helm-next-source)
          ("M-P"   . helm-previous-source))
   :init
-  (use-package helm-config)
   (use-package helm-mode
     :diminish helm-mode)
   (global-unset-key (kbd "C-x c"))
@@ -1046,14 +1045,6 @@ If string is empty, current directory is not a git repo"
          ("C-M-s" . isearch-forward)
          ("C-M-r" . isearch-backward)))
 #+END_SRC
-*** linum
-#+BEGIN_SRC emacs-lisp
-(use-package linum
-  :hook (prog-mode . linum-mode)
-  :config
-  (setq linum-format "%4d  ")
-  (set-face-attribute 'linum nil :height 110))
-#+END_SRC
 *** smooth scrolling
 #+BEGIN_SRC emacs-lisp
 (use-package smooth-scrolling
@@ -1244,7 +1235,6 @@ If string is empty, current directory is not a git repo"
   :config
   (add-to-list 'company-backends 'company-ghci))
 
-(use-package ghc :ensure :defer)
 (use-package hi2 :ensure :defer)
 #+END_SRC
 
