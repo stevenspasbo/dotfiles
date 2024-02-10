@@ -645,21 +645,6 @@ Don't warn about narrowing or downcasing
   (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand))
 #+END_SRC
 
-*** ggtags
-#+BEGIN_SRC emacs-lisp
-(use-package ggtags
-  :ensure
-  :diminish ggtags-mode
-  :bind (:map ggtags-mode-map
-              ("C-c g u" . ggtags-update-tags)
-              ("C-c g c" . ggtags-create-tags)
-              ("C-c g s" . ggtags-find-other-symbol)
-              ("C-c g h" . ggtags-view-tag-history)
-              ("C-c g r" . ggtags-find-reference)
-              ("C-c g f" . ggtags-find-file)
-              ("M-," . pop-tag-mark)))
-#+END_SRC
-
 ** Benchmarking and metrics
 #+BEGIN_SRC emacs-lisp
 (use-package keyfreq
@@ -770,16 +755,6 @@ Don't warn about narrowing or downcasing
 (use-package elec-pair
   :config
   (electric-pair-mode 1))
-#+END_SRC
-*** aggressive-indent mode
-#+BEGIN_SRC emacs-lisp
-(use-package aggressive-indent
-  :ensure
-  :commands (aggressive-indent-mode))
-#+END_SRC
-*** Strings
-#+BEGIN_SRC emacs-lisp
-(use-package s :ensure :defer)
 #+END_SRC
 *** Display emojis
 #+BEGIN_SRC emacs-lisp
@@ -1099,7 +1074,13 @@ Don't warn about narrowing or downcasing
   (setq web-mode-markup-indent-offset 2
         web-mode-code-indent-offset 2
         web-mode-css-indent-offset 2
-        web-mode-enable-auto-pairing t))
+        web-mode-enable-auto-pairing t
+        web-mode-enable-auto-closing t
+        web-mode-enable-auto-expanding t
+        web-mode-enable-auto-opening t
+        web-mode-enable-css-colorization t
+        web-mode-enable-current-element-highlight t
+        web-mode-enable-current-column-highlight t))
 #+END_SRC
 
 ** comint-mode
@@ -1233,7 +1214,10 @@ Don't warn about narrowing or downcasing
 (use-package python
   :defer
   :config
-  (setq python-indent-offset 4))
+  (setq python-indent-offset 4)
+    (when (executable-find "ipython")
+    (setq python-shell-interpreter "ipython"
+          python-shell-interpreter-args "-i --simple-prompt")))
 
 (use-package elpy
   :ensure
@@ -1242,20 +1226,9 @@ Don't warn about narrowing or downcasing
   :init
   (advice-add 'python-mode :before 'elpy-enable)
   :config
-  (setq elpy-rpc-backend "jedi")
-  (when (executable-find "ipython")
-    (setq python-shell-interpreter "ipython"
-          python-shell-interpreter-args "-i --simple-prompt"))
   (when (require 'flycheck nil t)
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
           elpy-modules (delq 'elpy-module-pyvenv elpy-modules))))
-
-;; (use-package py-autopep8
-;;   :ensure
-;;   :after elpy
-;;   :config
-;;   (add-hook 'elpy-mode-hook #'py-autopep8-enable-on-save))
-
 #+END_SRC
 
 ** C
