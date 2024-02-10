@@ -6,6 +6,7 @@ _cmds=(
   'configure:Configure a new IDP account.'
   'login:Login to a SAML 2.0 IDP and convert the SAML assertion to an STS token.'
   'exec:Exec the supplied command with env vars from STS token.'
+  'script:Emit a script that will export environment variables.'
 )
 
 local -a _flags
@@ -14,12 +15,15 @@ _flags=(
   '--version[Show application version.]'
   '--verbose[Enable verbose logging]'
   '-a[The name of the configured IDP account]' '--idp-account=[The name of the configured IDP account]'
-  '--mfa=[The configured IDP provider]'
+  '--mfa=MFA[The configured IDP provider]'
   '-s[Skip verification of server certificate.]' '--skip-verify[Skip verification of server certificate.]'
-  '--username[The username used to login.]:Users:whoami'
-  '--role[The ARN of the role to assume.]'
-  '--aws-urn[The URN used by SAML when you login.]'
+  '--url=URL[The URL of the SAML IDP server used to login.]'
+  '--username=USERNAME[The username used to login.]:Users:whoami'
+  '--role=ROLE[The ARN of the role to assume.]'
+  '--aws-urn=AWS-URN[The URN used by SAML when you login.]'
   '--skip-prompt[Skip prompting for parameters during login.]'
+  '--session-duration=SESSION-DURATION[The duration of your AWS Session.]'
+  '-p[The AWS profile to save the temporary credentials. Do not override, except for testing purposes.]' '--profile=PROFILE[The AWS profile to save the temporary credentials. Do not override, except for testing purposes.]'
 )
 
 __okta2aws_help() {

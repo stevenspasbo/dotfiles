@@ -28,7 +28,7 @@ plugins+=(history-substring-search zsh-completions)
 [[ -d $ZSH_CUSTOM/plugins/zsh-autopair ]] && plugins+=(zsh-autopair)
 
 # Check for executables
-for p (git tmux vagrant grunt composer gem nvm pip pyenv aws docker docker-compose go); do
+for p (composer pip pyenv aws docker docker-compose mvn); do
   if command -v $p > /dev/null; then
     plugins+=($p)
   fi
@@ -57,6 +57,8 @@ setopt PUSHD_TO_HOME
 setopt PUSHD_SILENT
 setopt PUSHD_MINUS # This inverts the +/- operators.
 setopt INTERACTIVE_COMMENTS # Recognize comments
+
+unsetopt AUTO_REMOVE_SLASH
 unsetopt FLOWCONTROL
 unsetopt MENU_COMPLETE # do not autoselect the first completion entry
 
@@ -94,6 +96,13 @@ fi
 alias -g G=' | grep -i'
 alias -g L=' | less'
 
-[[ -s $HOME/.aliases ]] && . $HOME/.aliases
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_OPTS='--reverse --border --exact --height=50%'
+# export FZF_ALT_C_COMMAND='fd --type directory'
+# export FZF_CTRL_T_COMMAND="mdfind -onlyin . -name ."
+
+
+
+zman() {
+  PAGER="less -g -s '+/^       "$1"'" man zshall
+}

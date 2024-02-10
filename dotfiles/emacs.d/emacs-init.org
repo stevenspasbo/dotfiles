@@ -4,14 +4,19 @@
 #+PROPERTY: header-args :tangle ~/.emacs.d/emacs-init.el :comments org
 
 * Startup
+** GC
+#+BEGIN_SRC emacs-lisp
+(defvar default-gc-cons-threshold (default-value 'gc-cons-threshold))
+(setq gc-cons-threshold 64000000)
+(add-hook 'after-init-hook #'(lambda ()
+                               (setq gc-cons-threshold default-gc-cons-threshold)))
+#+END_SRC
 ** Package stuff
 #+BEGIN_SRC emacs-lisp
-(setq package-archives
-      '(("marmalade"    . "http://marmalade-repo.org/packages/")
-        ("gnu"          . "https://elpa.gnu.org/packages/")
-        ("org"          . "http://orgmode.org/elpa/")
-        ("melpa"        . "https://melpa.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")))
+(require 'package)
+
+(add-to-list 'package-archives '("org"   . "https://orgmode.org/elpa/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 (setq package-enable-at-startup nil
       package--init-file-ensured t)
@@ -21,7 +26,7 @@
 
 (mapc #'(lambda (add) (add-to-list 'load-path add))
       (eval-when-compile
-        (package-initialize)
+        ;; (package-initialize)
         (let ((required-packages '(use-package diminish))
               (refreshed? nil))
           (dolist (p required-packages)
@@ -40,9 +45,8 @@
 
 (eval-when-compile
   (require 'use-package))
-(require 'bind-key)
 (require 'diminish)
-
+(require 'bind-key)
 
 #+END_SRC
 ** Constants and aliases
@@ -99,7 +103,6 @@ Disable custom file, put any changes you want in their relevant package configur
 (set-language-environment 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (setq locale-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
 (unless (eq system-type 'windows-nt)
  (set-selection-coding-system 'utf-8))
 #+END_SRC
@@ -125,34 +128,6 @@ Don't warn about narrowing or downcasing
 #+END_SRC
 
 * Functions
-** load-directory
-#+BEGIN_SRC emacs-lisp
-(defun load-directory (directory)
-  "Load recursively all `.el' files in DIRECTORY."
-  (dolist (element (directory-files-and-attributes directory nil nil nil))
-    (let* ((path (car element))
-	   (fullpath (concat directory "/" path))
-	   (isdir (car (cdr element)))
-	   (ignore-dir (or (string= path ".") (string= path ".."))))
-      (cond
-       ((and (eq isdir t) (not ignore-dir))
-	(load-directory fullpath))
-       ((and (eq isdir nil) (string= (substring path -3) ".el"))
-        (load (file-name-sans-extension fullpath)))))))
-#+END_SRC
-
-** watchwords - highlights keywords
-[[http://writequit.org/org/#281f1a45-954d-4412-bcb6-35c847be9b1a][Taken from writequit]]
-#+BEGIN_SRC emacs-lisp
-(defun my/add-watchwords ()
-  "Highlight FIXME, TODO, and NOCOMMIT in code"
-  (font-lock-add-keywords
-   nil '(("\\<\\(FIXME\\|TODO\\|NOCOMMIT\\)\\>"
-          1 '((:foreground "#d7a3ad") (:weight bold)) t))))
-
-(add-hook 'prog-mode-hook #'my/add-watchwords)
-#+END_SRC
-
 ** kill-back-to-indentation
 [[http://pages.sachachua.com/.emacs.d/Sacha.html#orgheadline131][Taken from Sacha's blog]]
 #+BEGIN_SRC emacs-lisp
@@ -163,20 +138,6 @@ Don't warn about narrowing or downcasing
     (back-to-indentation)
     (kill-region (point) prev-pos)))
 (global-set-key (kbd "C-M-<backspace>") 'sanityinc/kill-back-to-indentation)
-#+END_SRC
-
-** get-current-branch
-#+BEGIN_SRC emacs-lisp
-(defun current-git-branch (pwd)
-  "Returns current git branch as a string.
-If string is empty, current directory is not a git repo"
-  (interactive)
-  (use-package esh-ext :defer)
-  (when (and (eshell-search-path "git") (locate-dominating-file pwd ".git"))
-    (let ((git-output (shell-command-to-string (concat "cd " pwd " && git branch | grep '\\*' | sed -e 's/^\\* //'"))))
-      (if (> (length git-output) 0)
-	  (concat " (" (substring git-output 0 -1) ")" )
-	""))))
 #+END_SRC
 
 * General bindings
@@ -232,62 +193,43 @@ If string is empty, current directory is not a git repo"
          ([remap move-beginning-of-line] . crux-move-beginning-of-line)
          ([remap kill-whole-line] . crux-kill-whole-line)))
 #+END_SRC
-** eshell
-#+BEGIN_SRC emacs-lisp
-(use-package eshell
-  :bind (("C-c s" . eshell))
-  :config
-  (defun eshell/clear ()
-    "Clears the shell buffer ala Unix's clear."
-    ;; the shell prompts are read-only, so clear that for the duration
-    (let ((inhibit-read-only t))
-      ;; simply delete the region
-      (erase-buffer))))
-
-(use-package esh-opt
-  :after eshell)
-
-(use-package em-prompt
-  :after eshell
-  :config)
-
-(use-package eshell-prompt-extras
-  :ensure
-  :after em-prompt
-  :config
-  (setq eshell-highlight-prompt nil
-        eshell-prompt-function 'epe-theme-lambda))
-
-(use-package em-dirs
-  :after eshell
-  :config
-  (defun get-abbriv-directory ()
-    "Gets the current directory, replaces home with ~"
-    (interactive)
-    (abbreviate-file-name (eshell/pwd))))
-
-(use-package em-cmpl
-  :after eshell
-  :bind (([remap eshell-pcomplete] . helm-esh-pcomplete))
-  :config
-  (setq eshell-cmpl-ignore-case t))
-
-(use-package em-hist
-  :after eshell
-  :config
-  (setq eshell-save-history-on-exit t
-        eshell-hist-ignoredups t
-        eshell-history-size nil))
-
-(use-package em-glob
-  :after eshell
-  :config
-  (setq eshell-glob-case-insensitive t
-        eshell-glob-include-dot-files t))
-
-#+END_SRC
-
 ** Org
+*** org
+#+BEGIN_SRC emacs-lisp
+(use-package org-indent
+  :hook (org-mode . org-indent-mode)
+  :diminish "")
+
+(use-package ob-tangle
+  :hook (after-save . tangle-and-byte-compile-init)
+  :config
+  (defun tangle-and-byte-compile-init ()
+    (when (equal (buffer-file-name)
+                 (file-truename (concat user-emacs-directory "emacs-init.org")))
+      (let ((prog-mode-hook nil))
+        (org-babel-tangle)))))
+
+(use-package org
+  :hook (org-mode . visual-line-mode)
+  :bind (("C-c l" . org-store-link)
+         ("C-c C-n" . org-add-note))
+  :config
+  (progn
+    (let ((dropbox-org-dir (concat (getenv "HOME") "/Dropbox/org-files")))
+      (if (file-exists-p dropbox-org-dir)
+          (setq org-directory dropbox-org-dir
+                org-agenda-files dropbox-org-dir)))
+
+    (setq org-default-notes-file (concat org-directory "/notes.org")
+          org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE"))
+          org-columns-default-format "%14CATEGORY(Category) %50ITEM(Item) %10TODO(Status) %30TAGS(Tags)"
+          org-src-fontify-natively t
+          org-ellipsis " ⤵"
+          org-imenu-depth 5)
+
+    (add-to-list 'org-structure-template-alist
+                 '("se" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC" "<src lang=emacs-lisp\"?\">\n\n</src>"))))
+#+END_SRC
 *** org-agenda
 #+BEGIN_SRC emacs-lisp
 (use-package org-agenda
@@ -316,52 +258,6 @@ If string is empty, current directory is not a git repo"
       (let ((file-name (buffer-file-name)))
         ad-do-it
         (setq buffer-file-name file-name)))))
-#+END_SRC
-
-*** org
-#+BEGIN_SRC emacs-lisp
-(use-package org-indent
-  :hook (org-mode . org-indent-mode)
-  :diminish "")
-
-(use-package ob-tangle
-  :hook (after-save . tangle-and-byte-compile-init)
-  :config
-  (defun tangle-and-byte-compile-init ()
-    (when (equal (buffer-file-name)
-                 (file-truename (concat user-emacs-directory "emacs-init.org")))
-      (let ((prog-mode-hook nil))
-        (org-babel-tangle)))))
-
-(use-package org
-  :hook (org-mode . visual-line-mode)
-  :bind (("C-c b" . org-iswitchb)
-         ("C-c l" . org-store-link)
-         ("C-c C-n" . org-add-note))
-  :config
-  (progn
-    (let ((db-org (concat (getenv "HOME") "/Dropbox/org-files")))
-      (if (file-exists-p db-org) (setq org-directory db-org)))
-
-    (setq org-default-notes-file (concat org-directory "/notes.org")
-          org-agenda-files (list
-                            (concat org-directory "/planner.org")
-                            org-default-notes-file)
-          org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "|" "DONE" "CANCELED"))
-          org-columns-default-format "%14CATEGORY(Category) %50ITEM(Item) %10TODO(Status) %30TAGS(Tags)"
-          org-src-fontify-natively t
-          org-ellipsis " ⤵"
-          ;; org-refile-targets '((org-agenda-files . (:maxlevel . 10)))
-          ;; org-log-done t
-          ;; org-reverse-note-order t
-          ;; org-hide-emphasis-markers t
-          ;; org-pretty-entities t
-          ;; org-outline-path-complete-in-steps nil
-          ;; org-refile-use-outline-path 'file
-          org-imenu-depth 5)
-
-    (add-to-list 'org-structure-template-alist
-                 '("se" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC" "<src lang=emacs-lisp\"?\">\n\n</src>"))))
 #+END_SRC
 
 *** org-bullets
@@ -429,7 +325,6 @@ If string is empty, current directory is not a git repo"
          ("M-N"   . helm-next-source)
          ("M-P"   . helm-previous-source))
   :init
-  (use-package helm-config)
   (use-package helm-mode
     :diminish helm-mode)
   (global-unset-key (kbd "C-x c"))
@@ -603,15 +498,13 @@ If string is empty, current directory is not a git repo"
 #+END_SRC
 
 ** Version control
-*** gitconfig-mode
+*** git-modes
 #+BEGIN_SRC emacs-lisp
-(use-package gitconfig-mode
+(use-package git-modes
   :ensure
-  :mode (("gitconfig\\'" . gitconfig-mode)))
-
-(use-package gitignore-mode
-  :ensure
-  :mode (("gitignore\\'" . gitignore-mode)))
+  :defer
+  :mode (("gitconfig\\'" . gitconfig-mode)
+         ("gitignore\\'" . gitignore-mode)))
 #+END_SRC
 *** magit
 [[https://github.com/magit/magit][Github]]
@@ -671,8 +564,6 @@ If string is empty, current directory is not a git repo"
 *** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
-  :commands (recentf-mode)
-  :functions (recentf-load-list)
   :config
   (recentf-mode 1)
   ;; Prevents package.el updates from adding compiled files to recentf list
@@ -682,9 +573,9 @@ If string is empty, current directory is not a git repo"
       (if buf
           (let ((display-count (buffer-local-value 'buffer-display-count buf)))
             (if (> display-count 0) display-count nil)))))
-  (setq recentf-max-saved-items 500
+  (setq recentf-max-saved-items 250
         recentf-auto-cleanup 'never
-        recentf-max-menu-items 20
+        recentf-max-menu-items 15
         recentf-keep '(keep-default-and-visible-recentf-p)))
 #+END_SRC
 ** Completion / tagging
@@ -752,21 +643,6 @@ If string is empty, current directory is not a git repo"
   :bind (("M-/" . hippie-expand))
   :config
   (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand))
-#+END_SRC
-
-*** ggtags
-#+BEGIN_SRC emacs-lisp
-(use-package ggtags
-  :ensure
-  :diminish ggtags-mode
-  :bind (:map ggtags-mode-map
-              ("C-c g u" . ggtags-update-tags)
-              ("C-c g c" . ggtags-create-tags)
-              ("C-c g s" . ggtags-find-other-symbol)
-              ("C-c g h" . ggtags-view-tag-history)
-              ("C-c g r" . ggtags-find-reference)
-              ("C-c g f" . ggtags-find-file)
-              ("M-," . pop-tag-mark)))
 #+END_SRC
 
 ** Benchmarking and metrics
@@ -880,16 +756,6 @@ If string is empty, current directory is not a git repo"
   :config
   (electric-pair-mode 1))
 #+END_SRC
-*** aggressive-indent mode
-#+BEGIN_SRC emacs-lisp
-(use-package aggressive-indent
-  :ensure
-  :commands (aggressive-indent-mode))
-#+END_SRC
-*** Strings
-#+BEGIN_SRC emacs-lisp
-(use-package s :ensure :defer)
-#+END_SRC
 *** Display emojis
 #+BEGIN_SRC emacs-lisp
 (when *is-a-mac*
@@ -998,12 +864,19 @@ If string is empty, current directory is not a git repo"
 (use-package paredit
   :ensure
   :diminish "()"
-  :hook (emacs-lisp-mode . paredit-mode)
+  :hook ((emacs-lisp-mode
+          lisp-mode
+          eval-expression-minibuffer-setup
+          scheme-mode
+          geiser-repl-mode) . enable-paredit-mode)
   :config
   ;; making paredit work with delete-selection-mode
   (put 'paredit-forward-delete 'delete-selection 'supersede)
   (put 'paredit-backward-delete 'delete-selection 'supersede)
-  (put 'paredit-newline 'delete-selection t))
+  (put 'paredit-newline 'delete-selection t)
+  (progn
+    (with-eval-after-load "eldoc"
+      (eldoc-add-command #'paredit-backward-delete #'paredit-close-round))))
 #+END_SRC
 
 *** undo-tree
@@ -1062,14 +935,6 @@ If string is empty, current directory is not a git repo"
          ("C-r" . isearch-backward-regexp)
          ("C-M-s" . isearch-forward)
          ("C-M-r" . isearch-backward)))
-#+END_SRC
-*** linum
-#+BEGIN_SRC emacs-lisp
-(use-package linum
-  :hook (prog-mode . linum-mode)
-  :config
-  (setq linum-format "%4d  ")
-  (set-face-attribute 'linum nil :height 110))
 #+END_SRC
 *** smooth scrolling
 #+BEGIN_SRC emacs-lisp
@@ -1204,7 +1069,18 @@ If string is empty, current directory is not a git repo"
          ("\\.css\\'" . web-mode)
          ("\\.sass\\'" . web-mode)
          ("\\.scss\\'" . web-mode)
-         ("\\.twig\\'" . web-mode)))
+         ("\\.twig\\'" . web-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-enable-auto-pairing t
+        web-mode-enable-auto-closing t
+        web-mode-enable-auto-expanding t
+        web-mode-enable-auto-opening t
+        web-mode-enable-css-colorization t
+        web-mode-enable-current-element-highlight t
+        web-mode-enable-current-column-highlight t))
 #+END_SRC
 
 ** comint-mode
@@ -1227,37 +1103,6 @@ If string is empty, current directory is not a git repo"
         js2-basic-offset 2
         js2-bounce-indent-p nil))
 
-#+END_SRC
-
-** Haskell
-#+BEGIN_SRC emacs-lisp
-(use-package haskell-mode
-  :ensure
-  :mode (("\\.hs$" . haskell-mode))
-  :config
-  (progn
-    (add-hook 'haskell-mode-hook 'turn-on-haskell-doc)
-    (add-hook 'haskell-mode-hook 'haskell-indentation-mode)
-    (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-    (setq haskell-font-lock-symbols t
-          haskell-process-suggest-remove-import-lines t
-          haskell-process-auto-import-loaded-modules t
-          haskell-process-log t)))
-
-(use-package flycheck-haskell
-  :ensure
-  :after haskell-mode
-  :config
-  (flycheck-haskell-setup))
-
-(use-package company-ghci
-  :ensure
-  :after haskell-mode
-  :config
-  (add-to-list 'company-backends 'company-ghci))
-
-(use-package ghc :ensure :defer)
-(use-package hi2 :ensure :defer)
 #+END_SRC
 
 ** LISPs
@@ -1305,6 +1150,10 @@ If string is empty, current directory is not a git repo"
 
 *** Clojure
 #+BEGIN_SRC emacs-lisp
+;; (use-package inf-clojure
+;;   :ensure
+;;   :defer)
+
 (use-package clojure-mode
   :ensure
   :init
@@ -1315,8 +1164,6 @@ If string is empty, current directory is not a git repo"
          ("\\.boot$" . clojure-mode)
          ("\\.cljs.*$" . clojure-mode)
          ("lein-env" . ruby-mode)))
-
-(use-package clojure-mode-extra-font-locking :after clojure-mode)
 
 (use-package clojure-snippets
   :ensure
@@ -1359,6 +1206,7 @@ If string is empty, current directory is not a git repo"
   (defun cider-user-ns ()
     (interactive)
     (cider-repl-set-ns "user")))
+
 #+END_SRC
 
 ** Python
@@ -1366,7 +1214,10 @@ If string is empty, current directory is not a git repo"
 (use-package python
   :defer
   :config
-  (setq python-indent-offset 4))
+  (setq python-indent-offset 4)
+    (when (executable-find "ipython")
+    (setq python-shell-interpreter "ipython"
+          python-shell-interpreter-args "-i --simple-prompt")))
 
 (use-package elpy
   :ensure
@@ -1375,14 +1226,9 @@ If string is empty, current directory is not a git repo"
   :init
   (advice-add 'python-mode :before 'elpy-enable)
   :config
-  (setq elpy-rpc-backend "jedi")
-  (when (executable-find "ipython")
-    (setq python-shell-interpreter "ipython"
-          python-shell-interpreter-args "-i --simple-prompt"))
   (when (require 'flycheck nil t)
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
           elpy-modules (delq 'elpy-module-pyvenv elpy-modules))))
-
 #+END_SRC
 
 ** C
@@ -1405,16 +1251,16 @@ If string is empty, current directory is not a git repo"
   (add-hook 'irony-mode-hook 'irony-enable-completions)
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
-(use-package company-irony
-  :ensure
-  :after irony
-  :config
-  (add-hook 'irony-mode-hook (lambda ()
-    (set (make-local-variable 'company-backends))))
-  ;; (add-to-list 'company-backends 'company-irony)
-  (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
-             ;; (delete 'company-backends 'company-clang)
-             )
+;; (use-package company-irony
+;;   :ensure
+;;   :after irony
+;;   :config
+;;   (add-hook 'irony-mode-hook (lambda ()
+;;     (set (make-local-variable 'company-backends))))
+;;   ;; (add-to-list 'company-backends 'company-irony)
+;;   (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+;;              ;; (delete 'company-backends 'company-clang)
+;;              )
 
 (use-package flycheck-irony
   :ensure
@@ -1432,27 +1278,6 @@ If string is empty, current directory is not a git repo"
 
 ** ruby
 #+BEGIN_SRC emacs-lisp
-(use-package inf-ruby :ensure :defer)
-
-(use-package robe
-  :ensure
-  :after ruby-mode
-  :config
-  (add-hook 'ruby-mode-hook #'robe-mode)
-  (push 'company-robe company-backends))
-
-(use-package rvm
-  :ensure
-  :after ruby-mode
-  :config
-  (add-hook 'ruby-mode-hook #'rvm-activate-corresponding-ruby))
-
-(use-package ruby-electric
-  :ensure
-  :after ruby-mode
-  :config
-  (add-hook 'ruby-mode-hook #'ruby-electric-mode))
-
 (use-package ruby-mode
   :mode (("Vagrantfile$" . ruby-mode)
          ("rake\\'" . ruby-mode)
@@ -1463,14 +1288,21 @@ If string is empty, current directory is not a git repo"
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil
         ruby-deep-indent-paren nil)
-  (defun ruby-mode-stuff ()
-    (ruby-electric-mode 1)
-    (robe-mode 1)
-    (enable-paredit-mode)
-    (rvm-activate-corresponding-ruby)
-    (unless (derived-mode-p 'prog-mode)
-      (run-hooks 'prog-mode-hook)))
-  (add-hook 'ruby-mode-hook #'ruby-mode-stuff))
+  (enable-paredit-mode))
+
+(use-package robe
+  :ensure
+  :hook (ruby-mode . robe-mode)
+  :config
+  (push 'company-robe company-backends))
+
+(use-package ruby-electric
+ :ensure
+ :hook (ruby-mode . ruby-electric-mode))
+
+(use-package inf-ruby
+  :ensure
+  :hook (ruby-mode . inf-ruby-minor-mode))
 #+END_SRC
 
 * global and mode hooks

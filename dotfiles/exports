@@ -3,6 +3,7 @@
 #-------------------------------------------------------------
 # System stuff
 #-------------------------------------------------------------
+
 case "$(uname -s)" in
   Darwin)
     export IS_MAC=true
@@ -16,6 +17,10 @@ case "$(uname -s)" in
       if [ -n $CORE_UTILS ]; then
         export PATH="$CORE_UTILS/libexec/gnubin:$PATH"
         export MANPATH="$CORE_UTILS/libexec/gnuman:$MANPATH"
+      fi
+
+      if command -v fzf > /dev/null; then
+        source "$(brew --prefix fzf)/shell/key-bindings.zsh"
       fi
 
     fi
@@ -51,6 +56,8 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 [[ -s "$HOME/.exports.local" ]] && . "$HOME/.exports.local"
 
 # PATH
-[[ -d "$HOME/.local/bin" ]] && PATH="$PATH:$HOME/.local/bin"
-[[ -d "$HOME/.bin" ]] && PATH="$PATH:$HOME/.bin"
-[[ -d "$HOME/bin" ]] && PATH="$PATH:$HOME/bin"
+[[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin:$PATH"
+[[ -d "$HOME/.bin" ]] && PATH="$HOME/.bin:$PATH"
+[[ -d "$HOME/bin" ]] && PATH="$HOME/bin:$PATH"
+
+[[ -d "/opt/java/Contents/Home/bin" ]] && PATH="/opt/java/Contents/Home/bin:$PATH"

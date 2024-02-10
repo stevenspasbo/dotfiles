@@ -29,7 +29,7 @@ fi
 # Always use color output for `ls`
 alias ls="command ls ${colorflag}"
 
-alias ll='ls -lAFhG'
+alias ll="ls -lAFhG --group-directories-first"
 
 # Always enable colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
