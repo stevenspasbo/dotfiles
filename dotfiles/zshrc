@@ -96,13 +96,6 @@ fi
 alias -g G=' | grep -i'
 alias -g L=' | less'
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_OPTS='--reverse --border --exact --height=50%'
-# export FZF_ALT_C_COMMAND='fd --type directory'
-# export FZF_CTRL_T_COMMAND="mdfind -onlyin . -name ."
-
-
-
 zman() {
   PAGER="less -g -s '+/^       "$1"'" man zshall
 }
