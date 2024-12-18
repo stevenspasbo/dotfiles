@@ -71,12 +71,8 @@ if [[ -d "$ZSH_CUSTOM/config" ]]; then
   done
 fi
 
-zmodload -a zsh/stat stat
-zmodload -a zsh/zpty zpty
-zmodload -a zsh/zprof zprof
 zmodload -ap zsh/mapfile mapfile
 
-autoload -U tetriscurses # Slacker
 autoload zmv # Move files using glob, Ex: zmv '(*).lis' '$1.txt'
 autoload -U zsh-mime-setup # Set file suffixes.
 zsh-mime-setup
