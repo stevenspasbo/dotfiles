@@ -56,9 +56,6 @@ export HISTFILE="$HOME/.history"
 export HISTFORMAT='%F %T '
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
-# Environment specific stuff that I don't want committed.
-[[ -s "$HOME/.exports.local" ]] && . "$HOME/.exports.local"
-
 # PATH
 [[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin:$PATH"
 [[ -d "$HOME/.bin" ]] && PATH="$HOME/.bin:$PATH"
@@ -67,3 +64,7 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 if command -v fzf > /dev/null; then
   export FZF_DEFAULT_OPTS='--reverse --border --exact --height=50%'
 fi
+
+# Environment specific stuff that I don't want committed.
+# Load last to override exports from this file.
+[[ -s "$HOME/.exports.local" ]] && . "$HOME/.exports.local"

@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 #
 # Executes commands at login post-zshrc.
 #
@@ -10,7 +12,3 @@
     zcompile "$zcompdump"
   fi
 } &!
-
-# For bash / zsh compatability, exports will go in a separate file.
-[[ -s "$HOME/.exports" ]] && . "$HOME/.exports"
-[[ -s "$HOME/.aliases" ]] && . "$HOME/.aliases"

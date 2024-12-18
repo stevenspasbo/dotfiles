@@ -90,7 +90,9 @@ if [[ -n $HELPDIR ]]; then
   alias help=run-help
 fi
 
-# Global aliases
+# Aliases
+[[ -s "$HOME/.aliases" ]] && source "$HOME/.aliases"
+
 alias -g G=' | grep -i'
 alias -g L=' | less'
 
@@ -98,8 +100,6 @@ alias -g L=' | less'
 export FZF_DEFAULT_OPTS='--reverse --border --exact --height=50%'
 # export FZF_ALT_C_COMMAND='fd --type directory'
 # export FZF_CTRL_T_COMMAND="mdfind -onlyin . -name ."
-
-
 
 zman() {
   PAGER="less -g -s '+/^       "$1"'" man zshall
