@@ -1,1 +1,5 @@
 #! /usr/bin/env zsh
+#
+# Sourced after .zshenv and before .zshrc
+#
+# Note: zsh documentation specifies using either this or .zlogin, but not both.
