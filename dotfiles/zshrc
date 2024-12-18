@@ -62,8 +62,6 @@ unsetopt AUTO_REMOVE_SLASH
 unsetopt FLOWCONTROL
 unsetopt MENU_COMPLETE # do not autoselect the first completion entry
 
-unsetopt EXTENDED_HISTORY # Don't save timestamp info with history
-
 nocorrect which
 
 # Load all custom zsh configurations, ignoring temp files.
