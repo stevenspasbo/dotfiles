@@ -87,7 +87,7 @@ if [[ -n $HELPDIR ]]; then
 fi
 
 # Aliases
-[[ -s "$HOME/.aliases" ]] && source "$HOME/.aliases"
+# [[ -s "$HOME/.aliases" ]] && source "$HOME/.aliases"
 
 alias -g G=' | grep -i'
 alias -g L=' | less'

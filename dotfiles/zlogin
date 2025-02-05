@@ -12,3 +12,7 @@
     zcompile "$zcompdump"
   fi
 } &!
+
+# Exports are kept separately to be used by both zsh and bash.
+[[ -s "$HOME/.exports" ]] && . "$HOME/.exports"
+[[ -s "$HOME/.aliases" ]] && . "$HOME/.aliases"
