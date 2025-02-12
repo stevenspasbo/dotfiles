@@ -62,8 +62,6 @@ unsetopt AUTO_REMOVE_SLASH
 unsetopt FLOWCONTROL
 unsetopt MENU_COMPLETE # do not autoselect the first completion entry
 
-unsetopt EXTENDED_HISTORY # Don't save timestamp info with history
-
 nocorrect which
 
 # Load all custom zsh configurations, ignoring temp files.
@@ -73,12 +71,8 @@ if [[ -d "$ZSH_CUSTOM/config" ]]; then
   done
 fi
 
-zmodload -a zsh/stat stat
-zmodload -a zsh/zpty zpty
-zmodload -a zsh/zprof zprof
 zmodload -ap zsh/mapfile mapfile
 
-autoload -U tetriscurses # Slacker
 autoload zmv # Move files using glob, Ex: zmv '(*).lis' '$1.txt'
 autoload -U zsh-mime-setup # Set file suffixes.
 zsh-mime-setup
@@ -92,10 +86,13 @@ if [[ -n $HELPDIR ]]; then
   alias help=run-help
 fi
 
-# Global aliases
+# Aliases
+# [[ -s "$HOME/.aliases" ]] && source "$HOME/.aliases"
+
 alias -g G=' | grep -i'
 alias -g L=' | less'
 
-zman() {
-  PAGER="less -g -s '+/^       "$1"'" man zshall
-}
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_OPTS='--reverse --border --exact --height=50%'
+# export FZF_ALT_C_COMMAND='fd --type directory'
+# export FZF_CTRL_T_COMMAND="mdfind -onlyin . -name ."

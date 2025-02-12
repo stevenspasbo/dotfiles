@@ -8,7 +8,7 @@
 # It should contain commands to set the PATH and other
 # important environment variables.
 
-# Need this so PATH doesn't break on OSX Sierra.
+# Disables loading the default zsh config files in /etc
 setopt NO_GLOBAL_RCS
 
 # Set up tmp files
@@ -37,3 +37,6 @@ if [ -d "/usr/local/share/zsh/help" ]; then
 elif [ -d "/usr/share/zsh/help" ]; then
   export HELPDIR="/usr/share/zsh/help"
 fi
+
+# Exports are kept separately to be used by both zsh and bash.
+[[ -s "$HOME/.exports" ]] && source "$HOME/.exports"

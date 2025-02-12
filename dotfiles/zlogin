@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 #
 # Executes commands at login post-zshrc.
 #
@@ -11,6 +13,6 @@
   fi
 } &!
 
-# For bash / zsh compatability, exports will go in a separate file.
+# Exports are kept separately to be used by both zsh and bash.
 [[ -s "$HOME/.exports" ]] && . "$HOME/.exports"
 [[ -s "$HOME/.aliases" ]] && . "$HOME/.aliases"
