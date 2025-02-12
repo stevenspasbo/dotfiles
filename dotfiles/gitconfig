@@ -71,3 +71,6 @@
 
 [credential "https://bitbucket.workday.com"]
    helper = osxkeychain
+[user]
+	email = stevenspasbo@gmail.com
+	name = Steven Spasbo
