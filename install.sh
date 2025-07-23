@@ -12,8 +12,13 @@ print_done () {
   printf "\033[1m\033[32m%s\033[0m\n" "Done"
 }
 
+
 STARTING_DIRECTORY="$PWD"
+DOTFILES_DIR="$HOME/dotfiles"
+
+
 cd "$HOME"
+
 
 check_for_git() {
   echo -n "Checking for git... "
@@ -25,9 +30,10 @@ check_for_git() {
   print_done
 }
 
+
 check_out_dotfiles_repo() {
   echo -n "Checking out dotfiles repository..."
-  DOTFILES_DIR="$HOME/dotfiles"
+
   if [[ ! -d "$DOTFILES_DIR" ]]; then
     git clone --quiet --recursive "https://github.com/stevenspasbo/dotfiles.git" "$DOTFILES_DIR" > /dev/null
   else
@@ -39,45 +45,25 @@ check_out_dotfiles_repo() {
 }
 
 link_dotfiles() {
-  echo -n "Symlinking dotfiles... "
-  if [[ "$PWD" != "$DOTFILES_DIR" ]]; then
-    cd "$DOTFILES_DIR"
-  fi
-  # TODO Remove the dependency on rake, script this.
-  if ! command -v rake > /dev/null; then
-    echo "\nRake not found, exiting"
-    exit -1
-  fi
+  echo "Symlinking dotfiles... "
+  for FILE in $(find "$DOTFILES_DIR/dotfiles" -maxdepth 1 -mindepth 1); do
+    local DOTFILE_DEST="$HOME/.$(basename $FILE)"
+    if [[ -f "$DOTFILE_DEST" ]]; then
+      echo "$DOTFILE_DEST already exists, skipping."
+    else
+      ln -s "$FILE" "$HOME/.$(basename $FILE)"
+    fi
+  done
 
-  rake install_dotfiles
   print_done
 }
 
 create_exports_dot_local() {
   echo -n "Creating local exports file... "
   if [[ ! -f "$HOME/.exports.local" ]]; then
-    echo "#! /usr/bin/env \$SHELL" > "$HOME/.exports.local"
-  fi
-  print_done
-}
-
-install_nvm() {
-  # Install nvm
-  echo -n "Installing nvm... "
-  if ! command -v nvm > /dev/null; then
-    local NVM_INSTALL_DIRECTORY="$HOME/.nvm"
-    if [[ ! -d $NVM_INSTALL_DIRECTORY ]]; then
-      git clone --quiet "https://github.com/creationix/nvm.git" "$NVM_INSTALL_DIRECTORY" > /dev/null
-    fi
+    echo "#! /usr/bin/env \$SHELL\n" > "$HOME/.exports.local"
   fi
 
-  cd "$NVM_INSTALL_DIRECTORY"
-  git fetch --quiet --tags origin
-  git checkout --quiet `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)`
-
-  source "$NVM_INSTALL_DIRECTORY/nvm.sh"
-
-  cd "$DOTFILES_DIR"
   print_done
 }
 
@@ -118,7 +104,10 @@ install_xcode() {
   fi
 
   echo -n "Checking for xcode... "
-  xcode-select --install 2> /dev/null
+  if command -v xcode-select > /dev/null; then
+    xcode-select --install 2> /dev/null
+  fi
+
   print_done
 }
 
@@ -127,11 +116,22 @@ install_homebrew() {
     return
   fi
 
+  if [[ ! -f "$HOME/.exports.local" ]]; then
+    print_red "Local exports file not found, exiting."
+  fi
+
   echo -n "Checking for homebrew... "
   if ! command -v brew > /dev/null; then
-    echo "\nInstalling homebrew..."
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    # Ensure it wasn't installed but set up incorrectly.
+    if [[ -d /opt/homebrew ]]; then
+      echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.exports.local"
+    else
+      echo "\nInstalling homebrew..."
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  
+    fi
   fi
+
   print_done
 }
 
@@ -147,15 +147,13 @@ install_homebrew_packages() {
 }
 
 main() {
+  install_xcode
   check_out_dotfiles_repo
   link_dotfiles
   create_exports_dot_local
-  install_xcode
   install_fonts
-  install_homebrew
-  install_homebrew_packages
-  set_homebrew_zsh_as_default_shell
-  install_nvm
+  # install_homebrew
+  # install_homebrew_packages
 }
 
 main
