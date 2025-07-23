@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#! /usr/bin/env "$SHELL"
 
 #-------------------------------------------------------------
 #           Author: Steven Spasbo
@@ -11,7 +11,7 @@
 # Detect which `ls` flavor is in use
 if ls --color > /dev/null 2>&1; then # GNU `ls`
   colorflag="--color"
-  if [ -s "$HOME/.dircolors" ]; then
+  if command -v dircolors > /dev/null && [ -s "$HOME/.dircolors" ]; then
     eval $( dircolors -b "$HOME/.dircolors" )
   fi
 else # macOS `ls`
