@@ -47,12 +47,11 @@
   (require 'use-package))
 (require 'diminish)
 (require 'bind-key)
-
 #+END_SRC
 ** Constants and aliases
 #+BEGIN_SRC emacs-lisp
 (defconst *is-a-mac* (eq system-type 'darwin))
-(defconst *is-window* (not (null window-system)))
+(defconst *is-window* (display-graphic-p))
 
 (defalias 'yes-or-no-p 'y-or-n-p) ; y/n instead of yes/no
 #+END_SRC
@@ -151,11 +150,10 @@ Don't warn about narrowing or downcasing
 ** System
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
-    :ensure
-    :commands (exec-path-from-shell-initialize exec-path-from-shell-getenv)
+    :if *is-a-mac*
+    :ensure t
     :config
-    (if *is-a-mac*
-        (exec-path-from-shell-initialize)))
+    (exec-path-from-shell-initialize))
 #+END_SRC
 ** Usability
 *** which-key
@@ -163,11 +161,12 @@ Don't warn about narrowing or downcasing
 (use-package which-key
   :ensure
   :diminish which-key-mode
+  :custom
+  (which-key-side-window-max-height 0.35)
+  (which-key-idle-secondary-delay 0.1)
+  (which-key-idle-delay 0.3)
+  (which-key-compute-remaps t)
   :config
-  (setq which-key-side-window-max-height 0.35
-        which-key-idle-secondary-delay 0.1
-        which-key-idle-delay 0.3
-        which-key-compute-remaps t)
   (which-key-add-key-based-replacements
     ;; C-x
     "C-x" "C-x prefix"
