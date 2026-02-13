@@ -1,3 +1,4 @@
+
 #+AUTHOR: Steven Spasbo
 #+TITLE: emacs-init.el
 #+EMAIL: stevenspasbo@gmail.com
@@ -6,10 +7,10 @@
 * Startup
 ** GC
 #+BEGIN_SRC emacs-lisp
-(defvar default-gc-cons-threshold (default-value 'gc-cons-threshold))
-(setq gc-cons-threshold 64000000)
-(add-hook 'after-init-hook #'(lambda ()
-                               (setq gc-cons-threshold default-gc-cons-threshold)))
+;; (defvar default-gc-cons-threshold (default-value 'gc-cons-threshold))
+;; (setq gc-cons-threshold (* 1024 1024 100))
+;; (add-hook 'after-init-hook #'(lambda ()
+;;                                (setq gc-cons-threshold default-gc-cons-threshold)))
 #+END_SRC
 ** Package stuff
 #+BEGIN_SRC emacs-lisp
@@ -17,6 +18,7 @@
 
 (add-to-list 'package-archives '("org"   . "https://orgmode.org/elpa/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+
 
 (setq package-enable-at-startup nil
       package--init-file-ensured t)
@@ -47,12 +49,11 @@
   (require 'use-package))
 (require 'diminish)
 (require 'bind-key)
-
 #+END_SRC
 ** Constants and aliases
 #+BEGIN_SRC emacs-lisp
 (defconst *is-a-mac* (eq system-type 'darwin))
-(defconst *is-window* (not (null window-system)))
+(defconst *is-window* (display-graphic-p))
 
 (defalias 'yes-or-no-p 'y-or-n-p) ; y/n instead of yes/no
 #+END_SRC
@@ -151,11 +152,10 @@ Don't warn about narrowing or downcasing
 ** System
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
-    :ensure
-    :commands (exec-path-from-shell-initialize exec-path-from-shell-getenv)
+    :if *is-a-mac*
+    :ensure t
     :config
-    (if *is-a-mac*
-        (exec-path-from-shell-initialize)))
+    (exec-path-from-shell-initialize))
 #+END_SRC
 ** Usability
 *** which-key
@@ -163,11 +163,12 @@ Don't warn about narrowing or downcasing
 (use-package which-key
   :ensure
   :diminish which-key-mode
+  :custom
+  (which-key-side-window-max-height 0.35)
+  (which-key-idle-secondary-delay 0.1)
+  (which-key-idle-delay 0.3)
+  (which-key-compute-remaps t)
   :config
-  (setq which-key-side-window-max-height 0.35
-        which-key-idle-secondary-delay 0.1
-        which-key-idle-delay 0.3
-        which-key-compute-remaps t)
   (which-key-add-key-based-replacements
     ;; C-x
     "C-x" "C-x prefix"
@@ -325,8 +326,7 @@ Don't warn about narrowing or downcasing
          ("M-N"   . helm-next-source)
          ("M-P"   . helm-previous-source))
   :init
-  (use-package helm-mode
-    :diminish helm-mode)
+  (use-package helm-mode :diminish helm-mode)
   (global-unset-key (kbd "C-x c"))
   (global-set-key (kbd "M-x") 'undefined)
   :config
@@ -334,74 +334,88 @@ Don't warn about narrowing or downcasing
   (add-to-list 'helm-completing-read-handlers-alist '(org-set-tags-command))
   (add-to-list 'helm-completing-read-handlers-alist '(org-set-tags))
   (add-to-list 'helm-completing-read-handlers-alist '(org-match-sparse-tree))
-  (setq helm-split-window-in-side-p t
-        helm-mode-fuzzy-match t
-        helm-completion-in-region-fuzzy-match t))
+  (setq helm-split-window-inside-p t
+        ;; helm-mode-fuzzy-match t
+        ;; helm-completion-in-region-fuzzy-match t
+        ))
+
+(use-package helm-core
+  :after (helm helm-mode)
+  :custom
+  (helm-input-idle-delay 0.05)
+  (helm-reuse-last-window-split-state t)
+  (helm-always-two-windows t))
+
 
 ;; (define-key global-map [remap find-tag] 'helm-etags-select)
 
-(use-package helm-adaptive
-  :config (helm-adaptive-mode 1))
+;; (use-package helm-adaptive
+;;   :config (helm-adaptive-mode 1))
 
-(use-package helm-utils
-  ;; Popup buffer-name or filename in grep/moccur/imenu-all etc...
-  :config (helm-popup-tip-mode 1))
+;; (use-package helm-utils
+;;   ;; Popup buffer-name or filename in grep/moccur/imenu-all etc...
+;;   :config (helm-popup-tip-mode 1))
 
-(use-package helm-sys
-  :config (helm-top-poll-mode 1))
+;; (use-package helm-sys
+;;   :config (helm-top-poll-mode 1))
 
-(use-package helm-ring
-  :bind ("M-y" . helm-show-kill-ring))
+;; (use-package helm-ring
+;;   :bind ("M-y" . helm-show-kill-ring))
 
-(use-package helm-ag
-  :ensure
-  :bind (("C-c h a" . helm-do-ag))
-  :config
-  (setq helm-ag-base-command "ag --nocolor --nogroup --ignore-case"
-        helm-ag-insert-at-point 'symbol))
+;; (use-package helm-ag
+;;   :ensure
+;;   :bind (("C-c h a" . helm-do-ag))
+;;   :config
+;;   (setq helm-ag-base-command "ag --nocolor --nogroup --ignore-case"
+;;         helm-ag-insert-at-point 'symbol))
 
-(use-package helm-semantic
-  :bind (("C-c i" . helm-semantic-or-imenu)))
+;; (use-package helm-semantic
+;;   :bind (("C-c i" . helm-semantic-or-imenu)))
 
-(use-package helm-elisp
-  :bind ("C-h a" . helm-apropos))
+;; (use-package helm-elisp
+;;   :after (helm helm-mode)
+;;   :bind ("C-h a" . helm-apropos)
+;;   :custom
+;;   (helm-lisp-fuzzy-completion t))
 
 (use-package helm-files
-  :bind ("C-x C-f" . helm-find-files))
+  :bind ("C-x C-f" . helm-find-files)
+  :custom
+  (helm-ff-file-name-history-use-recentf t)
+  (helm-ff-skip-boring-files t)
+  (helm-ff-search-library-in-sexp t))
 
-(use-package helm-eshell
-  :commands helm-esh-pcomplete)
+;; (use-package helm-eshell
+;;   :commands helm-esh-pcomplete)
 
 ;; helm-bookmark
-(setq helm-bookmark-show-location t)
+;; (use-package helm-bookmark
+;;   :after (helm helm-mode)
+;;   :custom
+;;   (helm-bookmark-show-location t))
 
-(use-package helm-elisp
-  :config
-  (setq helm-lisp-fuzzy-completion t))
 
-;; helm-buffers
-(setq helm-buffers-fuzzy-matching t)
-(setq helm-ff-file-name-history-use-recentf t
-      helm-ff-skip-boring-files t
-      helm-ff-search-library-in-sexp t
+(use-package helm-buffers
+  :after (helm helm-mode)
+  :custom
+  (helm-buffers-fuzzy-matching t)
+  (helm-buffer-max-length 25))
 
-      helm-grep-default-command "grep -a -d skip %e -n%cH -e %p %f"
-      helm-grep-default-recurse-command "grep -a -d recurse %e -n%cH -e %p %f"
-      helm-input-idle-delay 0.05
-      helm-buffer-max-length 25
-      helm-reuse-last-window-split-state t
-      helm-always-two-windows t)
 
-(when (executable-find "curl")
-  (setq helm-net-prefer-curl t))
+;; (use-package helm-grep
+;;   :custom
+;;   (helm-grep-default-command "grep -a -d skip %e -n%cH -e %p %f")
+;;   (helm-grep-default-recurse-command "grep -a -d recurse %e -n%cH -e %p %f"))
+
+;; (when (executable-find "curl")
+;;   (setq helm-net-prefer-curl t))
 
 ;; ggrep is gnu grep on OSX
-(when (executable-find "ggrep")
-  (setq helm-grep-default-command
-        "ggrep -a -d skip %e -n%cH -e %p %f"
-        helm-grep-default-recurse-command
-        "ggrep -a -d recurse %e -n%cH -e %p %f"))
-
+;; (when (executable-find "ggrep")
+;;   (setq helm-grep-default-command
+;;         "ggrep -a -d skip %e -n%cH -e %p %f"
+;;         helm-grep-default-recurse-command
+;;         "ggrep -a -d recurse %e -n%cH -e %p %f"))
 #+END_SRC
 *** helm-fuzzier
 #+BEGIN_SRC emacs-lisp
@@ -424,43 +438,46 @@ Don't warn about narrowing or downcasing
 
 *** helm-swoop
 #+BEGIN_SRC emacs-lisp
-(use-package helm-swoop
-  :ensure
-  :bind (("M-i" . helm-swoop)
-         ("M-I" . helm-multi-swoop)
-         :map helm-swoop-map
-         ("M-i" . helm-multi-swoop-all-from-helm-swoop)
-         :map isearch-mode-map
-         ("M-i" . helm-swoop-from-isearch))
-  :config
-  (setq helm-multi-swoop-edit-save t
-        helm-swoop-split-direction 'split-window-vertically
-        helm-swoop-use-fuzzy-match t
-        helm-swoop-split-with-multiple-windows t
-        helm-swoop-speed-or-color nil
-        helm-swoop-use-line-number-face t))
+;; Package was removed in https://github.com/melpa/melpa/pull/9520.
+;; Replacement options: https://www.reddit.com/r/emacs/comments/1pnra4c/helmswoop_replacement
+
+;; (use-package helm-swoop
+;;   :ensure
+;;   :bind (("M-i" . helm-swoop)
+;;          ("M-I" . helm-multi-swoop)
+;;          :map helm-swoop-map
+;;          ("M-i" . helm-multi-swoop-all-from-helm-swoop)
+;;          :map isearch-mode-map
+;;          ("M-i" . helm-swoop-from-isearch))
+;;   :config
+;;   (setq helm-multi-swoop-edit-save t
+;;         helm-swoop-split-direction 'split-window-vertically
+;;         helm-swoop-use-fuzzy-match t
+;;         helm-swoop-split-with-multiple-windows t
+;;         helm-swoop-speed-or-color nil
+;;         helm-swoop-use-line-number-face t))
 #+END_SRC
 
 *** helm-gtags
 #+BEGIN_SRC emacs-lisp
-(use-package helm-gtags
-  :ensure
-  :diminish helm-gtags-mode
-  :bind (:map helm-gtags-mode-map
-              ("C-c g a" . helm-gtags-tags-in-this-function)
-              ("C-c g r" . helm-gtags-find-rtag)
-              ("C-c >" . helm-gtags-next-history)
-              ("C-c <" . helm-gtags-previous-history)
-              ("M-," . helm-gtags-pop-stack)
-              ("M-." . helm-gtags-dwim)
-              ("C-j" . helm-gtags-select))
-  :config
-  (setq helm-gtags-ignore-case t
-        helm-gtags-auto-update t
-        helm-gtags-use-input-at-cursor t
-        helm-gtags-pulse-at-cursor t
-        helm-gtags-suggested-key-mapping t
-        helm-gtags-prefix-key "\C-cg"))
+;; (use-package helm-gtags
+;;   :ensure
+;;   :diminish helm-gtags-mode
+;;   :bind (:map helm-gtags-mode-map
+;;               ("C-c g a" . helm-gtags-tags-in-this-function)
+;;               ("C-c g r" . helm-gtags-find-rtag)
+;;               ("C-c >" . helm-gtags-next-history)
+;;               ("C-c <" . helm-gtags-previous-history)
+;;               ("M-," . helm-gtags-pop-stack)
+;;               ("M-." . helm-gtags-dwim)
+;;               ("C-j" . helm-gtags-select))
+;;   :config
+;;   (setq helm-gtags-ignore-case t
+;;         helm-gtags-auto-update t
+;;         helm-gtags-use-input-at-cursor t
+;;         helm-gtags-pulse-at-cursor t
+;;         helm-gtags-suggested-key-mapping t
+;;         helm-gtags-prefix-key "\C-cg"))
 #+END_SRC
 ** flycheck
 *** flycheck
@@ -470,20 +487,17 @@ Don't warn about narrowing or downcasing
   :config
   (global-flycheck-mode)
   ;; Set flycheck faces
-  (set-face-background 'flycheck-fringe-warning nil)
+  ;; (set-face-background 'flycheck-fringe-warning nil)
   (set-face-attribute 'flycheck-error nil
-                      :foreground nil
-                      :background nil
+                      ;; :foreground nil
+                      ;; :background nil
                       :underline "#dc322f")
   (set-face-attribute 'flycheck-warning nil
-                      :foreground nil
-                      :background nil
+                      ;; :foreground nil
+                      ;; :background nil
                       :underline "#b58900")
-  (set-face-attribute 'flycheck-info nil
-                      :foreground nil
-                      :background nil
-                      :underline "#268bd2")
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+
+  ;; (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   (if (executable-find "eslint")
       (setq flycheck-javascript-eslint-executable "eslint")))
 #+END_SRC
@@ -581,9 +595,9 @@ Don't warn about narrowing or downcasing
 ** Completion / tagging
 *** dash-at-point
 #+BEGIN_SRC emacs-lisp
-(use-package dash-at-point
-  :ensure
-  :bind (("C-c d" . dash-at-point)))
+;; (use-package dash-at-point
+;;   :ensure
+;;   :bind (("C-c d" . dash-at-point)))
 #+END_SRC
 *** Company
 [[https://github.com/company-mode/company-mode][Complete Anything]]
@@ -596,10 +610,20 @@ Don't warn about narrowing or downcasing
         company-idle-delay 0.1
         company-tooltip-align-annotations t
         company-selection-wrap-around t
-        company-global-modes '(not org-mode erc-mode eshell-mode sh-mode))
+        company-tooltip-limit 15
+        company-global-modes '(not erc-mode eshell-mode sh-mode)
+        company-backends '(company-capf
+                           company-elisp
+                           company-keywords
+                           company-semantic
+                           company-files
+                           company-dabbrev
+                           company-dabbrev-code)
+        company-selection-wrap-around nil
+        company-tooltip-margin 5
+        company-tooltip-scrollbar-width 1
+        company-tooltip-width-grow-only t)
 
-  (set-face-background 'company-tooltip-annotation (face-background 'company-tooltip))
-  (set-face-background 'company-tooltip-annotation-selection (face-background 'company-tooltip-selection))
   (global-company-mode))
 #+END_SRC
 
@@ -614,35 +638,35 @@ Don't warn about narrowing or downcasing
 
 *** yasnippet
 #+BEGIN_SRC emacs-lisp
-(use-package yasnippet
-  :ensure
-  :after company
-  :diminish yas-minor-mode
-  :commands (yas-global-mode yas-minor-mode update-company-backends-with-snippets)
-  :config
-  (yas-global-mode 1)
-  ;; Add yasnippet support for all company backends
-  ;; https://github.com/syl20bnr/spacemacs/pull/179
-  (defvar company-mode/enable-yas t
-    "Enable yasnippet for all backends.")
+;; (use-package yasnippet
+;;   :ensure
+;;   :after company
+;;   :diminish yas-minor-mode
+;;   :commands (yas-global-mode yas-minor-mode update-company-backends-with-snippets)
+;;   :config
+;;   (yas-global-mode 1)
+;;   ;; Add yasnippet support for all company backends
+;;   ;; https://github.com/syl20bnr/spacemacs/pull/179
+;;   (defvar company-mode/enable-yas t
+;;     "Enable yasnippet for all backends.")
 
-  (defun company-mode/backend-with-yas (backend)
-    (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
-        backend
-      (append (if (consp backend) backend (list backend))
-              '(:with company-yasnippet))))
+;;   (defun company-mode/backend-with-yas (backend)
+;;     (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+;;         backend
+;;       (append (if (consp backend) backend (list backend))
+;;               '(:with company-yasnippet))))
 
-  (defun update-company-backends-with-snippets ()
-    (interactive)
-    (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))))
+;;   (defun update-company-backends-with-snippets ()
+;;     (interactive)
+;;     (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))))
 #+END_SRC
 
 *** hippie
 #+BEGIN_SRC emacs-lisp
-(use-package hippie-exp
-  :bind (("M-/" . hippie-expand))
-  :config
-  (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand))
+;; (use-package hippie-exp
+;;   :bind (("M-/" . hippie-expand))
+;;   :config
+;;   (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand))
 #+END_SRC
 
 ** Benchmarking and metrics
@@ -684,7 +708,7 @@ Don't warn about narrowing or downcasing
 (use-package dracula-theme :ensure :defer)
 (use-package atom-one-dark-theme :ensure t :defer t)
 (use-package darkokai-theme      :ensure t :defer t)
-(use-package github-theme        :ensure t :defer t)
+;; (use-package github-theme        :ensure t :defer t)
 (use-package monokai-theme       :ensure t :defer t)
 (use-package paganini-theme      :ensure t :defer t)
 (use-package solarized-theme     :ensure t :defer t)
@@ -972,33 +996,51 @@ Don't warn about narrowing or downcasing
 * Major modes
 ** Go
 #+BEGIN_SRC emacs-lisp
-(use-package go-mode :ensure :defer)
 
-(use-package company-go
-  :ensure
-  :after (flycheck go-mode)
-  :config
-  (add-hook 'go-mode-hook
-            (lambda ()
-              (set (make-local-variable 'company-backends) '(company-go)))))
-#+END_SRC
-** Solidity
-#+BEGIN_SRC emacs-lisp
-(use-package solidity-mode
-  :ensure
-  :defer
-  :config
-  (let ((solc (executable-find "solc")))
-    (when (bound-and-true-p solc)
-      (setq solidity-solc-path solc))))
+(setq treesit-language-source-alist
+      '((go "https://github.com/tree-sitter/tree-sitter-go" "v0.20.0")
+        (gomod "https://github.com/camdencheek/tree-sitter-go-mod" "v1.0.0")
+        (make "https://github.com/tree-sitter/tree-sitter-make")
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
-(use-package solidity-flycheck
-  :defer
-  :after (flycheck solidity-mode)
-  :config
-  (if (bound-and-true-p solidity-solc-path)
-      (setq solidity-flycheck-solc-checker-active t)))
+;; Optional: Helper to install all of them at once
+(defun my-install-go-grammars ()
+  "Install Go and Gomod grammars if they are missing."
+  (interactive)
+  (treesit-install-language-grammar 'go)
+  (treesit-install-language-grammar 'gomod))
 
+
+(use-package go-mode
+  :ensure t
+  :defer t
+  :mode "\\.go\\'" ;; Associate .go files
+  :config
+  ;; Helper to run gofmt/goimports on save
+  (defun my-go-format-buffer ()
+    (interactive)
+    (when (eq major-mode 'go-ts-mode)
+      (eglot-format-buffer)))
+  (setq go-ts-mode-indent-offset 4)
+
+  ;; Hooks for modern Go setups
+  (add-hook 'go-ts-mode-hook (lambda () (flycheck-mode -1)))
+  (add-hook 'go-ts-mode-hook 'eglot-ensure) ; Start LSP automatically
+  (add-hook 'before-save-hook 'my-go-format-buffer)) ; Format on save
+
+;; Note: You might need to remap go-mode to go-ts-mode if you prefer the TS version default
+(add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
+
+
+(use-package eglot
+  :ensure nil ;; Built in.
+  :config
+  (setq-default eglot-workspace-configuration
+                '((:gopls .
+                          ((staticcheck . t)
+                           (gofumpt . t)
+                           (usePlaceholders . t)
+                           (completeUnimported . t))))))
 #+END_SRC
 ** Rust
 #+BEGIN_SRC emacs-lisp
@@ -1116,12 +1158,12 @@ Don't warn about narrowing or downcasing
   :bind (:map emacs-lisp-mode-map
               ("C-c b" . eval-buffer)))
 
-(defun emacs-lisp-stuff ()
-  (set (make-local-variable 'company-backends) '(company-elisp company-capf company-dabbrev-code company-dabbrev)))
+;; (defun emacs-lisp-stuff ()
+;;   (set (make-local-variable 'company-backends) '(company-capf company-dabbrev-code company-dabbrev)))
 
-(add-hook 'emacs-lisp-mode-hook #'emacs-lisp-stuff)
-(add-hook 'lisp-interaction-mode-hook #'emacs-lisp-stuff)
-(add-hook 'ielm-mode-hook #'emacs-lisp-stuff)
+;; (add-hook 'emacs-lisp-mode-hook #'emacs-lisp-stuff)
+;; (add-hook 'lisp-interaction-mode-hook #'emacs-lisp-stuff)
+;; (add-hook 'ielm-mode-hook #'emacs-lisp-stuff)
 #+END_SRC
 *** common lisp
 #+BEGIN_SRC emacs-lisp
@@ -1141,11 +1183,10 @@ Don't warn about narrowing or downcasing
 
 *** Scheme / Racket
 #+BEGIN_SRC emacs-lisp
-(use-package geiser :ensure :defer)
-(use-package scheme :ensure :defer)
-(use-package scheme-complete :ensure :defer)
-(use-package racket-mode :ensure :defer)
-(use-package quack :ensure :defer)
+;; (use-package geiser :ensure :defer)
+;; (use-package scheme :ensure :defer)
+;; (use-package racket-mode :ensure :defer)
+;; (use-package quack :ensure :defer)
 #+END_SRC
 
 *** Clojure
@@ -1164,10 +1205,6 @@ Don't warn about narrowing or downcasing
          ("\\.boot$" . clojure-mode)
          ("\\.cljs.*$" . clojure-mode)
          ("lein-env" . ruby-mode)))
-
-(use-package clojure-snippets
-  :ensure
-  :after clojure-mode)
 
 (use-package cider
   :ensure
@@ -1206,50 +1243,39 @@ Don't warn about narrowing or downcasing
   (defun cider-user-ns ()
     (interactive)
     (cider-repl-set-ns "user")))
-
 #+END_SRC
 
 ** Python
 #+BEGIN_SRC emacs-lisp
 (use-package python
-  :defer
+  :mode ("\\.py\\'" . python-ts-mode)
+  :hook ((python-ts-mode . eglot-ensure))
   :config
   (setq python-indent-offset 4)
     (when (executable-find "ipython")
     (setq python-shell-interpreter "ipython"
           python-shell-interpreter-args "-i --simple-prompt")))
-
-(use-package elpy
-  :ensure
-  :commands (elpy-enable)
-  :hook (python-mode . elpy-enable)
-  :init
-  (advice-add 'python-mode :before 'elpy-enable)
-  :config
-  (when (require 'flycheck nil t)
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)
-          elpy-modules (delq 'elpy-module-pyvenv elpy-modules))))
 #+END_SRC
 
 ** C
 #+BEGIN_SRC emacs-lisp
-(use-package irony
-  :ensure
-  :commands enable-irony-for-specific-modes
-  :hook ((c-mode . enable-irony-for-specific-modes)
-         (c++-mode . enable-irony-for-specific-modes))
-  :config
-  (defun enable-irony-for-specific-modes ()
-    ;; avoid enabling irony-mode in modes that inherits c-mode, e.g: php-mode
-    (when (member major-mode irony-supported-major-modes)
-      (irony-mode 1)))
-  (defun irony-enable-completions ()
-    (define-key irony-mode-map [remap completion-at-point]
-      'irony-completion-at-point-async)
-    (define-key irony-mode-map [remap complete-symbol]
-      'irony-completion-at-point-async))
-  (add-hook 'irony-mode-hook 'irony-enable-completions)
-  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+;; (use-package irony
+;;   :ensure
+;;   :commands enable-irony-for-specific-modes
+;;   :hook ((c-mode . enable-irony-for-specific-modes)
+;;          (c++-mode . enable-irony-for-specific-modes))
+;;   :config
+;;   (defun enable-irony-for-specific-modes ()
+;;     ;; avoid enabling irony-mode in modes that inherits c-mode, e.g: php-mode
+;;     (when (member major-mode irony-supported-major-modes)
+;;       (irony-mode 1)))
+;;   (defun irony-enable-completions ()
+;;     (define-key irony-mode-map [remap completion-at-point]
+;;       'irony-completion-at-point-async)
+;;     (define-key irony-mode-map [remap complete-symbol]
+;;       'irony-completion-at-point-async))
+;;   (add-hook 'irony-mode-hook 'irony-enable-completions)
+;;   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
 ;; (use-package company-irony
 ;;   :ensure
@@ -1262,47 +1288,50 @@ Don't warn about narrowing or downcasing
 ;;              ;; (delete 'company-backends 'company-clang)
 ;;              )
 
-(use-package flycheck-irony
-  :ensure
-  :after irony
-  :config
-  (flycheck-irony-setup))
+;; (use-package flycheck-irony
+;;   :ensure
+;;   :after irony
+;;   :config
+;;   (flycheck-irony-setup))
 
-(use-package irony-eldoc
-  :ensure
-  :hook (irony-mode . irony-eldoc)
-  :config
-  (add-hook 'irony-mode-hook #'irony-eldoc))
+;; (use-package irony-eldoc
+;;   :ensure
+;;   :hook (irony-mode . irony-eldoc)
+;;   :config
+;;   (add-hook 'irony-mode-hook #'irony-eldoc))
 
+(use-package lsp-mode
+  :ensure
+  :commands lsp lsp-deferred)
 #+END_SRC
 
 ** ruby
 #+BEGIN_SRC emacs-lisp
-(use-package ruby-mode
-  :mode (("Vagrantfile$" . ruby-mode)
-         ("rake\\'" . ruby-mode)
-         ("Rakefile" . ruby-mode)
-         ("\\.gemspec$" . ruby-mode)
-         ("Gemfile" . ruby-mode))
-  :config
-  (setq ruby-indent-level 2
-        ruby-indent-tabs-mode nil
-        ruby-deep-indent-paren nil)
-  (enable-paredit-mode))
+;; (use-package ruby-mode
+;;   :mode (("Vagrantfile$" . ruby-mode)
+;;          ("rake\\'" . ruby-mode)
+;;          ("Rakefile" . ruby-mode)
+;;          ("\\.gemspec$" . ruby-mode)
+;;          ("Gemfile" . ruby-mode))
+;;   :config
+;;   (setq ruby-indent-level 2
+;;         ruby-indent-tabs-mode nil
+;;         ruby-deep-indent-paren nil)
+;;   (enable-paredit-mode))
 
-(use-package robe
-  :ensure
-  :hook (ruby-mode . robe-mode)
-  :config
-  (push 'company-robe company-backends))
+;; (use-package robe
+;;   :ensure
+;;   :hook (ruby-mode . robe-mode)
+;;   :config
+;;   (push 'company-robe company-backends))
 
-(use-package ruby-electric
- :ensure
- :hook (ruby-mode . ruby-electric-mode))
+;; (use-package ruby-electric
+;;  :ensure
+;;  :hook (ruby-mode . ruby-electric-mode))
 
-(use-package inf-ruby
-  :ensure
-  :hook (ruby-mode . inf-ruby-minor-mode))
+;; (use-package inf-ruby
+;;   :ensure
+;;   :hook (ruby-mode . inf-ruby-minor-mode))
 #+END_SRC
 
 * global and mode hooks
@@ -1355,4 +1384,11 @@ Don't warn about narrowing or downcasing
 (add-hook 'before-save-hook #'delete-trailing-whitespace) ; Remove whitespace on save
 (add-hook 'prog-mode-hook #'prog-setup)
 (add-hook 'after-init-hook #'after-init-enable-global-modes)
+#+END_SRC
+
+** Display line numbers
+#+BEGIN_SRC emacs-lisp
+(use-package display-line-numbers
+  :config
+  (global-display-line-numbers-mode t))
 #+END_SRC

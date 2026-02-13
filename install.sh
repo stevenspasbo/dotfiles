@@ -117,7 +117,7 @@ link_dotfiles() {
 create_exports_dot_local() {
   echo -n "Creating local exports file... "
   if [[ ! -f "$HOME/.exports.local" ]]; then
-    if ! echo "#! /usr/bin/env $SHELL" >"$HOME/.exports.local"; then
+    if ! echo "#! /usr/bin/env zsh\n\n" > "$HOME/.exports.local"; then
       print_red "Failed to create .exports.local"
       return 1
     fi
@@ -129,8 +129,9 @@ install_nvm() {
   # Install nvm
   echo -n "Installing nvm... "
   local NVM_INSTALL_DIRECTORY="$HOME/.nvm"
+  local NVM_REPO="https://github.com/nvm-sh/nvm.git"
   if [[ ! -d $NVM_INSTALL_DIRECTORY ]]; then
-    if ! git clone --quiet "https://github.com/creationix/nvm.git" "$NVM_INSTALL_DIRECTORY" >/dev/null; then
+    if ! git clone --quiet "$NVM_REPO" "$NVM_INSTALL_DIRECTORY" >/dev/null; then
       print_red "Failed to clone nvm repository."
       return 1
     fi
@@ -149,7 +150,9 @@ install_nvm() {
     return 1
   fi
 
-  source "$NVM_INSTALL_DIRECTORY/nvm.sh"
+
+  echo 'export NVM_DIR="$HOME/.nvm"' >> "$HOME/.exports.local"
+  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> "$HOME/.exports.local"
 
   cd "$DOTFILES_DIR" || exit
   print_done
@@ -171,6 +174,20 @@ install_fonts() {
     fi
   fi
 
+  print_done
+}
+
+install_pyenv() {
+  echo -n "Installing pyenv... "
+  local PYENV_INSTALL_DIR="$HOME/.pyenv"
+  local LOCAL_EXPORTS="$HOME/.exports.local"
+  if [[ ! -d "$PYENV_INSTALL_DIR" ]]; then
+    git clone "https://github.com/pyenv/pyenv.git" "$PYENV_INSTALL_DIR" > /dev/null
+    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> "$LOCAL_EXPORTS"
+    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> "$LOCAL_EXPORTS"
+    echo 'eval "$(pyenv init - zsh)\n\n"' >> "$LOCAL_EXPORTS"
+  fi
+  cd "$DOTFILES_DIR" || exit
   print_done
 }
 
@@ -217,6 +234,10 @@ install_homebrew_packages() {
   # brew bundle
   print_done
 }
+
+##################################################
+# Main
+##################################################
 
 main() {
   check_for_git
