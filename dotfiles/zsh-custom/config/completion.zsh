@@ -34,7 +34,7 @@ zstyle ':completion:*' accept-exact '*(N)'
 # Results; Sets formatting of group titles
 zstyle ':completion:*:descriptions' format '%F{yellow}%B---- %d%b'
 # No results; ex: commandthatdoesntexist[tab]
-zstyle ':completion:*:warnings' format '%F{red%}%BNo results in: %ds%b%f'
+zstyle ':completion:*:warnings' format '%F{red}%BNo results in: %ds%b%f'
 # Suggested corrections
 zstyle ':completion:*:corrections' format '%U%F{green}%d%f%u'
 
@@ -133,7 +133,8 @@ zstyle ':completion:*:kill:*'   force-list always
 zstyle ':completion:*:*:kill:*:processes' list-colors "=(#b) #([0-9]#) #([^ ]#)*=$color[cyan]=$color[red]=$color[green]"
 
 # make "rm [tab]" look like ls -l
-zstyle ':completion:*:*:rm:*' file-list 'yes'
+#zstyle ':completion:*:*:rm:*' file-list 'yes'
+zstyle ':completion:*:*:rm:*' menu select
 
 # Ignore files already in active line
 zstyle ':completion::*:(git|less|rm|vim|most)' ignore-line true

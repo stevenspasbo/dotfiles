@@ -66,7 +66,7 @@ nocorrect which
 
 # Load all custom zsh configurations, ignoring temp files.
 if [[ -d "$ZSH_CUSTOM/config" ]]; then
-  for f in $(ls $ZSH_CUSTOM/config/[^.#]*.zsh); do
+  for f in $ZSH_CUSTOM/config/[^.#]*.zsh(N); do
     source $f
   done
 fi
