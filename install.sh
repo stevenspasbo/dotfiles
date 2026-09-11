@@ -46,7 +46,7 @@ check_for_git() {
 }
 
 check_out_dotfiles_repo() {
-  echo -n "Checking out dotfiles repository..."
+  echo -n "Checking out dotfiles repository... "
   if [[ ! -d "$DOTFILES_DIR" ]]; then
     if ! git clone --quiet --recursive "https://github.com/stevenspasbo/dotfiles.git" "$DOTFILES_DIR" >/dev/null; then
       print_red "Failed to clone dotfiles repository."
