@@ -91,13 +91,13 @@ link_dotfiles() {
         print_red "Failed to backup $home_file"
         continue
       fi
-      echo "\t$home_file was moved to $new_file_name"
+      printf "\t%s was moved to %s\n" "$home_file" "$new_file_name"
     fi
 
     # If the symlink already exists, check if it points to the correct file
     if [[ -L "$home_file" ]]; then
       if [[ "$(readlink "$home_file")" == "$DOTFILES_DIR/$file" ]]; then
-        echo "\tSymlink for $base_dot_name already exists and is correct."
+        printf "\tSymlink for %s already exists and is correct.\n" "$base_dot_name"
         continue
       else
         # If the symlink is incorrect, delete it
