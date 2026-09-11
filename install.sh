@@ -219,7 +219,7 @@ install_homebrew() {
   echo -n "Checking for homebrew... "
   if ! command -v brew >/dev/null; then
     echo "\nInstalling homebrew..."
-    if ! /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"; then
+    if ! /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
       print_red "Failed to install homebrew."
       return 1
     fi
