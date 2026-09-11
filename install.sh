@@ -64,7 +64,7 @@ check_out_dotfiles_repo() {
 }
 
 link_dotfiles() {
-  echo "Symlinking dotfiles... "
+  echo -n "Symlinking dotfiles... "
   if [[ "$PWD" != "$DOTFILES_DIR" ]]; then
     cd "$DOTFILES_DIR" || exit
   fi
@@ -79,7 +79,6 @@ link_dotfiles() {
     local home_file="$HOME/.$(basename "$file")"
     local base_dot_name=$(basename "$home_file")
 
-    echo "Creating symlink for $base_dot_name"
     # If the file exists and is not a symlink, back it up
     if [[ -e "$home_file" && ! -L "$home_file" ]]; then
       local new_file_name="$BACKUP_DIR/$(basename "$file")$TIME"
@@ -91,13 +90,12 @@ link_dotfiles() {
         print_red "Failed to backup $home_file"
         continue
       fi
-      printf "\t%s was moved to %s\n" "$home_file" "$new_file_name"
+      printf "\n\t%s was moved to %s\n" "$home_file" "$new_file_name"
     fi
 
     # If the symlink already exists, check if it points to the correct file
     if [[ -L "$home_file" ]]; then
       if [[ "$(readlink "$home_file")" == "$DOTFILES_DIR/$file" ]]; then
-        printf "\tSymlink for %s already exists and is correct.\n" "$base_dot_name"
         continue
       else
         # If the symlink is incorrect, delete it
