@@ -117,7 +117,7 @@ link_dotfiles() {
 create_exports_dot_local() {
   echo -n "Creating local exports file... "
   if [[ ! -f "$HOME/.exports.local" ]]; then
-    if ! echo "#! /usr/bin/env zsh\n\n" > "$HOME/.exports.local"; then
+    if ! printf "#! /usr/bin/env zsh\n\n" > "$HOME/.exports.local"; then
       print_red "Failed to create .exports.local"
       return 1
     fi
@@ -183,9 +183,11 @@ install_pyenv() {
   local LOCAL_EXPORTS="$HOME/.exports.local"
   if [[ ! -d "$PYENV_INSTALL_DIR" ]]; then
     git clone "https://github.com/pyenv/pyenv.git" "$PYENV_INSTALL_DIR" > /dev/null
+  fi
+  if ! grep -qF 'PYENV_ROOT' "$LOCAL_EXPORTS" 2>/dev/null; then
     echo 'export PYENV_ROOT="$HOME/.pyenv"' >> "$LOCAL_EXPORTS"
     echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> "$LOCAL_EXPORTS"
-    echo 'eval "$(pyenv init - zsh)\n\n"' >> "$LOCAL_EXPORTS"
+    echo 'eval "$(pyenv init - zsh)"' >> "$LOCAL_EXPORTS"
   fi
   cd "$DOTFILES_DIR" || exit
   print_done
