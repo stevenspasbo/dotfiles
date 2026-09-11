@@ -150,9 +150,10 @@ install_nvm() {
     return 1
   fi
 
-
-  echo 'export NVM_DIR="$HOME/.nvm"' >> "$HOME/.exports.local"
-  echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> "$HOME/.exports.local"
+  if ! grep -qF 'NVM_DIR' "$HOME/.exports.local" 2>/dev/null; then
+    echo 'export NVM_DIR="$HOME/.nvm"' >> "$HOME/.exports.local"
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> "$HOME/.exports.local"
+  fi
 
   cd "$DOTFILES_DIR" || exit
   print_done
