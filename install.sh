@@ -169,7 +169,7 @@ install_fonts() {
   fi
 
   if ! find "$FONT_DIR" -iname "*powerline*.ttf" 2>/dev/null | grep -q "."; then
-    if ! source "$DOTFILES_DIR/fonts/install.sh" >/dev/null; then
+    if ! sh "$DOTFILES_DIR/fonts/install.sh" >/dev/null; then
       print_red "Failed to install fonts."
       return 1
     fi
