@@ -50,3 +50,5 @@ weechat.log
 *.sql
 
 .python-version
+
+**/.claude/settings.local.json
