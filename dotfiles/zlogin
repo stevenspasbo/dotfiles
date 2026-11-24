@@ -3,16 +3,7 @@
 #
 # Executes commands at login post-zshrc.
 #
-# Execute code that does not affect the current session in the background.
+# Note: ~/.exports is already sourced by ~/.zshenv, and oh-my-zsh zcompiles
+# its own completion dump, so neither is repeated here.
 
-{
-  # Compile the completion dump to increase startup speed.
-  zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-  if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
-    zcompile "$zcompdump"
-  fi
-} &!
-
-# Exports are kept separately to be used by both zsh and bash.
-[[ -s "$HOME/.exports" ]] && . "$HOME/.exports"
 [[ -s "$HOME/.aliases" ]] && . "$HOME/.aliases"
