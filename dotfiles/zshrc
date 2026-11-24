@@ -104,4 +104,6 @@ alias -g L=' | less'
 
 # fzf key bindings/completion. Loaded last so oh-my-zsh doesn't override ^R.
 # fzf options live in ~/.exports.
-command -v fzf > /dev/null && eval "$(fzf --zsh)"
+if command -v fzf > /dev/null; then
+  eval "$(fzf --zsh)"
+fi
