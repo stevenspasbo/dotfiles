@@ -24,9 +24,11 @@ COMPLETION_WAITING_DOTS="%F{red}......%f" # Matches the old zle.zsh dots
 plugins+=(themes)
 plugins+=(history-substring-search)
 [[ -d $ZSH_CUSTOM/plugins/zsh-autopair ]] && plugins+=(zsh-autopair)
+[[ -d $ZSH_CUSTOM/plugins/zsh-autosuggestions ]] && plugins+=(zsh-autosuggestions)
 
 # Check for executables
-for p (composer pip pyenv aws docker docker-compose mvn bun); do
+# (pyenv works via shims set up in ~/.exports.local; its plugin isn't needed.)
+for p (pip aws docker docker-compose bun); do
   if command -v $p > /dev/null; then
     plugins+=($p)
   fi
