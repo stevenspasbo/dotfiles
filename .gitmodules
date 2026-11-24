@@ -25,18 +25,9 @@
 [submodule "dotfiles/zsh-custom/plugins/zsh-syntax-highlighting"]
 	path = dotfiles/zsh-custom/plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
-[submodule "dotfiles/zsh-custom/plugins/zsh-history-substring-search"]
-	path = dotfiles/zsh-custom/plugins/zsh-history-substring-search
-	url = https://github.com/zsh-users/zsh-history-substring-search.git
-[submodule "dotfiles/zsh-custom/plugins/zsh-autopair"]
-	path = dotfiles/zsh-custom/plugins/zsh-autopair
-	url = https://github.com/hlissner/zsh-autopair.git
 [submodule "dotfiles/zsh-custom/plugins/zsh-autosuggestions"]
 	path = dotfiles/zsh-custom/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
-[submodule "dotfiles/zsh-custom/plugins/zsh-interactive-cd"]
-	path = dotfiles/zsh-custom/plugins/zsh-interactive-cd
-	url = https://github.com/changyuheng/zsh-interactive-cd.git
 [submodule "powerline"]
 	path = powerline
 	url = https://github.com/powerline/powerline.git
