@@ -41,12 +41,13 @@ export TZ="America/Los_Angeles"
 #-------------------------------------------------------------
 # History stuff
 #-------------------------------------------------------------
-export HISTCONTROL=ignoreboth:ignoredups:erasedups # Ignore lines that are duplicates or begin with space
+export HISTCONTROL=ignoreboth:erasedups # ignoreboth = ignorespace + ignoredups
 export HISTSIZE=100000
 export HISTFILESIZE=100000
 export SAVEHIST=100000
 export HISTFILE="$HOME/.history"
-export HISTFORMAT='%F %T '
+# No HISTTIMEFORMAT: it makes bash write "#<timestamp>" lines into the shared
+# $HISTFILE, which zsh (EXTENDED_HISTORY off) would read back as commands.
 # bash's PROMPT_COMMAND (history sharing) is set in bashrc, not exported here.
 
 # PATH
