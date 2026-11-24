@@ -27,8 +27,7 @@ ZSH_THEME_GIT_COMMITS_DIVERGED='⇕'
 ZSH_THEME_GIT_COMMITS_AHEAD_SUFFIX='↑' # '⇡' '⬆'
 
 
-# Git segment. Uses a single `git status --porcelain=v2 --branch` call to get
-# the branch, ahead/behind counts, and changed/untracked state.
+# Git segment: branch, changed/untracked state, ahead/behind
 function _git_info() {
   local out
   if ! out=$(git status --porcelain=v2 --branch --ignore-submodules=dirty 2> /dev/null); then

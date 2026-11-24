@@ -104,8 +104,7 @@ link_dotfiles() {
     fi
 
     # Create the symlink
-    # -n: if $home_file is a symlink to a directory, don't create the link
-    # inside that directory (which would produce a self-referencing loop).
+    # -n: don't create the link inside an existing directory symlink
     if ! ln -sn "$DOTFILES_DIR/$file" "$home_file"; then
       print_red "Failed to create symlink for $base_dot_name"
     fi

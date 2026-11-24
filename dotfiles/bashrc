@@ -7,12 +7,10 @@
 #-------------------------------------------------------------
 # Environment stuff
 #-------------------------------------------------------------
-# Load first so Homebrew, GNU coreutils, etc. are on PATH for the rest of
-# this file.
+# Load first so Homebrew is on PATH for the rest of this file.
 [ -s "$HOME/.exports" ] && . "$HOME/.exports"
 
 if [[ -L ~/.bashrc ]]; then
-  # `readlink -f` works with GNU coreutils and macOS 12.3+.
   export DOTFILE_REPO="$(dirname "$(readlink -f ~/.bashrc)")"
 fi
 
@@ -23,7 +21,7 @@ shopt -s cdspell
 shopt -s dotglob
 shopt -s nocaseglob
 
-# Bash 4+ only (macOS ships bash 3.2 as /bin/bash).
+# Bash 4+ only
 if (( BASH_VERSINFO[0] >= 4 )); then
   shopt -s autocd
   shopt -s dirspell
@@ -34,9 +32,7 @@ fi
 #-------------------------------------------------------------
 shopt -s histappend # Append to history file instead of overwriting
 
-# Share history between bash sessions (like zsh's SHARE_HISTORY): after each
-# command, append new lines to $HISTFILE, then reload it.
-# Not exported, and only added once, so it doesn't grow in nested shells.
+# Share history between bash sessions
 export -n PROMPT_COMMAND 2> /dev/null
 case "$PROMPT_COMMAND" in
   *"history -a; history -c; history -r"*) ;;
@@ -58,7 +54,6 @@ if [ -n "$HOMEBREW_PREFIX" ]; then
     . "$HOMEBREW_PREFIX/etc/bash_completion"
 fi
 
-# Fall back to no git info in the prompt if git-prompt.sh wasn't found.
 type -t __git_ps1 > /dev/null || __git_ps1() { :; }
 
 export GIT_PS1_SHOWDIRTYSTATE=1

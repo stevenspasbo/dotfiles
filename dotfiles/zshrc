@@ -3,42 +3,35 @@
 #
 # Author: Steven Spasbo
 #
-# Interactive-shell setup. Environment/PATH lives in ~/.zshenv -> ~/.exports.
 
-# zsh/complist is loaded in zsh-custom/config/completion.zsh.
 zmodload zsh/terminfo
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export ZSH_CUSTOM="$HOME/.zsh-custom"
 
-# compinit is run by oh-my-zsh; don't run it here too.
 autoload -U colors && colors
 
 ZSH_THEME="spasbo"
 
 DISABLE_AUTO_UPDATE="true"
 ENABLE_CORRECTION="true"
-COMPLETION_WAITING_DOTS="%F{red}......%f" # Matches the old zle.zsh dots
+COMPLETION_WAITING_DOTS="%F{red}......%f"
 
 [[ -d $ZSH_CUSTOM/plugins/zsh-autosuggestions ]] && plugins+=(zsh-autosuggestions)
 
 # Check for executables
-# (pyenv works via shims set up in ~/.exports.local; its plugin isn't needed.
-# docker-compose completion comes from the docker plugin.)
 for p (pip aws docker bun); do
   if command -v $p > /dev/null; then
     plugins+=($p)
   fi
 done
 
-# zsh-syntax-highlighting must be the last plugin loaded, except for
-# history-substring-search, which its README says must come after it.
+# zsh-syntax-highlighting must load last, followed only by history-substring-search.
 [[ -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
 plugins+=(history-substring-search)
 
-# zsh-completions is added to fpath (per its README), not loaded as a plugin.
-# Must happen before oh-my-zsh runs compinit.
+# zsh-completions goes on fpath, not in plugins.
 [[ -d $ZSH_CUSTOM/plugins/zsh-completions/src ]] && fpath+=("$ZSH_CUSTOM/plugins/zsh-completions/src")
 
 source "$ZSH/oh-my-zsh.sh"
@@ -52,8 +45,7 @@ setopt AUTO_PUSHD
 setopt CDABLE_VARS
 setopt CHASE_LINKS # chase symlinks, opposite of CHASE_DOTS
 setopt COMPLETE_ALIASES
-# Correct command names only. ENABLE_CORRECTION above turns on CORRECT_ALL
-# (which also "corrects" arguments, e.g. new file names); turn that back off.
+# Correct command names only (ENABLE_CORRECTION turns on CORRECT_ALL).
 setopt CORRECT
 unsetopt CORRECT_ALL
 setopt EXTENDED_GLOB
@@ -96,14 +88,13 @@ if [[ -n $HELPDIR ]]; then
   alias help=run-help
 fi
 
-# Aliases (shared with bash). Sourced after oh-my-zsh so these win.
+# Aliases
 [[ -s "$HOME/.aliases" ]] && source "$HOME/.aliases"
 
 alias -g G=' | grep -i'
 alias -g L=' | less'
 
-# fzf key bindings/completion. Loaded last so oh-my-zsh doesn't override ^R.
-# fzf options live in ~/.exports.
+# fzf. Loaded last so oh-my-zsh doesn't override ^R.
 if command -v fzf > /dev/null; then
   eval "$(fzf --zsh)"
 fi

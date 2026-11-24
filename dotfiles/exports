@@ -6,7 +6,6 @@
 
 case "$(uname -s)" in
   Darwin)
-    # Put Homebrew on PATH first so everything below can find it.
     if [ -x /opt/homebrew/bin/brew ]; then
       eval "$(/opt/homebrew/bin/brew shellenv)"
     elif [ -x /usr/local/bin/brew ]; then
@@ -16,7 +15,6 @@ case "$(uname -s)" in
     if [ -n "$HOMEBREW_PREFIX" ]; then
       export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
 
-      # Use $HOMEBREW_PREFIX/opt rather than `brew --prefix` to avoid forking brew.
       export CORE_UTILS="$HOMEBREW_PREFIX/opt/coreutils"
       if [ -d "$CORE_UTILS/libexec/gnubin" ]; then
         export PATH="$CORE_UTILS/libexec/gnubin:$PATH"
@@ -41,24 +39,20 @@ export TZ="America/Los_Angeles"
 #-------------------------------------------------------------
 # History stuff
 #-------------------------------------------------------------
-export HISTCONTROL=ignoreboth:erasedups # ignoreboth = ignorespace + ignoredups
+export HISTCONTROL=ignoreboth:erasedups # Ignore lines that are duplicates or begin with space
 export HISTSIZE=100000
 export HISTFILESIZE=100000
 export SAVEHIST=100000
 export HISTFILE="$HOME/.history"
-# No HISTTIMEFORMAT: it makes bash write "#<timestamp>" lines into the shared
-# $HISTFILE, which zsh (EXTENDED_HISTORY off) would read back as commands.
-# bash's PROMPT_COMMAND (history sharing) is set in bashrc, not exported here.
 
 # PATH
 [[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin:$PATH"
 [[ -d "$HOME/.bin" ]] && PATH="$HOME/.bin:$PATH"
 [[ -d "$HOME/bin" ]] && PATH="$HOME/bin:$PATH"
 
-# fzf options (shell integration is loaded in zshrc/bashrc)
+# fzf
 export FZF_DEFAULT_OPTS='--reverse --border --exact --height=50%'
-# Directories fzf's file walker skips for Ctrl-T, Alt-C and **<Tab>. Without
-# this, Ctrl-T from ~ indexes 1.6M+ entries (virtualenvs, Library, caches).
+# Directories to skip for Ctrl-T, Alt-C and **<Tab>
 _fzf_walker_skip='.git,node_modules,.venv,venv,__pycache__,.mypy_cache,.pytest_cache,Library,.Trash,.cache,.npm,.nvm,.pyenv,.bun,.m2,.gradle'
 export FZF_CTRL_T_OPTS="--walker-skip=$_fzf_walker_skip"
 export FZF_ALT_C_OPTS="--walker-skip=$_fzf_walker_skip"

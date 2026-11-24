@@ -21,14 +21,13 @@ else # macOS `ls`
   export LSCOLORS='BxBxhxDxfxhxhxhxhxcxcx'
 fi
 
-# Color output for `ls` (only when writing to a terminal)
+# Color output for `ls`
 alias ls="command ls ${colorflag}"
 
 alias ll="ls -lAFh ${llflags}"
 unset colorflag llflags
 
-# Colored `grep` output when writing to a terminal; `auto` keeps color codes
-# out of pipes and files.
+# Colored `grep` output
 # Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'

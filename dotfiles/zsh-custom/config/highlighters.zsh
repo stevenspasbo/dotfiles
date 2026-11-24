@@ -8,8 +8,7 @@ HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND='bg=magenta,fg=white,bold'
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND='bg=red,fg=white,bold'
 HISTORY_SUBSTRING_SEARCH_GLOBBING_FLAGS='i'
 
-# Colors carried over from the old zsh-custom/zle.zsh highlighter, for the
-# token types zsh-syntax-highlighting leaves uncolored by default.
+# Colors for token types that are uncolored by default
 typeset -gA ZSH_HIGHLIGHT_STYLES
 ZSH_HIGHLIGHT_STYLES[single-hyphen-option]='fg=yellow'
 ZSH_HIGHLIGHT_STYLES[double-hyphen-option]='fg=green'
