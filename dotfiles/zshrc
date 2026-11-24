@@ -5,7 +5,7 @@
 #
 # Interactive-shell setup. Environment/PATH lives in ~/.zshenv -> ~/.exports.
 
-zmodload zsh/complist
+# zsh/complist is loaded in zsh-custom/config/completion.zsh.
 zmodload zsh/terminfo
 
 # Path to your oh-my-zsh installation.
@@ -14,7 +14,6 @@ export ZSH_CUSTOM="$HOME/.zsh-custom"
 
 # compinit is run by oh-my-zsh; don't run it here too.
 autoload -U colors && colors
-autoload -U vcs_info
 
 ZSH_THEME="spasbo"
 
@@ -51,7 +50,10 @@ setopt AUTO_PUSHD
 setopt CDABLE_VARS
 setopt CHASE_LINKS # chase symlinks, opposite of CHASE_DOTS
 setopt COMPLETE_ALIASES
-setopt CORRECT_ALL
+# Correct command names only. ENABLE_CORRECTION above turns on CORRECT_ALL
+# (which also "corrects" arguments, e.g. new file names); turn that back off.
+setopt CORRECT
+unsetopt CORRECT_ALL
 setopt EXTENDED_GLOB
 setopt GLOB_DOTS # emacs zsh [tab] [tab] -> .zshrc .zprofile .z[a-z]+
 setopt IGNOREEOF # Don't kill session with ctrl+D
@@ -68,7 +70,7 @@ unsetopt AUTO_REMOVE_SLASH
 unsetopt FLOWCONTROL
 unsetopt MENU_COMPLETE # do not autoselect the first completion entry
 
-nocorrect which
+alias which='nocorrect which'
 
 # Load all custom zsh configurations, ignoring temp files.
 if [[ -d "$ZSH_CUSTOM/config" ]]; then
