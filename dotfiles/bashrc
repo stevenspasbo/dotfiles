@@ -34,6 +34,15 @@ fi
 #-------------------------------------------------------------
 shopt -s histappend # Append to history file instead of overwriting
 
+# Share history between bash sessions (like zsh's SHARE_HISTORY): after each
+# command, append new lines to $HISTFILE, then reload it.
+# Not exported, and only added once, so it doesn't grow in nested shells.
+export -n PROMPT_COMMAND 2> /dev/null
+case "$PROMPT_COMMAND" in
+  *"history -a; history -c; history -r"*) ;;
+  *) PROMPT_COMMAND="history -a; history -c; history -r${PROMPT_COMMAND:+; $PROMPT_COMMAND}" ;;
+esac
+
 #-------------------------------------------------------------
 # Aliases
 #-------------------------------------------------------------

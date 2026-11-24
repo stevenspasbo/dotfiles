@@ -47,7 +47,7 @@ export HISTFILESIZE=100000
 export SAVEHIST=100000
 export HISTFILE="$HOME/.history"
 export HISTFORMAT='%F %T '
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+# bash's PROMPT_COMMAND (history sharing) is set in bashrc, not exported here.
 
 # PATH
 [[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin:$PATH"
