@@ -20,11 +20,10 @@ ZSH_THEME="spasbo"
 
 DISABLE_AUTO_UPDATE="true"
 ENABLE_CORRECTION="true"
-COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="%F{red}......%f" # Matches the old zle.zsh dots
 
 plugins+=(themes)
-plugins+=(history-substring-search zsh-completions)
-[[ -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
+plugins+=(history-substring-search)
 [[ -d $ZSH_CUSTOM/plugins/zsh-autopair ]] && plugins+=(zsh-autopair)
 
 # Check for executables
@@ -33,6 +32,13 @@ for p (composer pip pyenv aws docker docker-compose mvn bun); do
     plugins+=($p)
   fi
 done
+
+# zsh-syntax-highlighting must be the last plugin loaded.
+[[ -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && plugins+=(zsh-syntax-highlighting)
+
+# zsh-completions is added to fpath (per its README), not loaded as a plugin.
+# Must happen before oh-my-zsh runs compinit.
+[[ -d $ZSH_CUSTOM/plugins/zsh-completions/src ]] && fpath+=("$ZSH_CUSTOM/plugins/zsh-completions/src")
 
 source "$ZSH/oh-my-zsh.sh"
 
