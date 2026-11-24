@@ -57,6 +57,14 @@ export HISTFILE="$HOME/.history"
 
 # fzf options (shell integration is loaded in zshrc/bashrc)
 export FZF_DEFAULT_OPTS='--reverse --border --exact --height=50%'
+# Directories fzf's file walker skips for Ctrl-T, Alt-C and **<Tab>. Without
+# this, Ctrl-T from ~ indexes 1.6M+ entries (virtualenvs, Library, caches).
+_fzf_walker_skip='.git,node_modules,.venv,venv,__pycache__,.mypy_cache,.pytest_cache,Library,.Trash,.cache,.npm,.nvm,.pyenv,.bun,.m2,.gradle'
+export FZF_CTRL_T_OPTS="--walker-skip=$_fzf_walker_skip"
+export FZF_ALT_C_OPTS="--walker-skip=$_fzf_walker_skip"
+export FZF_COMPLETION_PATH_OPTS="--walker-skip=$_fzf_walker_skip"
+export FZF_COMPLETION_DIR_OPTS="--walker-skip=$_fzf_walker_skip"
+unset _fzf_walker_skip
 # export FZF_ALT_C_COMMAND='fd --type directory'
 # export FZF_CTRL_T_COMMAND="mdfind -onlyin . -name ."
 
