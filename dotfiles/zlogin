@@ -1,9 +1,0 @@
-#!/usr/bin/env zsh
-
-#
-# Executes commands at login post-zshrc.
-#
-# Note: ~/.exports is already sourced by ~/.zshenv, and oh-my-zsh zcompiles
-# its own completion dump, so neither is repeated here.
-
-[[ -s "$HOME/.aliases" ]] && . "$HOME/.aliases"

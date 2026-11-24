@@ -3,7 +3,7 @@
 #
 # Author: Steven Spasbo
 #
-# Next to load is ~/.zlogin
+# Interactive-shell setup. Environment/PATH lives in ~/.zshenv -> ~/.exports.
 
 zmodload zsh/complist
 zmodload zsh/terminfo
@@ -12,9 +12,9 @@ zmodload zsh/terminfo
 export ZSH="$HOME/.oh-my-zsh"
 export ZSH_CUSTOM="$HOME/.zsh-custom"
 
-autoload -U compinit && compinit
+# compinit is run by oh-my-zsh; don't run it here too.
 autoload -U colors && colors
-autoload -U vcs_info && vcs_info
+autoload -U vcs_info
 
 ZSH_THEME="spasbo"
 
@@ -28,7 +28,7 @@ plugins+=(history-substring-search zsh-completions)
 [[ -d $ZSH_CUSTOM/plugins/zsh-autopair ]] && plugins+=(zsh-autopair)
 
 # Check for executables
-for p (composer pip pyenv aws docker docker-compose mvn); do
+for p (composer pip pyenv aws docker docker-compose mvn bun); do
   if command -v $p > /dev/null; then
     plugins+=($p)
   fi
@@ -86,13 +86,12 @@ if [[ -n $HELPDIR ]]; then
   alias help=run-help
 fi
 
-# Aliases
-# [[ -s "$HOME/.aliases" ]] && source "$HOME/.aliases"
+# Aliases (shared with bash). Sourced after oh-my-zsh so these win.
+[[ -s "$HOME/.aliases" ]] && source "$HOME/.aliases"
 
 alias -g G=' | grep -i'
 alias -g L=' | less'
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_OPTS='--reverse --border --exact --height=50%'
-# export FZF_ALT_C_COMMAND='fd --type directory'
-# export FZF_CTRL_T_COMMAND="mdfind -onlyin . -name ."
+# fzf key bindings/completion. Loaded last so oh-my-zsh doesn't override ^R.
+# fzf options live in ~/.exports.
+command -v fzf > /dev/null && eval "$(fzf --zsh)"

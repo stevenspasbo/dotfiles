@@ -5,31 +5,29 @@
 #-------------------------------------------------------------
 
 #-------------------------------------------------------------
+# Environment stuff
+#-------------------------------------------------------------
+# Load first so Homebrew, GNU coreutils, etc. are on PATH for the rest of
+# this file.
+[ -s "$HOME/.exports" ] && . "$HOME/.exports"
+
+if [[ -L ~/.bashrc ]]; then
+  # `readlink -f` works with GNU coreutils and macOS 12.3+.
+  export DOTFILE_REPO="$(dirname "$(readlink -f ~/.bashrc)")"
+fi
+
+#-------------------------------------------------------------
 # Set options
 #-------------------------------------------------------------
-shopt -s autocd
 shopt -s cdspell
-shopt -s dirspell
 shopt -s dotglob
 shopt -s nocaseglob
 
-#-------------------------------------------------------------
-# Environment stuff
-#-------------------------------------------------------------
-
-if [[ -L ~/.bashrc ]]; then
-  case "$(uname -s)" in
-    Darwin)
-      export DOTFILE_REPO=`dirname $(greadlink -f ~/.bashrc)`
-      ;;
-    Linux)
-      export DOTFILE_REPO=`dirname $(readlink -f ~/.bashrc)`
-      ;;
-    *)
-  esac
+# Bash 4+ only (macOS ships bash 3.2 as /bin/bash).
+if (( BASH_VERSINFO[0] >= 4 )); then
+  shopt -s autocd
+  shopt -s dirspell
 fi
-
-source ~/.aliases
 
 #-------------------------------------------------------------
 # History stuff
@@ -37,17 +35,24 @@ source ~/.aliases
 shopt -s histappend # Append to history file instead of overwriting
 
 #-------------------------------------------------------------
-# Prompt
+# Aliases
 #-------------------------------------------------------------
-if command -v brew > /dev/null; then
-  source $(brew --prefix)/etc/bash_completion.d/git-prompt.sh
-  source $(brew --prefix)/etc/bash_completion
+[ -s "$HOME/.aliases" ] && . "$HOME/.aliases"
+
+#-------------------------------------------------------------
+# Completion and prompt
+#-------------------------------------------------------------
+if [ -n "$HOMEBREW_PREFIX" ]; then
+  [ -f "$HOMEBREW_PREFIX/etc/bash_completion.d/git-prompt.sh" ] && \
+    . "$HOMEBREW_PREFIX/etc/bash_completion.d/git-prompt.sh"
+  [ -f "$HOMEBREW_PREFIX/etc/bash_completion" ] && \
+    . "$HOMEBREW_PREFIX/etc/bash_completion"
 fi
+
+# Fall back to no git info in the prompt if git-prompt.sh wasn't found.
+type -t __git_ps1 > /dev/null || __git_ps1() { :; }
 
 export GIT_PS1_SHOWDIRTYSTATE=1
 export PS1='\[$(tput bold)\]\[$(tput setaf 7)\][\[$(tput setaf 4)\]\u\[$(tput setaf 5)\]@\[$(tput setaf 6)\]\h: \[$(tput setaf 2)\]\w\[$(tput setaf 7)\]]$(__git_ps1 " (%s)")\n\[$(tput setaf 2)\]λ \[$(tput sgr0)\]'
 
-[ -s "$HOME/.exports" ] && . "$HOME/.exports"
-[ -s "$HOME/.aliases" ] && . "$HOME/.aliases"
-
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+command -v fzf > /dev/null && eval "$(fzf --bash)"
